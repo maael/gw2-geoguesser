@@ -20,38 +20,78 @@ const myIcon = L.icon({
 
 const MAX_ZOOM = 7
 
-export default function Map() {
-  const [marker, setMarker] = useState(null)
+export default function Map({
+  guessLocation = [null, null],
+  onGuess,
+  guessId,
+  showGuessLocation,
+}: {
+  guessLocation: Readonly<[number | null, number | null]>
+  onGuess: (score: number) => void
+  guessId: string
+  showGuessLocation: boolean
+}) {
   const [distance, setDistance] = useState(null)
-  const [locationLongLat, setLocationLongLat] = useState(null)
-  const [coordX] = useState(49704)
-  const [coordY] = useState(39984)
   return (
-    <MapContainer
-      center={[-241, 368]}
-      zoom={3}
-      minZoom={2}
-      maxZoom={MAX_ZOOM}
-      style={{ height: '100%', width: '100%', background: '#032A32' }}
-      crs={L.CRS.Simple}
-      maxBoundsViscosity={1}
-      attributionControl={false}
-    >
+    <>
+      <div className="isolate w-full h-full relative">
+        <MapContainer
+          center={[-241, 368]}
+          zoom={3}
+          minZoom={2}
+          maxZoom={MAX_ZOOM}
+          style={{ height: '100%', width: '100%', background: '#032A32' }}
+          crs={L.CRS.Simple}
+          maxBoundsViscosity={1}
+          attributionControl={false}
+        >
+          <MapInner
+            guessLocation={guessLocation}
+            distance={distance}
+            setDistance={setDistance}
+            guessId={guessId}
+            showGuessLocation={showGuessLocation}
+          />
+        </MapContainer>
+      </div>
+      {showGuessLocation ? null : (
+        <button
+          className="absolute left-1/2 bottom-5 bg-red-200 z-50 px-3 py-2"
+          onClick={() => {
+            onGuess(Number(Math.max(500 - Math.pow(distance || 0, Math.sqrt(Math.E)), 0).toFixed(0)))
+          }}
+        >
+          Guess
+        </button>
+      )}
+    </>
+  )
+}
+
+function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLocation }: any) {
+  const [marker, setMarker] = useState(null)
+  const locationLongLat = useLocationLongLat(guessLocation)
+  useEffect(() => {
+    setMarker(null)
+    setDistance(null)
+  }, [guessId, setMarker, setDistance])
+  useSetup({
+    locationLongLat,
+    marker,
+    setMarker,
+    setDistance,
+    showGuessLocation,
+  })
+  return (
+    <>
       {/** TODO: Replace with own tile service */}
       <TileLayer url="https://tiles.tinyarmy.org/1/1/{z}/{x}/{y}.jpg" noWrap={true} minZoom={1} maxZoom={7} />
       <AttributionControl prefix={`Tiles by <a href="https://blog.thatshaman.com/" target="_blank">that_shaman</a>`} />
-      <Setup
-        locationLongLat={locationLongLat}
-        marker={marker}
-        setMarker={setMarker}
-        setDistance={setDistance}
-        setLocationLongLat={setLocationLongLat}
-        coordsX={coordX}
-        coordsY={coordY}
-      />
       {marker ? <Marker title="Your guess" icon={myIcon} position={marker} /> : null}
-      {locationLongLat ? <Marker title="Your guess" icon={myIcon} position={locationLongLat} /> : null}
-      {marker && locationLongLat ? (
+      {showGuessLocation && locationLongLat ? (
+        <Marker title="The location" icon={myIcon} position={locationLongLat} />
+      ) : null}
+      {marker && locationLongLat && showGuessLocation ? (
         <Polyline
           positions={[marker, locationLongLat]}
           pathOptions={{ color: '#7DDA59', dashArray: '10, 10', weight: 5 }}
@@ -61,26 +101,28 @@ export default function Map() {
           </Tooltip>
         </Polyline>
       ) : null}
-    </MapContainer>
+    </>
   )
 }
 
-function Setup({
+function useLocationLongLat(guessLocation: Readonly<[number | null, number | null]>) {
+  const map = useMap()
+  const coords = guessLocation[0] === null || guessLocation[1] === null ? null : (guessLocation as [number, number])
+  return coords ? map.unproject([coords[0], coords[1]], MAX_ZOOM) : null
+}
+
+function useSetup({
   locationLongLat,
   marker,
   setMarker,
   setDistance,
-  setLocationLongLat,
-  coordsX,
-  coordsY,
+  showGuessLocation,
 }: {
   locationLongLat: any
   marker: any
   setMarker: any
   setDistance: any
-  setLocationLongLat: any
-  coordsX: any
-  coordsY: any
+  showGuessLocation: boolean
 }) {
   const map = useMap()
 
@@ -89,31 +131,26 @@ function Setup({
     const southEast = map.unproject([81920, 114688], MAX_ZOOM)
     const mapbounds = new L.LatLngBounds(northWest, southEast)
     map.setMaxBounds(mapbounds)
-  }, [map, setLocationLongLat])
+  }, [map])
 
   useEffect(() => {
-    if (!isNaN(coordsX) && !isNaN(coordsY)) {
-      setLocationLongLat(map.unproject([coordsX, coordsY], MAX_ZOOM))
+    if (showGuessLocation) {
+      const bounds = new L.LatLngBounds([marker, locationLongLat])
+      map.fitBounds(bounds)
     }
-  }, [map, setLocationLongLat, coordsX, coordsY])
-
-  useEffect(() => {
-    if (!marker || !locationLongLat) return
-    const bounds = new L.LatLngBounds([marker, locationLongLat])
-    map.fitBounds(bounds)
-
-    const distance = map.distance(marker, locationLongLat)
-    setDistance(distance)
-  }, [map, marker, locationLongLat, setDistance])
+  }, [marker, showGuessLocation, locationLongLat, map])
 
   useMapEvents({
     click(e) {
-      console.info('CLICK', e)
-      setMarker({
+      if (showGuessLocation) return
+      const newMarker = {
         lat: e.latlng.lat,
         lng: e.latlng.lng,
-      })
+      }
+      setMarker(newMarker)
+
+      const distance = map.distance(newMarker, locationLongLat)
+      setDistance(distance)
     },
   })
-  return null
 }
