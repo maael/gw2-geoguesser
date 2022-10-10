@@ -39,6 +39,8 @@ const options: Array<{
   },
 ]
 
+const MAX_ROUNDS = 3
+
 export default function Index() {
   const [game, setGame] = React.useState<
     Array<{
@@ -57,13 +59,15 @@ export default function Index() {
           <Image src={lastItem?.image} layout="fill" />
         </div>
       </div>
-      <div className="bg-brown-brushed flex flex-col absolute top-10 right-0 text-white pl-12 pr-20 py-2 bg-black text-lg md:text-3xl rounded-l-full shadow-md border-b border-black">
-        <div>Round: {game.length}/5</div>
+      <div className="bg-brown-brushed flex flex-col absolute top-10 right-0 text-white pl-12 pr-20 py-2 bg-black text-lg md:text-3xl rounded-l-full drop-shadow-xl">
+        <div>
+          Round: {game.length}/{MAX_ROUNDS}
+        </div>
         <div>Score: {total}</div>
       </div>
-      {lastItem.score !== null && lastItem.score !== undefined && game.length <= 5 ? (
+      {lastItem.score !== null && lastItem.score !== undefined && game.length <= MAX_ROUNDS ? (
         <button
-          className="gwfont bg-brown-brushed text-white hover:scale-125 transition-transform flex flex-col absolute bottom-10 px-10 py-2 text-2xl border-b border-black shadow-md rounded-full"
+          className="gwfont bg-brown-brushed text-white hover:scale-125 transition-transform flex flex-col absolute bottom-10 px-10 py-2 text-2xl drop-shadow-md rounded-full"
           onClick={() => {
             setGame((g) => {
               return g.concat(options[game.length % options.length])
@@ -86,11 +90,11 @@ export default function Index() {
           }}
         />
       </div>
-      {game.length === 5 && game.every((g) => typeof g.score === 'number') ? (
+      {game.length === MAX_ROUNDS && game.every((g) => typeof g.score === 'number') ? (
         <div className="bg-opacity-50 bg-gray-800 absolute inset-0 flex flex-col justify-center items-center">
-          <div className="flex flex-col text-white bg-brown-brushed shadow-lg border-b border-black px-10 py-5 justify-center text-xl md:w-1/3 m-3">
+          <div className="flex flex-col text-white bg-brown-brushed drop-shadow-xl px-10 py-5 justify-center text-xl md:w-1/3 m-3">
             <h2 className="gwfont text-5xl text-center">Finished!</h2>
-            <div className="flex flex-col gap-1 mt-3">
+            <div className="flex flex-col gap-1 mt-3 mb-1">
               {game.map((g, i) => (
                 <div key={g.id} className="flex flex-row items-center gap-1 bg-black-brushed px-10 py-2">
                   <div className="pr-10">{i + 1}.</div>
@@ -101,10 +105,12 @@ export default function Index() {
                 </div>
               ))}
             </div>
-            <div className="gwfont text-4xl text-center py-3">Total: {total}</div>
-            <div className="flex flex-row justify-center items-center">
+            <div className="gwfont text-4xl text-center py-3">
+              Total: {total} / {500 * MAX_ROUNDS}
+            </div>
+            <div className="flex flex-row justify-center items-center mt-1">
               <button
-                className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl border-b border-black shadow-md rounded-full"
+                className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full"
                 onClick={() => setGame([options[0]])}
               >
                 Restart

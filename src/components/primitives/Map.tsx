@@ -71,7 +71,7 @@ export default function Map({
       {showGuessLocation ? null : (
         <button
           className={cls(
-            'absolute left-1/2 text-3xl border-none bottom-5 z-50 px-10 py-2 gwfont bg-brown-brushed hover:scale-125 transition-transform border-b rounded-full border-black shadow-md text-white',
+            'absolute left-1/2 text-3xl border-none bottom-5 z-50 px-10 py-2 gwfont bg-brown-brushed hover:scale-125 transition-all rounded-full border-b border-black shadow-md text-white',
             {
               'opacity-50': !marker,
             }

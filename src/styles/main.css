@@ -21,6 +21,10 @@ button:disabled {
   cursor: url(/cursors/grey.cur), pointer;
 }
 
+.leaflet-interactive {
+  cursor: url(/cursors/target.cur), pointer !important;
+}
+
 .leaflet-grab {
   cursor: url(/cursors/target.cur), grab !important;
 }
