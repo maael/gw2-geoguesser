@@ -19,7 +19,17 @@ const myIcon = L.icon({
   iconAnchor: [16, 34],
 })
 
+const myOtherIcon = L.icon({
+  iconUrl: 'ui/guess-icon.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 34],
+})
+
 const MAX_ZOOM = 7
+
+function distanceToScore(distance: number | null) {
+  return Number(Math.max(500 - Math.pow(distance || 0, Math.sqrt(Math.E)), 0).toFixed(0))
+}
 
 export default function Map({
   guessLocation = [null, null],
@@ -67,7 +77,7 @@ export default function Map({
             }
           )}
           onClick={() => {
-            onGuess(Number(Math.max(500 - Math.pow(distance || 0, Math.sqrt(Math.E)), 0).toFixed(0)))
+            onGuess(distanceToScore(distance))
           }}
           disabled={!marker}
         >
@@ -96,7 +106,7 @@ function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLoca
       {/** TODO: Replace with own tile service */}
       <TileLayer url="https://tiles.tinyarmy.org/1/1/{z}/{x}/{y}.jpg" noWrap={true} minZoom={1} maxZoom={7} />
       <AttributionControl prefix={`Tiles by <a href="https://blog.thatshaman.com/" target="_blank">that_shaman</a>`} />
-      {marker ? <Marker title="Your guess" icon={myIcon} position={marker} /> : null}
+      {marker ? <Marker title="Your guess" icon={myOtherIcon} position={marker} /> : null}
       {showGuessLocation && locationLongLat ? (
         <Marker title="The location" icon={myIcon} position={locationLongLat} />
       ) : null}
@@ -106,7 +116,7 @@ function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLoca
           pathOptions={{ color: '#7DDA59', dashArray: '10, 10', weight: 5 }}
         >
           <Tooltip direction="bottom" offset={[0, 20]} opacity={1} permanent={true}>
-            {distance}m
+            {distanceToScore(distance)} points ({distance.toFixed(1)}m)
           </Tooltip>
         </Polyline>
       ) : null}
