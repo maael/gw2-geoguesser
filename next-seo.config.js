@@ -1,6 +1,6 @@
-const title = 'Matt Elphick | Software Engineer'
-const description = 'Software engineer mainly messing around with JavaScript.'
-const url = 'https://mael.tech/'
+const title = 'Guild Wars 2 | Geo Guesser'
+const description = 'How well do you know the world of Guild Wars 2?'
+const url = 'https://gw2-geoguesser.mael.tech'
 
 export default {
   title,
@@ -13,10 +13,13 @@ export default {
     site_name: title,
     type: 'website',
     locale: 'en_GB',
-  },
-  twitter: {
-    handle: '@mattaelphick',
-    site: '@mattaelphick',
-    cardType: 'summary_large_image',
+    images: [
+      {
+        url: `${url}/preview.png`,
+        width: 1200,
+        height: 627,
+        alt: 'Guild Wars 2 | Geo Guesser',
+      },
+    ],
   },
 }

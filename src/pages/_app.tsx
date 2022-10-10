@@ -4,7 +4,6 @@ import { AppProps } from 'next/app'
 import { DefaultSeo } from 'next-seo'
 import useFathom from '~/components/hooks/useFathom'
 import SEO from '~/../next-seo.config'
-import EmojiFavicon from '~/components/primitives/EmojiFavicon'
 
 function App({ Component, pageProps }: AppProps) {
   useFathom()
@@ -16,7 +15,6 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       <DefaultSeo {...SEO} />
       <Component {...pageProps} />
-      <EmojiFavicon emoji="🤖" />
     </>
   )
 }
