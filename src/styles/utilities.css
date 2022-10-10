@@ -2,3 +2,42 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.bg-brown-brushed {
+  background-image: url(/ui/windowbg-brushed.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg-black-brushed {
+  background-image: url(/ui/windowbg-glyphs.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.ptfont {
+  font-family: PTSerif, Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: 'PTSerif';
+  src: url(/fonts/PTSerif-Regular.ttf);
+}
+
+.cagfont {
+  font-family: Cagliostro, Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: 'Cagliostro';
+  src: url(/fonts/Cagliostro-Regular.ttf);
+}
+
+.gwfont {
+  font-family: GwTwo, Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: 'GwTwo';
+  src: url(/fonts/GWTwoFont.ttf);
+}

@@ -11,4 +11,17 @@ body > div:first-child,
 div#__next,
 div#__next > div {
   height: 100%;
+  cursor: url(/cursors/default.cur), default;
+}
+
+button {
+  cursor: url(/cursors/green.cur), pointer;
+}
+
+.leaflet-grab {
+  cursor: url(/cursors/map.cur), grab !important;
+}
+
+.leaflet-dragging .leaflet-grab {
+  cursor: url(/cursors/drag.cur), grabbing !important;
 }

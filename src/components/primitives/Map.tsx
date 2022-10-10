@@ -13,7 +13,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 const myIcon = L.icon({
-  iconUrl: 'guess-icon-green.png',
+  iconUrl: 'ui/guess-icon-green.png',
   iconSize: [32, 32],
   iconAnchor: [16, 34],
 })
@@ -56,7 +56,7 @@ export default function Map({
       </div>
       {showGuessLocation ? null : (
         <button
-          className="absolute left-1/2 bottom-5 bg-red-200 z-50 px-3 py-2"
+          className="absolute left-1/2 text-3xl border-none bottom-5 z-50 px-10 py-2 gwfont bg-brown-brushed hover:scale-125 transition-transform border-b rounded-full border-black shadow-md text-white"
           onClick={() => {
             onGuess(Number(Math.max(500 - Math.pow(distance || 0, Math.sqrt(Math.E)), 0).toFixed(0)))
           }}
