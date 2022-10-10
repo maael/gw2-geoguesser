@@ -26,6 +26,8 @@
   "dependencies": {
     "fathom-client": "^3.5.0",
     "leaflet": "^1.9.2",
+    "mongoose": "^6.6.5",
+    "mongoose-paginate-v2": "^1.7.1",
     "next": "^12.3.1",
     "next-seo": "^5.5.0",
     "react": "^18.2.0",
