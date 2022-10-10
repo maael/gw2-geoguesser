@@ -11,6 +11,7 @@ import {
 } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import cls from 'classnames'
 
 const myIcon = L.icon({
   iconUrl: 'ui/guess-icon-green.png',
@@ -32,6 +33,7 @@ export default function Map({
   showGuessLocation: boolean
 }) {
   const [distance, setDistance] = useState(null)
+  const [marker, setMarker] = useState(null)
   return (
     <>
       <div className="isolate w-full h-full relative">
@@ -51,15 +53,23 @@ export default function Map({
             setDistance={setDistance}
             guessId={guessId}
             showGuessLocation={showGuessLocation}
+            marker={marker}
+            setMarker={setMarker}
           />
         </MapContainer>
       </div>
       {showGuessLocation ? null : (
         <button
-          className="absolute left-1/2 text-3xl border-none bottom-5 z-50 px-10 py-2 gwfont bg-brown-brushed hover:scale-125 transition-transform border-b rounded-full border-black shadow-md text-white"
+          className={cls(
+            'absolute left-1/2 text-3xl border-none bottom-5 z-50 px-10 py-2 gwfont bg-brown-brushed hover:scale-125 transition-transform border-b rounded-full border-black shadow-md text-white',
+            {
+              'opacity-50': !marker,
+            }
+          )}
           onClick={() => {
             onGuess(Number(Math.max(500 - Math.pow(distance || 0, Math.sqrt(Math.E)), 0).toFixed(0)))
           }}
+          disabled={!marker}
         >
           Guess
         </button>
@@ -68,8 +78,7 @@ export default function Map({
   )
 }
 
-function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLocation }: any) {
-  const [marker, setMarker] = useState(null)
+function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLocation, marker, setMarker }: any) {
   const locationLongLat = useLocationLongLat(guessLocation)
   useEffect(() => {
     setMarker(null)

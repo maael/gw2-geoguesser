@@ -17,9 +17,12 @@ div#__next > div {
 button {
   cursor: url(/cursors/green.cur), pointer;
 }
+button:disabled {
+  cursor: url(/cursors/grey.cur), pointer;
+}
 
 .leaflet-grab {
-  cursor: url(/cursors/map.cur), grab !important;
+  cursor: url(/cursors/target.cur), grab !important;
 }
 
 .leaflet-dragging .leaflet-grab {
