@@ -7,9 +7,7 @@
 
 html,
 body,
-body > div:first-child,
-div#__next,
-div#__next > div {
+div#__next {
   height: 100%;
   cursor: url(/cursors/default.cur), default;
 }
@@ -17,6 +15,7 @@ div#__next > div {
 button {
   cursor: url(/cursors/green.cur), pointer;
 }
+
 button:disabled {
   cursor: url(/cursors/grey.cur), pointer;
 }
