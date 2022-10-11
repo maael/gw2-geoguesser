@@ -1,8 +1,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { FaUser } from 'react-icons/fa'
+import { FaUser, FaSignOutAlt } from 'react-icons/fa'
+import { useSession, signOut } from 'next-auth/react'
 
 export default function Header() {
+  const { data: session } = useSession()
+
   return (
     <div>
       <div className="max-w-6xl w-full mx-auto h-12 px-1 py-2 flex flex-row gap-6 items-center text-white">
@@ -19,10 +22,31 @@ export default function Header() {
             New Game
           </button>
         </Link>
-        <div className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg">
-          <FaUser />
-          Sign in
-        </div>
+        {session ? (
+          <div className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg">
+            <FaUser />
+            {session.user?.name}
+          </div>
+        ) : null}
+        {session ? (
+          <button
+            onClick={async () => {
+              await signOut({ redirect: false })
+              window.location.assign('/')
+            }}
+            className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg"
+          >
+            <FaSignOutAlt />
+            Sign Out
+          </button>
+        ) : (
+          <Link href="/auth">
+            <div className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg">
+              <FaUser />
+              Sign In | Register
+            </div>
+          </Link>
+        )}
       </div>
     </div>
   )
