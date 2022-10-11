@@ -69,7 +69,7 @@ export default function Game() {
       />
       {lastItem.score !== null && lastItem.score !== undefined && game.length <= MAX_ROUNDS ? (
         <button
-          className="gwfont bg-brown-brushed text-white hover:scale-125 transition-transform flex flex-col absolute bottom-10 px-10 py-2 text-2xl drop-shadow-md rounded-full"
+          className="gwfont bg-brown-brushed text-white hover:scale-125 transition-transform flex flex-col absolute bottom-3 md:bottom-10 px-10 py-2 text-2xl drop-shadow-md rounded-full"
           onClick={() => {
             setGame((g) => {
               return g.concat(options[game.length % options.length])
@@ -79,7 +79,7 @@ export default function Game() {
           Next
         </button>
       ) : null}
-      <div className="absolute bottom-28 md:bottom-10 left-3 md:left-auto right-3 md:right-10 lg:w-1/2 aspect-video scale-100 md:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-50 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
+      <div className="absolute bottom-20 md:bottom-10 left-4 md:left-auto right-4 md:right-10 lg:w-1/2 aspect-video scale-100 md:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-50 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map
           guessId={lastItem?.id}
           guessLocation={lastItem?.location}
