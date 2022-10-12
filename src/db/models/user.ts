@@ -1,5 +1,5 @@
 import { Schema, Model } from 'mongoose'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { connect } from '../mongo'
 import { WithDoc, User } from '../../types'
 
