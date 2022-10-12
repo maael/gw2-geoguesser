@@ -16,14 +16,15 @@ const handlers: ApiHandlers = {
     },
     post: {
       many: async ({ req, res, body }) => {
-        if (typeof body.totalScore === 'undefined') {
-          throw new Error('Required score')
-        }
         const session = await unstable_getServerSession(req, res, authOptions)
         if (!session) {
           throw new Error('Required session')
         }
-        const game = await Game.create({ userId: (session.user as any).id, totalScore: body.totalScore })
+        const game = await Game.create({
+          userId: (session.user as any).id,
+          totalScore: body.totalScore,
+          challenge: body.challenge,
+        })
         return game as any
       },
     },

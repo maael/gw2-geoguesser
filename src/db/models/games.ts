@@ -17,7 +17,10 @@ const itemSchema = new Schema<WithDoc<Game>, ItemModel>(
       type: String,
       required: true,
     },
-    totalScore: Number,
+    totalScore: {
+      type: Number,
+      required: true,
+    },
     isDeleted: Boolean,
     createdAt: String,
     updatedAt: String,
