@@ -4,8 +4,7 @@ export type WithDoc<T> = T & Document
 
 export interface User {
   username: string
-  hash: string
-  salt: string
+  password: string
   isDeleted: boolean
   createdAt: string
   updatedAt: string
