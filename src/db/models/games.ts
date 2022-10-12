@@ -1,4 +1,4 @@
-import { Schema, Model, PaginateModel } from 'mongoose'
+import { Schema, Model } from 'mongoose'
 import { connect } from '../mongo'
 import { WithDoc, Game } from '../../types'
 
@@ -9,23 +9,25 @@ interface ItemModel extends Model<WithDoc<Game>> {}
 
 const itemSchema = new Schema<WithDoc<Game>, ItemModel>(
   {
-    userId: Schema.Types.ObjectId,
-    guesses: [
-      {
-        id: String,
-        guess: [Number, Number],
-        score: Number,
-      },
-    ],
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    challenge: {
+      type: String,
+      required: true,
+    },
+    totalScore: Number,
     isDeleted: Boolean,
     createdAt: String,
     updatedAt: String,
   },
   {
+    id: true,
     timestamps: true,
   }
 )
 
-const Item = connection.model<WithDoc<Game>, PaginateModel<ItemModel>>('Game', itemSchema)
+const Item = connection.model<WithDoc<Game>, ItemModel>('Game', itemSchema)
 
 export default Item

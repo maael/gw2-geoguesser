@@ -1,57 +1,76 @@
 import * as React from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
+import { CHALLENGE } from '~/types'
+import { ChallengeOptionsMap } from '~/util'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
   loading: () => <div>Loading...</div>,
 })
 
-const options: Array<{
+type Game = Array<{
   id: string
   image: string
   location: [number | null, number | null]
-}> = [
-  {
-    id: 'ce6fb458-8523-4c70-a1a1-35c4ffc8aad8.jpg',
-    image: 'https://gw2-sightseeing.maael.xyz/new_group/ce6fb458-8523-4c70-a1a1-35c4ffc8aad8.jpg',
-    location: [45136, 29864],
-  },
-  {
-    id: 'bc1f4a36-23ed-450d-b73a-debd5fa0cb89',
-    image: 'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/bc1f4a36-23ed-450d-b73a-debd5fa0cb89.jpg',
-    location: [37988, 32718],
-  },
-  {
-    id: '36094a2c-a7e3-44c2-a52f-40b3bdd0877a',
-    image: 'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/36094a2c-a7e3-44c2-a52f-40b3bdd0877a.jpg',
-    location: [38714, 37092],
-  },
-  {
-    id: 'f51eef90-1cb9-4669-8e7e-baea846b7c44',
-    image: 'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/f51eef90-1cb9-4669-8e7e-baea846b7c44.jpg',
-    location: [49704, 39984],
-  },
-  {
-    id: 'ab9d667f-38d1-446f-bc78-0864c872edd4',
-    image: 'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/ab9d667f-38d1-446f-bc78-0864c872edd4.jpg',
-    location: [37988, 32718],
-  },
-]
+  score?: null | number
+}>
 
-const MAX_ROUNDS = 3
+async function saveGame(gameType: CHALLENGE, game: Game) {
+  fetch('/api/internal/game', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      challenge: gameType,
+      totalScore: sumScore(game),
+    }),
+  })
+}
+
+function sumScore(game: Game) {
+  return game.reduce((acc, g) => acc + (g.score || 0), 0)
+}
+
+function useGameOptions(gameType: CHALLENGE) {
+  const [options, setOptions] = React.useState([])
+  const [error, setError] = React.useState(null)
+  const [loading, setLoading] = React.useState(true)
+  React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;(async () => {
+      try {
+        setLoading(true)
+        const fetchedOptions = await fetch(`/api/internal/challenge/${gameType}`).then((r) => r.json())
+        setOptions(fetchedOptions)
+      } catch (e) {
+        setError(e)
+      } finally {
+        setLoading(false)
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return { options, error, loading }
+}
 
 export default function Game() {
-  const [game, setGame] = React.useState<
-    Array<{
-      id: string
-      image: string
-      location: [number | null, number | null]
-      score?: null | number
-    }>
-  >([options[0]])
+  const gameType = CHALLENGE.random
+  const { options, loading } = useGameOptions(gameType)
+  return loading ? <div>Loading...</div> : <GameScreen options={options} gameType={gameType} />
+}
+
+function GameScreen({ options, gameType }: { options: any; gameType: CHALLENGE }) {
+  const maxRounds = ChallengeOptionsMap[gameType].rounds
+  const { data: session } = useSession()
+  const [game, setGame] = React.useState<Game>([options[0]])
   const lastItem = game[game.length - 1]
-  const total = game.reduce((acc, g) => acc + (g.score || 0), 0)
+  const total = sumScore(game)
+  function isFinished(g: Game) {
+    return g.length === maxRounds && g.every((gi) => typeof gi.score === 'number')
+  }
   return (
     <div
       suppressHydrationWarning
@@ -59,7 +78,7 @@ export default function Game() {
     >
       <div className="bg-brown-brushed flex flex-col md:absolute md:top-16 right-0 text-white pl-12 pr-20 py-2 bg-black text-lg md:text-3xl rounded-full my-4 md:my-0 md:rounded-l-full drop-shadow-xl">
         <div>
-          Round: {game.length}/{MAX_ROUNDS}
+          Round: {game.length}/{maxRounds}
         </div>
         <div>Score: {total}</div>
       </div>
@@ -67,13 +86,11 @@ export default function Game() {
         className="flex flex-row w-full h-full justify-center items-center bg-contain bg-no-repeat md:bg-center"
         style={{ backgroundImage: `url(${lastItem?.image})` }}
       />
-      {lastItem.score !== null && lastItem.score !== undefined && game.length <= MAX_ROUNDS ? (
+      {lastItem.score !== null && lastItem.score !== undefined && game.length <= maxRounds ? (
         <button
           className="gwfont bg-brown-brushed text-white hover:scale-125 transition-transform flex flex-col absolute bottom-3 md:bottom-10 px-10 py-2 text-2xl drop-shadow-md rounded-full"
           onClick={() => {
-            setGame((g) => {
-              return g.concat(options[game.length % options.length])
-            })
+            setGame((g) => g.concat(options[game.length % options.length]))
           }}
         >
           Next
@@ -87,12 +104,16 @@ export default function Game() {
           onGuess={(score) => {
             setGame((g) => {
               const last = { ...g[g.length - 1], score }
-              return g.slice(0, -1).concat(last)
+              const updatedGame = g.slice(0, -1).concat(last)
+              if (isFinished(updatedGame) && session) {
+                void saveGame(gameType, updatedGame)
+              }
+              return updatedGame
             })
           }}
         />
       </div>
-      {game.length === MAX_ROUNDS && game.every((g) => typeof g.score === 'number') ? (
+      {isFinished(game) ? (
         <div className="bg-opacity-50 bg-gray-800 absolute inset-0 flex flex-col justify-center items-center">
           <div className="flex flex-col text-white bg-brown-brushed drop-shadow-xl px-2 md:px-10 py-5 justify-center text-xl md:w-1/3 m-3">
             <h2 className="gwfont text-5xl text-center">Finished!</h2>
@@ -108,7 +129,7 @@ export default function Game() {
               ))}
             </div>
             <div className="gwfont text-4xl text-center py-3">
-              Total: {total} / {500 * MAX_ROUNDS}
+              Total: {total} / {500 * maxRounds}
             </div>
             <div className="flex flex-row justify-center items-center mt-1">
               <button

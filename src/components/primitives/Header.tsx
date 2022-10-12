@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { useSession, signOut } from 'next-auth/react'
+import logoImg from '../../../public/logo.png'
 
 export default function Header() {
   const { data: session } = useSession()
@@ -12,7 +13,7 @@ export default function Header() {
         <Link href="/">
           <div className="flex flex-row gap-2 h-full items-center flex-1">
             <div className="relative h-full aspect-square">
-              <Image src="/logo.png" layout="fill" />
+              <Image src={logoImg} layout="fill" />
             </div>
             <h1 className="gwfont text-xl hidden sm:block">Guild Wars 2 | Geo Guesser</h1>
           </div>

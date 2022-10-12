@@ -27,6 +27,7 @@
         "ignoreRestSiblings": true
       }
     ],
+    "@typescript-eslint/no-explicit-any": "off",
     // React
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",

@@ -21,6 +21,7 @@ const itemSchema = new Schema<WithDoc<User>, ItemModel, ItemMethods>(
     updatedAt: String,
   },
   {
+    id: true,
     timestamps: true,
   }
 )
