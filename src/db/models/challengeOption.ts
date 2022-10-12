@@ -9,7 +9,6 @@ interface ItemModel extends Model<WithDoc<ChallengeOption>> {}
 
 const itemSchema = new Schema<WithDoc<ChallengeOption>, ItemModel>(
   {
-    id: String,
     image: String,
     location: [Number, Number],
   },
