@@ -20,6 +20,15 @@ export interface Game {
   updatedAt: string
 }
 
+export interface Challenge {
+  name: string
+  type: CHALLENGE
+  options: [ObjectId]
+  isDeleted: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface ChallengeOption {
   id: string
   image: string
