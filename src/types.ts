@@ -41,6 +41,8 @@ export type ApiOneHandler<T = any, Body = any> = (args: {
   body?: Body
   req: NextApiRequest
   res: NextApiResponse
+  sort?: string
+  limit?: number
 }) => Promise<T | null>
 
 export type ApiManyHandler<T = any, Body = any> = (args: {
@@ -50,6 +52,7 @@ export type ApiManyHandler<T = any, Body = any> = (args: {
   body?: Body
   req: NextApiRequest
   res: NextApiResponse
+  sort?: string
 }) => Promise<T[]>
 
 export type ApiHandlers = Record<

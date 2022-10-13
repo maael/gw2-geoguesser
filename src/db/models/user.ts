@@ -17,8 +17,6 @@ const itemSchema = new Schema<WithDoc<User>, ItemModel, ItemMethods>(
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isDeleted: { type: Boolean, default: false },
-    createdAt: String,
-    updatedAt: String,
   },
   {
     id: true,

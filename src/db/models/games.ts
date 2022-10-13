@@ -26,8 +26,6 @@ const itemSchema = new Schema<WithDoc<Game>, ItemModel>(
       required: true,
     },
     isDeleted: Boolean,
-    createdAt: String,
-    updatedAt: String,
   },
   {
     id: true,

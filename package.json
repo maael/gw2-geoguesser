@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@tanstack/react-query": "^4.10.3",
     "bcryptjs": "^2.4.3",
     "classnames": "^2.3.2",
     "fathom-client": "^3.5.0",

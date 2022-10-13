@@ -3,7 +3,7 @@ import functionsMap from '~/api/functions'
 
 const handler: NextApiHandler = async (req, res) => {
   const [type, id] = (req.query as any).route || []
-  const { limit, page, offset } = req.query
+  const { limit, page, offset, sort } = req.query
   if (!req.method) return
   if (req.method === 'OPTIONS') {
     res.json({ ok: 1 })
@@ -20,7 +20,7 @@ const handler: NextApiHandler = async (req, res) => {
     return
   }
   try {
-    const results = await matchedFunction({ id, limit, page, offset, body: req.body || {}, req, res })
+    const results = await matchedFunction({ id, limit, page, offset, body: req.body || {}, req, res, sort })
     res.json(results)
   } catch (e) {
     res.status(500).json({ error: e.message })
