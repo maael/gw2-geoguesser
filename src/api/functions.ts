@@ -12,7 +12,7 @@ const handlers: ApiHandlers = {
       one: async ({ id, sort, limit = 10 }) => {
         let challengeId = id
         let challenge: WithDoc<TChallenge> | undefined | null = undefined
-        if (challengeId === 'daily' || challengeId === 'monthly') {
+        if (challengeId === 'daily' || challengeId === 'weekly' || challengeId === 'monthly') {
           challenge = await Challenge.findOne({ type: id }, { _id: 1, name: 1, type: 1, createdAt: 1 }).sort({
             createdAt: 'desc',
           })
@@ -64,7 +64,7 @@ const handlers: ApiHandlers = {
           return {
             options: await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 5 } }]),
           }
-        } else if (id === CHALLENGE.daily || id === CHALLENGE.monthly) {
+        } else if (id === CHALLENGE.daily || id === CHALLENGE.monthly || id === CHALLENGE.weekly) {
           return Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
         } else {
           return null

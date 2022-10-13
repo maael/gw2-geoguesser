@@ -63,5 +63,6 @@ export type ApiHandlers = Record<
 export enum CHALLENGE {
   'random' = 'random',
   'daily' = 'daily',
+  'weekly' = 'weekly',
   'monthly' = 'monthly',
 }

@@ -24,10 +24,12 @@ export default function Header() {
           </button>
         </Link>
         {session ? (
-          <div className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg">
-            <FaUser />
-            {session.user?.name}
-          </div>
+          <Link href={`/user/${session.user?.name}`}>
+            <div className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg">
+              <FaUser />
+              {session.user?.name}
+            </div>
+          </Link>
         ) : null}
         {session ? (
           <button

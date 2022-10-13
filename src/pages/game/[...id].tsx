@@ -63,6 +63,8 @@ export default function Game() {
   const gameType =
     queryGameType === CHALLENGE.daily
       ? CHALLENGE.daily
+      : queryGameType === CHALLENGE.weekly
+      ? CHALLENGE.weekly
       : queryGameType === CHALLENGE.monthly
       ? CHALLENGE.monthly
       : CHALLENGE.random
