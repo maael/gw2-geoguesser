@@ -1,6 +1,7 @@
 import NextAuth, { User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import UserModel from '~/db/models/user'
+import { getRandomArrayItem } from '~/util'
 
 export const authOptions: Parameters<typeof NextAuth>[2] = {
   providers: [
@@ -21,17 +22,19 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
     }),
   ],
   callbacks: {
-    session: async ({ session, token }) => {
+    session: async ({ session, token, user }) => {
       if (session?.user) {
         // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;(session.user as any).id = token.uid
       }
+      console.info({ session, token, user })
       return session
     },
-    jwt: async ({ user, token }) => {
+    jwt: async ({ user, token, profile, account }) => {
       if (user) {
         token.uid = user.id
       }
+      console.info({ user, token, profile, account })
       return token
     },
   },
@@ -46,15 +49,19 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
 async function registerFlow(credentials: Record<'username' | 'password', string> | undefined): Promise<User | null> {
   return new Promise((resolve, reject) => {
     if (!credentials) return reject(new Error('Credentials required'))
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const avatars = require('../../../../data/avatars.json') as string[]
     const newUser = new UserModel({
       username: credentials.username,
       password: credentials.password,
+      image: getRandomArrayItem(avatars),
     })
     newUser.save((err) => {
       if (err) return reject(err)
       resolve({
         id: newUser._id.toString(),
         name: newUser.username,
+        image: newUser.image,
       })
     })
   })
@@ -70,6 +77,7 @@ async function signinFlow(credentials: Record<'username' | 'password', string> |
     return {
       id: user._id.toString(),
       name: user.username,
+      image: user.image,
     }
   } else {
     return null

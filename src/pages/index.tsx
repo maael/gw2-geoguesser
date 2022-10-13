@@ -2,6 +2,8 @@ import Link from 'next/link'
 import * as React from 'react'
 import { useQueries } from '@tanstack/react-query'
 import format from 'date-fns/format'
+import { avatar } from '~/util'
+import Image from 'next/image'
 
 export default function Index() {
   const [
@@ -53,7 +55,7 @@ export default function Index() {
   })
   return (
     <div className="ptfont bg-black-brushed bg-gray-900 flex justify-center items-center text-white">
-      <div className="flex flex-col gap-7 sm:gap-3 justify-center items-center max-w-5xl w-full sm:text-lg px-2">
+      <div className="flex flex-col gap-7 justify-center items-center max-w-5xl w-full sm:text-lg px-2">
         <div className="flex flex-col justify-center items-center gap-2 w-full px-2 mt-2">
           <Link href="/game/random">
             <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-3 py-1">
@@ -104,11 +106,11 @@ export default function Index() {
 function GamesBlock({ games, label }: any) {
   return games && !games.error ? (
     <div className="bg-brown-brushed px-5 pt-3 pb-5 drop-shadow-lg sm:flex-1 flex flex-col gap-1">
-      <div className="text-lg sm:text-xl">{label}</div>
+      <div className="gwfont text-lg sm:text-xl">{label}</div>
       <div>{games.challenge.name}</div>
       <div className="my-2">
         <div
-          className="flex flex-row gap-2 px-3 py-1"
+          className="flex flex-row gap-2 px-3 py-1 gwfont"
           style={{
             backgroundColor: 'rgba(96, 76, 52, 0.5)',
           }}
@@ -127,7 +129,10 @@ function GamesBlock({ games, label }: any) {
               }}
             >
               <Link href={`/user/${g.userId.username}`}>
-                <a className="w-2/5 text-center sm:text-left">{g.userId.username}</a>
+                <a className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
+                  <Image src={avatar(g.userId.image)} height={25} width={25} className="rounded-full" />{' '}
+                  {g.userId.username}
+                </a>
               </Link>
               <div className="w-1/5 text-center">{g.totalScore}</div>
               <div className="w-2/5 text-right">{format(new Date(g.createdAt), 'HH:mm do MMM yyyy')}</div>

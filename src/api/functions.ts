@@ -21,7 +21,7 @@ const handlers: ApiHandlers = {
         if (!challengeId) {
           throw new Error('Required challenge ID')
         }
-        const filter = Game.find({ challenge: challengeId }).populate('userId', 'username')
+        const filter = Game.find({ challenge: challengeId }).populate('userId', 'username image')
         if (sort === 'score') {
           filter.sort({ totalScore: 'desc' })
         } else if (sort === 'time') {
@@ -80,16 +80,25 @@ const handlers: ApiHandlers = {
         return session as any
       },
       one: async ({ id }) => {
-        const user = await User.findOne({ username: id }, { _id: 1, username: 1, createdAt: 1 })
+        const user = await User.findOne({ username: id }, { _id: 1, username: 1, createdAt: 1, image: 1 })
         if (!user) throw new Error('Not found')
         const userGames = await Game.find({ userId: user._id })
           .sort({ createdAt: 'desc' })
           .populate('challenge', 'name type createdAt')
         return {
           username: user.username,
+          image: user.image,
           createdAt: user.createdAt,
           games: userGames,
         }
+      },
+    },
+  },
+  avatars: {
+    get: {
+      many: async () => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        return require('../../data/avatars.json') as string[]
       },
     },
   },

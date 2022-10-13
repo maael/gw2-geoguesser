@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { useSession, signOut } from 'next-auth/react'
 import logoImg from '../../../public/logo.png'
+import { avatar } from '~/util'
 
 export default function Header() {
   const { data: session } = useSession()
@@ -26,7 +27,7 @@ export default function Header() {
         {session ? (
           <Link href={`/user/${session.user?.name}`}>
             <div className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg">
-              <FaUser />
+              <Image src={avatar(session.user?.image)} width={20} height={20} className="rounded-full" />
               {session.user?.name}
             </div>
           </Link>

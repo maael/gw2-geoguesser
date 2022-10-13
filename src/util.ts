@@ -14,3 +14,11 @@ export const ChallengeOptionsMap: Record<CHALLENGE, { rounds: number }> = {
     rounds: 15,
   },
 }
+
+export function avatar(name: string | undefined | null) {
+  return `https://gw2-sightseeing.maael.xyz/avatars/${name || 'Toxx_2BIcon.jpg'}`
+}
+
+export function getRandomArrayItem<T>(items: T[]) {
+  return items[Math.floor(Math.random() * items.length)]
+}

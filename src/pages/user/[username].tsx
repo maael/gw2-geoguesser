@@ -2,6 +2,8 @@ import * as React from 'react'
 import { useQueries } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import format from 'date-fns/format'
+import Image from 'next/image'
+import { avatar } from '~/util'
 
 export default function Index() {
   const { query } = useRouter()
@@ -16,14 +18,17 @@ export default function Index() {
   if (!user) return null
   return (
     <div className="ptfont bg-black-brushed bg-gray-900 flex justify-center items-center text-white">
-      <div className="flex flex-col gap-2 justify-center items-center max-w-5xl w-full px-2 sm:px-4">
-        <div className="gwfont text-4xl sm:text-6xl mt-2">{user.username}</div>
+      <div className="flex flex-col gap-2 justify-center items-center max-w-5xl w-full px-2 sm:px-4 pt-5">
+        <div className="relative aspect-square" style={{ width: '25vmin', maxWidth: 200 }}>
+          <Image src={avatar(user.image)} layout="fill" className="rounded-full drop-shadow-md" />
+        </div>
+        <div className="gwfont text-4xl sm:text-6xl mb-3">{user.username}</div>
         <div
           className="flex flex-col justify-center bg-brown-brushed px-6 pt-4 pb-6 drop-shadow-lg w-full text-xl"
           style={{ minHeight: '20vh' }}
         >
           <div
-            className="flex flex-col sm:flex-row gap-2 px-3 py-1 text-2xl"
+            className="flex flex-row gap-2 px-3 py-1 text-2xl gwfont"
             style={{
               backgroundColor: 'rgba(96, 76, 52, 0.5)',
             }}
