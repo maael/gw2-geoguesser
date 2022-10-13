@@ -14,13 +14,13 @@ import 'leaflet/dist/leaflet.css'
 import cls from 'classnames'
 
 const myIcon = L.icon({
-  iconUrl: 'ui/guess-icon-green.png',
+  iconUrl: '/ui/guess-icon-green.png',
   iconSize: [32, 32],
   iconAnchor: [16, 34],
 })
 
 const myOtherIcon = L.icon({
-  iconUrl: 'ui/guess-icon.png',
+  iconUrl: '/ui/guess-icon.png',
   iconSize: [32, 32],
   iconAnchor: [16, 34],
 })

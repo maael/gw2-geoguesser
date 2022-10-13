@@ -14,7 +14,8 @@ export interface User {
 export interface Game {
   userId: ObjectId
   totalScore: number
-  challenge: CHALLENGE
+  challengeType: CHALLENGE
+  challenge?: ObjectId
   isDeleted: boolean
   createdAt: string
   updatedAt: string

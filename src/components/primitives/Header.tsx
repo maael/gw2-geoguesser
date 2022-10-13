@@ -18,7 +18,7 @@ export default function Header() {
             <h1 className="gwfont text-xl hidden sm:block">Guild Wars 2 | Geo Guesser</h1>
           </div>
         </Link>
-        <Link href="/game">
+        <Link href="/game/random">
           <button className="gwfont bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg">
             New Game
           </button>

@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { CHALLENGE } from '~/types'
-import { ChallengeOptionsMap } from '~/util'
+import { useRouter } from 'next/router'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -11,20 +11,21 @@ const Map = dynamic(() => import('~/components/primitives/Map'), {
 })
 
 type Game = Array<{
-  id: string
+  _id: string
   image: string
   location: [number | null, number | null]
   score?: null | number
 }>
 
-async function saveGame(gameType: CHALLENGE, game: Game) {
+async function saveGame(gameType: CHALLENGE, gameId: string | undefined, game: Game) {
   fetch('/api/internal/game', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      challenge: gameType,
+      challenge: gameId,
+      challengeType: gameType,
       totalScore: sumScore(game),
     }),
   })
@@ -34,17 +35,17 @@ function sumScore(game: Game) {
   return game.reduce((acc, g) => acc + (g.score || 0), 0)
 }
 
-function useGameOptions(gameType: CHALLENGE) {
-  const [options, setOptions] = React.useState([])
+function useGameOptions(gameType: CHALLENGE | null) {
+  const [game, setGame] = React.useState({ _id: undefined, options: [] })
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
   React.useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    if (gameType === null) return // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(async () => {
       try {
         setLoading(true)
-        const fetchedOptions = await fetch(`/api/internal/challenge/${gameType}`).then((r) => r.json())
-        setOptions(fetchedOptions)
+        const game = await fetch(`/api/internal/challenge/${gameType}`).then((r) => r.json())
+        setGame(game)
       } catch (e) {
         setError(e)
       } finally {
@@ -52,20 +53,30 @@ function useGameOptions(gameType: CHALLENGE) {
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return { options, error, loading }
+  }, [gameType])
+  return { game, error, loading }
 }
 
 export default function Game() {
-  const gameType = CHALLENGE.random
-  const { options, loading } = useGameOptions(gameType)
-  return loading ? <div>Loading...</div> : <GameScreen options={options} gameType={gameType} />
+  const { query } = useRouter()
+  const queryGameType = query.id ? query.id[0] : null
+  const gameType =
+    queryGameType === CHALLENGE.daily
+      ? CHALLENGE.daily
+      : queryGameType === CHALLENGE.monthly
+      ? CHALLENGE.monthly
+      : CHALLENGE.random
+  const {
+    game: { _id: gameId, options },
+    loading,
+  } = useGameOptions(queryGameType ? gameType : null)
+  return loading ? <div>Loading...</div> : <GameScreen gameId={gameId} options={options} gameType={gameType} />
 }
 
-function GameScreen({ options, gameType }: { options: any; gameType: CHALLENGE }) {
-  const maxRounds = ChallengeOptionsMap[gameType].rounds
+function GameScreen({ options, gameType, gameId }: { options: any; gameType: CHALLENGE; gameId: string | undefined }) {
   const { data: session } = useSession()
   const [game, setGame] = React.useState<Game>([options[0]])
+  const maxRounds = options.length || 0
   const lastItem = game[game.length - 1]
   const total = sumScore(game)
   function isFinished(g: Game) {
@@ -98,7 +109,7 @@ function GameScreen({ options, gameType }: { options: any; gameType: CHALLENGE }
       ) : null}
       <div className="absolute bottom-20 md:bottom-10 left-4 md:left-auto right-4 md:right-10 lg:w-1/2 aspect-video scale-100 md:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-50 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map
-          guessId={lastItem?.id}
+          guessId={lastItem?._id}
           guessLocation={lastItem?.location}
           showGuessLocation={typeof lastItem?.score === 'number'}
           onGuess={(score) => {
@@ -106,7 +117,7 @@ function GameScreen({ options, gameType }: { options: any; gameType: CHALLENGE }
               const last = { ...g[g.length - 1], score }
               const updatedGame = g.slice(0, -1).concat(last)
               if (isFinished(updatedGame) && session) {
-                void saveGame(gameType, updatedGame)
+                void saveGame(gameType, gameId, updatedGame)
               }
               return updatedGame
             })
@@ -119,7 +130,7 @@ function GameScreen({ options, gameType }: { options: any; gameType: CHALLENGE }
             <h2 className="gwfont text-5xl text-center">Finished!</h2>
             <div className="flex flex-col gap-1 mt-3 mb-1">
               {game.map((g, i) => (
-                <div key={g.id} className="flex flex-row items-center gap-1 bg-black-brushed px-3 md:px-10 py-2">
+                <div key={g._id} className="flex flex-row items-center gap-1 bg-black-brushed px-3 md:px-10 py-2">
                   <div className="pr-2 md:pr-10">{i + 1}.</div>
                   <div className="max-h-20 h-full aspect-video relative">
                     <Image src={g.image} layout="fill" />

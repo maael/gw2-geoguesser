@@ -1,7 +1,9 @@
 import { unstable_getServerSession } from 'next-auth/next'
-import { ApiHandlers, ChallengeOption } from '~/types'
+import { ApiHandlers, CHALLENGE } from '~/types'
 import { authOptions } from '~/pages/api/auth/[...nextauth]'
 import Game from '~/db/models/games'
+import Challenge from '~/db/models/challenges'
+import ChallengeOption from '~/db/models/challengeOption'
 
 const handlers: ApiHandlers = {
   game: {
@@ -24,6 +26,7 @@ const handlers: ApiHandlers = {
           userId: (session.user as any).id,
           totalScore: body.totalScore,
           challenge: body.challenge,
+          challengeType: body.challengeType,
         })
         return game as any
       },
@@ -33,38 +36,15 @@ const handlers: ApiHandlers = {
     get: {
       one: async ({ id }) => {
         console.info('[challenge]', { type: id })
-        const options: ChallengeOption[] = [
-          {
-            id: 'ce6fb458-8523-4c70-a1a1-35c4ffc8aad8.jpg',
-            image: 'https://gw2-sightseeing.maael.xyz/new_group/ce6fb458-8523-4c70-a1a1-35c4ffc8aad8.jpg',
-            location: [45136, 29864],
-          },
-          {
-            id: 'bc1f4a36-23ed-450d-b73a-debd5fa0cb89',
-            image:
-              'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/bc1f4a36-23ed-450d-b73a-debd5fa0cb89.jpg',
-            location: [37988, 32718],
-          },
-          {
-            id: '36094a2c-a7e3-44c2-a52f-40b3bdd0877a',
-            image:
-              'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/36094a2c-a7e3-44c2-a52f-40b3bdd0877a.jpg',
-            location: [38714, 37092],
-          },
-          {
-            id: 'f51eef90-1cb9-4669-8e7e-baea846b7c44',
-            image:
-              'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/f51eef90-1cb9-4669-8e7e-baea846b7c44.jpg',
-            location: [49704, 39984],
-          },
-          {
-            id: 'ab9d667f-38d1-446f-bc78-0864c872edd4',
-            image:
-              'https://gw2-sightseeing.maael.xyz/63276040328b845fd0dac05a/ab9d667f-38d1-446f-bc78-0864c872edd4.jpg',
-            location: [37988, 32718],
-          },
-        ]
-        return options
+        if (id === CHALLENGE.random) {
+          return {
+            options: await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 5 } }]),
+          }
+        } else if (id === CHALLENGE.daily || id === CHALLENGE.monthly) {
+          return Challenge.findOne({ type: id }).sort({ createdAt: 'asc' }).populate('options')
+        } else {
+          return null
+        }
       },
       many: async () => [],
     },

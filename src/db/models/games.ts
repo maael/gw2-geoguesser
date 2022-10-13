@@ -13,9 +13,13 @@ const itemSchema = new Schema<WithDoc<Game>, ItemModel>(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    challenge: {
+    challengeType: {
       type: String,
       required: true,
+    },
+    challenge: {
+      type: Schema.Types.ObjectId,
+      ref: 'Challenge',
     },
     totalScore: {
       type: Number,

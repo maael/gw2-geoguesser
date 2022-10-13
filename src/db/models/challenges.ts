@@ -9,8 +9,11 @@ interface ItemModel extends Model<WithDoc<Challenge>> {}
 
 const itemSchema = new Schema<WithDoc<Challenge>, ItemModel>(
   {
-    id: String,
-    name: String,
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     type: String,
     options: [
       {
