@@ -18,3 +18,5 @@ jobs:
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: npm run create-challenge
+        env:
+          MONGO_DB_URI: ${{ secrets.MONGO_DB_URI }}
