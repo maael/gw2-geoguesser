@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { CHALLENGE } from '~/types'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { EVENTS, Fathom } from '~/components/hooks/useFathom'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -58,7 +59,7 @@ function useGameOptions(gameType: CHALLENGE | null) {
   return { game, error, loading }
 }
 
-export default function Game() {
+export default function Game({ fathom }: { fathom: Fathom }) {
   const { query } = useRouter()
   const queryGameType = query.id ? query.id[0] : null
   const gameType =
@@ -78,7 +79,7 @@ export default function Game() {
   ) : error ? (
     <ErrorScreen error={error} />
   ) : (
-    <GameScreen gameId={gameId} options={options} gameType={gameType} />
+    <GameScreen gameId={gameId} options={options} gameType={gameType} fathom={fathom} />
   )
 }
 
@@ -127,7 +128,17 @@ function ErrorScreen({ error }: { error: string }) {
   return <Component error={error} />
 }
 
-function GameScreen({ options, gameType, gameId }: { options: any; gameType: CHALLENGE; gameId: string | undefined }) {
+function GameScreen({
+  options,
+  gameType,
+  gameId,
+  fathom,
+}: {
+  options: any
+  gameType: CHALLENGE
+  gameId: string | undefined
+  fathom: Fathom
+}) {
   const { data: session } = useSession()
   const [game, setGame] = React.useState<Game>([options[0]])
   const maxRounds = options.length || 0
@@ -136,6 +147,10 @@ function GameScreen({ options, gameType, gameId }: { options: any; gameType: CHA
   function isFinished(g: Game) {
     return g.length === maxRounds && g.every((gi) => typeof gi.score === 'number')
   }
+  React.useEffect(() => {
+    fathom.trackGoal(EVENTS.StartGame, 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
     <div
       suppressHydrationWarning
@@ -170,8 +185,9 @@ function GameScreen({ options, gameType, gameId }: { options: any; gameType: CHA
             setGame((g) => {
               const last = { ...g[g.length - 1], score }
               const updatedGame = g.slice(0, -1).concat(last)
-              if (isFinished(updatedGame) && session) {
-                void saveGame(gameType, gameId, updatedGame)
+              if (isFinished(updatedGame)) {
+                fathom.trackGoal(EVENTS.FinishGame, 0)
+                if (session) void saveGame(gameType, gameId, updatedGame)
               }
               return updatedGame
             })
@@ -200,7 +216,10 @@ function GameScreen({ options, gameType, gameId }: { options: any; gameType: CHA
               {gameType === CHALLENGE.random ? (
                 <button
                   className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full"
-                  onClick={() => setGame([options[0]])}
+                  onClick={() => {
+                    fathom.trackGoal(EVENTS.StartGame, 0)
+                    setGame([options[0]])
+                  }}
                 >
                   New Game
                 </button>

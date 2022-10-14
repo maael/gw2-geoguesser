@@ -11,7 +11,7 @@ import Header from '~/components/primitives/Header'
 const queryClient = new QueryClient()
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps & { pageProps: { session: any } }) {
-  useFathom()
+  const fathom = useFathom()
   return (
     <>
       <Head>
@@ -22,7 +22,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps & { p
         <div className="flex flex-col h-full bg-fixed">
           <QueryClientProvider client={queryClient}>
             <Header />
-            <Component {...pageProps} />
+            <Component {...pageProps} fathom={fathom} />
           </QueryClientProvider>
         </div>
       </SessionProvider>

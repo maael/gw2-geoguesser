@@ -3,8 +3,9 @@ import * as React from 'react'
 import cls from 'classnames'
 import { useSession } from 'next-auth/react'
 import { FaSpinner } from 'react-icons/fa'
+import { Fathom, EVENTS } from '~/components/hooks/useFathom'
 
-export default function Auth() {
+export default function Auth({ fathom }: { fathom: Fathom }) {
   const { data: session } = useSession()
   React.useEffect(() => {
     if (session) {
@@ -28,12 +29,12 @@ export default function Auth() {
           Register
         </button>
       </div>
-      {type === 'signin' ? <SigninForm /> : <RegisterForm />}
+      {type === 'signin' ? <SigninForm fathom={fathom} /> : <RegisterForm fathom={fathom} />}
     </div>
   )
 }
 
-function SigninForm() {
+function SigninForm({ fathom }: { fathom: Fathom }) {
   const [error, setError] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   return (
@@ -46,6 +47,7 @@ function SigninForm() {
           const username = (e.currentTarget.elements.namedItem('username') as HTMLInputElement | null)?.value.trim()
           const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement | null)?.value.trim()
           const result = await signIn('credentials', { redirect: false, username, password, type: 'signin' })
+          fathom.trackGoal(EVENTS.Signin, 0)
           if (result?.ok) {
             window.location.replace('/')
           } else {
@@ -93,7 +95,7 @@ function SigninForm() {
   )
 }
 
-function RegisterForm() {
+function RegisterForm({ fathom }: { fathom: Fathom }) {
   const [error, setError] = React.useState<boolean | string>(false)
   const [loading, setLoading] = React.useState(false)
   return (
@@ -123,6 +125,7 @@ function RegisterForm() {
             confirmPassword,
             type: 'register',
           })
+          fathom.trackGoal(EVENTS.Register, 0)
           if (result?.ok) {
             window.location.replace('/')
           } else {
