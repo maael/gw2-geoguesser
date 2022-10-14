@@ -59,18 +59,31 @@ const handlers: ApiHandlers = {
   challenge: {
     get: {
       one: async ({ id }) => {
+        if (id === 'random') return null
+        return Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+      },
+    },
+  },
+  play: {
+    get: {
+      one: async ({ id, req, res }) => {
         console.info('[challenge]', { type: id })
         if (id === CHALLENGE.random) {
           return {
             options: await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 5 } }]),
           }
         } else if (id === CHALLENGE.daily || id === CHALLENGE.monthly || id === CHALLENGE.weekly) {
-          return Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+          const session = await unstable_getServerSession(req, res, authOptions)
+          if (!session) throw new Error('Need to have an account to play ranked games!')
+          const challenge = await Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+          if (!challenge) return null
+          const existingUserGame = await Game.findOne({ userId: (session.user as any).id, challenge: challenge._id })
+          if (existingUserGame) throw new Error('Ranked games can only be done once per user!')
+          return challenge
         } else {
           return null
         }
       },
-      many: async () => [],
     },
   },
   user: {

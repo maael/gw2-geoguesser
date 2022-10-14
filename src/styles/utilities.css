@@ -4,13 +4,13 @@
 }
 
 .bg-brown-brushed {
-  background-image: url(/ui/windowbg-brushed.png);
+  background-image: url(/ui/windowbg-brushed.png) !important;
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
 .bg-black-brushed {
-  background-image: url(/ui/windowbg-glyphs.png);
+  background-image: url(/ui/windowbg-glyphs.png) !important;
   background-repeat: no-repeat;
   background-size: cover;
 }

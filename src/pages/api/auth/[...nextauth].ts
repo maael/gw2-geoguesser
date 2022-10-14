@@ -22,19 +22,17 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
     }),
   ],
   callbacks: {
-    session: async ({ session, token, user }) => {
+    session: async ({ session, token }) => {
       if (session?.user) {
         // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;(session.user as any).id = token.uid
       }
-      console.info({ session, token, user })
       return session
     },
-    jwt: async ({ user, token, profile, account }) => {
+    jwt: async ({ user, token }) => {
       if (user) {
         token.uid = user.id
       }
-      console.info({ user, token, profile, account })
       return token
     },
   },
@@ -49,6 +47,7 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
 async function registerFlow(credentials: Record<'username' | 'password', string> | undefined): Promise<User | null> {
   return new Promise((resolve, reject) => {
     if (!credentials) return reject(new Error('Credentials required'))
+    if (credentials.password.length < 8) return reject(new Error('Password must be more than 8 characters'))
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const avatars = require('../../../../data/avatars.json') as string[]
     const newUser = new UserModel({

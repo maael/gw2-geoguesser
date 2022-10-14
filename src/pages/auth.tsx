@@ -2,6 +2,7 @@ import { signIn } from 'next-auth/react'
 import * as React from 'react'
 import cls from 'classnames'
 import { useSession } from 'next-auth/react'
+import { FaSpinner } from 'react-icons/fa'
 
 export default function Auth() {
   const { data: session } = useSession()
@@ -34,31 +35,57 @@ export default function Auth() {
 
 function SigninForm() {
   const [error, setError] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
   return (
     <form
-      className="flex flex-col gap-2 "
+      className="flex flex-col gap-2"
       onSubmit={async (e) => {
-        e.preventDefault()
-        const username = (e.currentTarget.elements.namedItem('username') as HTMLInputElement | null)?.value.trim()
-        const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement | null)?.value.trim()
-        const result = await signIn('credentials', { redirect: false, username, password, type: 'signin' })
-        if (result?.ok) {
-          window.location.replace('/')
-        } else {
+        try {
+          e.preventDefault()
+          setLoading(true)
+          const username = (e.currentTarget.elements.namedItem('username') as HTMLInputElement | null)?.value.trim()
+          const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement | null)?.value.trim()
+          const result = await signIn('credentials', { redirect: false, username, password, type: 'signin' })
+          if (result?.ok) {
+            window.location.replace('/')
+          } else {
+            setError(true)
+          }
+        } catch (e) {
           setError(true)
+        } finally {
+          setLoading(false)
         }
       }}
     >
       <h1 className="gwfont text-3xl text-center">Sign In</h1>
       <label className="flex flex-row gap-1 items-center justify-center">
-        Username
-        <input className="text-black px-2 py-1 rounded-md" name="username" type="text" />
+        <span className="w-1/2 px-2">Username</span>
+        <input
+          className="text-black px-2 py-1 rounded-md"
+          name="username"
+          type="text"
+          placeholder="Username..."
+          required
+        />
       </label>
       <label className="flex flex-row gap-1 items-center justify-center">
-        Password
-        <input className="text-black px-2 py-1 rounded-md" name="password" type="password" />
+        <span className="w-1/2 px-2">Password</span>
+        <input
+          className="text-black px-2 py-1 rounded-md"
+          name="password"
+          type="password"
+          placeholder="Your password..."
+          required
+        />
       </label>
-      <button type="submit">Sign in</button>
+      <button
+        disabled={loading}
+        type="submit"
+        className="flex flex-row justify-center items-center bg-black-brushed rounded-md px-2 py-1 gwfont"
+      >
+        {loading ? <FaSpinner className="animate-spin" /> : 'Sign In'}
+      </button>
       {error ? (
         <div className="text-red-600 text-center text-sm gwfont pb-2">There was an error, please try again.</div>
       ) : null}
@@ -67,47 +94,92 @@ function SigninForm() {
 }
 
 function RegisterForm() {
-  const [error, setError] = React.useState(false)
+  const [error, setError] = React.useState<boolean | string>(false)
+  const [loading, setLoading] = React.useState(false)
   return (
     <form
       className="flex flex-col gap-2"
       onSubmit={async (e) => {
-        e.preventDefault()
-        const username = (e.currentTarget.elements.namedItem('username') as HTMLInputElement | null)?.value.trim()
-        const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement | null)?.value.trim()
-        const confirmPassword = (
-          e.currentTarget.elements.namedItem('password') as HTMLInputElement | null
-        )?.value.trim()
-        const result = await signIn('credentials', {
-          redirect: false,
-          username,
-          password,
-          confirmPassword,
-          type: 'register',
-        })
-        if (result?.ok) {
-          window.location.replace('/')
-        } else {
+        try {
+          e.preventDefault()
+          const username = (e.currentTarget.elements.namedItem('username') as HTMLInputElement | null)?.value.trim()
+          const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement | null)?.value.trim()
+          const confirmPassword = (
+            e.currentTarget.elements.namedItem('password') as HTMLInputElement | null
+          )?.value.trim()
+          if (password !== confirmPassword) {
+            setError("Passwords don't match")
+            setLoading(false)
+            return
+          } else if (password && password.length < 8) {
+            setError('Password too short, must be over 8 characters')
+            setLoading(false)
+            return
+          }
+          const result = await signIn('credentials', {
+            redirect: false,
+            username,
+            password,
+            confirmPassword,
+            type: 'register',
+          })
+          if (result?.ok) {
+            window.location.replace('/')
+          } else {
+            setError(true)
+          }
+        } catch (e) {
           setError(true)
+        } finally {
+          setLoading(false)
         }
       }}
     >
       <h1 className="gwfont text-3xl text-center">Register</h1>
       <label className="flex flex-row gap-1 items-center justify-center">
-        Username
-        <input className="text-black px-2 py-1 rounded-md" name="username" type="text" />
+        <span className="w-1/2 px-2">Username</span>
+        <input
+          className="text-black px-2 py-1 rounded-md"
+          name="username"
+          type="text"
+          placeholder="Username..."
+          required
+          minLength={3}
+        />
       </label>
       <label className="flex flex-row gap-1 items-center justify-center">
-        Password
-        <input className="text-black px-2 py-1 rounded-md" name="password" type="password" />
+        <span className="w-1/2 px-2">Password</span>
+        <input
+          className="text-black px-2 py-1 rounded-md"
+          name="password"
+          type="password"
+          placeholder="Secure password..."
+          required
+          minLength={8}
+        />
       </label>
       <label className="flex flex-row gap-1 items-center justify-center">
-        Confirm Password
-        <input className="text-black px-2 py-1 rounded-md" name="confirmPassword" type="password" />
+        <span className="w-1/2 px-2">Repeat Password</span>
+        <input
+          className="text-black px-2 py-1 rounded-md"
+          name="confirmPassword"
+          type="password"
+          placeholder="Repeat password..."
+          required
+          minLength={8}
+        />
       </label>
-      <button type="submit">Register</button>
+      <button
+        disabled={loading}
+        type="submit"
+        className="flex flex-row justify-center items-center bg-black-brushed rounded-md px-2 py-1 gwfont"
+      >
+        {loading ? <FaSpinner className="animate-spin" /> : 'Register'}
+      </button>
       {error ? (
-        <div className="text-red-600 text-center text-sm gwfont pb-2">There was an error, please try again.</div>
+        <div className="text-red-600 text-center text-sm gwfont pb-2">
+          {typeof error === 'string' ? error : 'There was an error, please try again.'}
+        </div>
       ) : null}
     </form>
   )

@@ -4,6 +4,7 @@ import { useQueries } from '@tanstack/react-query'
 import format from 'date-fns/format'
 import { avatar } from '~/util'
 import Image from 'next/image'
+import { FaArrowRight, FaCoffee } from 'react-icons/fa'
 
 export default function Index() {
   const [
@@ -54,52 +55,62 @@ export default function Index() {
     ],
   })
   return (
-    <div className="ptfont bg-black-brushed bg-gray-900 flex justify-center items-center text-white">
-      <div className="flex flex-col gap-7 justify-center items-center max-w-5xl w-full sm:text-lg px-2">
-        <div className="flex flex-col justify-center items-center gap-2 w-full px-2 mt-2">
-          <Link href="/game/random">
-            <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-3 py-1">
-              Quick Game
-            </a>
-          </Link>
-          <div className="grid grid-cols-3 gap-2">
-            {daily ? (
-              <Link href="/game/daily">
-                <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-3 py-1">
-                  {daily.name}
-                </a>
-              </Link>
-            ) : null}
-            {weekly ? (
-              <Link href="/game/weekly">
-                <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-3 py-1">
-                  {weekly.name}
-                </a>
-              </Link>
-            ) : null}
-            {monthly ? (
-              <Link href="/game/monthly">
-                <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-3 py-1">
-                  {monthly.name}
-                </a>
-              </Link>
-            ) : null}
+    <>
+      <div className="ptfont flex flex-col justify-center items-center text-white">
+        <div className="flex flex-col gap-7 justify-center items-center max-w-5xl w-full sm:text-lg px-2">
+          <div className="flex flex-col justify-center items-center gap-2 w-full px-2 mt-3 mb-1">
+            <Link href="/game/random">
+              <a className="text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
+                Quick Game <FaArrowRight />
+              </a>
+            </Link>
+            <div className="gwfont text-xl sm:text-3xl mt-2">Ranked Games</div>
+            <div className="flex flex-row justify-center items-center gap-2">
+              {daily ? (
+                <Link href="/game/daily">
+                  <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
+                    {daily.name}
+                  </a>
+                </Link>
+              ) : null}
+              {weekly ? (
+                <Link href="/game/weekly">
+                  <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
+                    {weekly.name}
+                  </a>
+                </Link>
+              ) : null}
+              {monthly ? (
+                <Link href="/game/monthly">
+                  <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
+                    {monthly.name}
+                  </a>
+                </Link>
+              ) : null}
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
+            <GamesBlock games={recentDailyGames} label={'Recent Daily Games'} />
+            <GamesBlock games={highDailyGames} label={'High Daily Games'} />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
+            <GamesBlock games={recentWeeklyGames} label={'Recent Weekly Games'} />
+            <GamesBlock games={highWeeklyGames} label={'High Weekly Games'} />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
+            <GamesBlock games={recentMonthlyGames} label={'Recent Monthly Games'} />
+            <GamesBlock games={highMonthlyGames} label={'High Monthly Games'} />
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-          <GamesBlock games={recentDailyGames} label={'Recent Daily Games'} />
-          <GamesBlock games={highDailyGames} label={'High Daily Games'} />
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-          <GamesBlock games={recentWeeklyGames} label={'Recent Weekly Games'} />
-          <GamesBlock games={highWeeklyGames} label={'High Weekly Games'} />
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-          <GamesBlock games={recentMonthlyGames} label={'Recent Monthly Games'} />
-          <GamesBlock games={highMonthlyGames} label={'High Monthly Games'} />
-        </div>
       </div>
-    </div>
+      <div className="flex-1" />
+      <div className="max-w-3xl mx-auto text-white py-2 text-xs flex flex-row gap-5 justify-center items-end text-center">
+        <a href="https://elonian-gallery.com/">Avatars © Ilona Iske 2022</a>
+        <a href="https://www.buymeacoffee.com/matte" className="flex flex-row gap-1 justify-center items-end">
+          Enjoying the game? Get me a coffee. <FaCoffee />
+        </a>
+      </div>
+    </>
   )
 }
 

@@ -19,7 +19,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps & { p
       </Head>
       <DefaultSeo {...SEO} />
       <SessionProvider session={session}>
-        <div className="ptfont bg-black-brushed bg-gray-900 flex flex-col h-full">
+        <div className="flex flex-col h-full bg-fixed">
           <QueryClientProvider client={queryClient}>
             <Header />
             <Component {...pageProps} />

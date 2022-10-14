@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { CHALLENGE } from '~/types'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -36,7 +37,7 @@ function sumScore(game: Game) {
 }
 
 function useGameOptions(gameType: CHALLENGE | null) {
-  const [game, setGame] = React.useState({ _id: undefined, options: [] })
+  const [game, setGame] = React.useState({ _id: undefined, options: [], error: '' })
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
   React.useEffect(() => {
@@ -44,7 +45,7 @@ function useGameOptions(gameType: CHALLENGE | null) {
     ;(async () => {
       try {
         setLoading(true)
-        const game = await fetch(`/api/internal/challenge/${gameType}`).then((r) => r.json())
+        const game = await fetch(`/api/internal/play/${gameType}`).then((r) => r.json())
         setGame(game)
       } catch (e) {
         setError(e)
@@ -69,10 +70,61 @@ export default function Game() {
       ? CHALLENGE.monthly
       : CHALLENGE.random
   const {
-    game: { _id: gameId, options },
+    game: { _id: gameId, options, error },
     loading,
   } = useGameOptions(queryGameType ? gameType : null)
-  return loading ? <div>Loading...</div> : <GameScreen gameId={gameId} options={options} gameType={gameType} />
+  return loading ? (
+    <div>Loading...</div>
+  ) : error ? (
+    <ErrorScreen error={error} />
+  ) : (
+    <GameScreen gameId={gameId} options={options} gameType={gameType} />
+  )
+}
+
+const messageToTypeMap = {
+  'Need to have an account to play ranked games!': 'account',
+  'Ranked games can only be done once per user!': 'attempts',
+}
+const contentMap = {
+  account: AccountError,
+  attempts: AttemptsError,
+  default: DefaultError,
+}
+
+function AccountError({ error }: { error: string }) {
+  return (
+    <div className="text-white text-center text-2xl flex flex-col justify-center items-center gap-5 mt-5">
+      <div>{error}</div>
+      <Link href="/auth">
+        <a className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg h-full">
+          Log in or Sign up here!
+        </a>
+      </Link>
+    </div>
+  )
+}
+
+function AttemptsError({ error }: { error: string }) {
+  return (
+    <div className="text-white text-center text-2xl flex flex-col justify-center items-center gap-5 mt-5">
+      <div>{error}</div>
+      <Link href="/">
+        <a className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg h-full">
+          Go back and find another game!
+        </a>
+      </Link>
+    </div>
+  )
+}
+
+function DefaultError({ error }: { error: string }) {
+  return <div className="text-white text-center text-2xl mt-5">{error}</div>
+}
+function ErrorScreen({ error }: { error: string }) {
+  const type = messageToTypeMap[error]
+  const Component = contentMap[type] || contentMap.default
+  return <Component error={error} />
 }
 
 function GameScreen({ options, gameType, gameId }: { options: any; gameType: CHALLENGE; gameId: string | undefined }) {
@@ -145,12 +197,20 @@ function GameScreen({ options, gameType, gameId }: { options: any; gameType: CHA
               Total: {total} / {500 * maxRounds}
             </div>
             <div className="flex flex-row justify-center items-center mt-1">
-              <button
-                className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full"
-                onClick={() => setGame([options[0]])}
-              >
-                Restart
-              </button>
+              {gameType === CHALLENGE.random ? (
+                <button
+                  className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full"
+                  onClick={() => setGame([options[0]])}
+                >
+                  New Game
+                </button>
+              ) : (
+                <Link href="/">
+                  <a className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full">
+                    Finish
+                  </a>
+                </Link>
+              )}
             </div>
           </div>
         </div>

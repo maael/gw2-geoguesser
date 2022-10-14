@@ -12,6 +12,15 @@ div#__next {
   cursor: url(/cursors/default.cur), default;
 }
 
+body {
+  background-image: url(/ui/windowbg-glyphs.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: fixed;
+  font-family: PTSerif, Arial, Helvetica, sans-serif;
+  @apply bg-gray-900;
+}
+
 button,
 a {
   cursor: url(/cursors/green.cur), pointer;
