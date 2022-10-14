@@ -84,7 +84,7 @@ function SigninForm({ fathom }: { fathom: Fathom }) {
       <button
         disabled={loading}
         type="submit"
-        className="flex flex-row justify-center items-center bg-black-brushed rounded-md px-2 py-1 gwfont"
+        className="flex flex-row justify-center items-center bg-black-brushed rounded-md px-2 py-1 gwfont mt-2"
       >
         {loading ? <FaSpinner className="animate-spin" /> : 'Sign In'}
       </button>
@@ -175,7 +175,7 @@ function RegisterForm({ fathom }: { fathom: Fathom }) {
       <button
         disabled={loading}
         type="submit"
-        className="flex flex-row justify-center items-center bg-black-brushed rounded-md px-2 py-1 gwfont"
+        className="flex flex-row justify-center items-center bg-black-brushed rounded-md px-2 py-1 gwfont mt-2"
       >
         {loading ? <FaSpinner className="animate-spin" /> : 'Register'}
       </button>

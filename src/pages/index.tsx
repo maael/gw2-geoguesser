@@ -77,11 +77,14 @@ export default function Index() {
               </a>
             </Link>
             <div className="gwfont text-xl sm:text-3xl mt-2">Ranked Games</div>
-            <div className="text-center">
+            <div className="text-center max-w-md">
               <Link href="/auth">
                 <a className="underline">Sign up or Log in</a>
               </Link>{' '}
               to play fixed ranked games!
+            </div>
+            <div className="text-center max-w-md my-1">
+              You can only attempt each ranked game once until a new one is released, so play carefully!
             </div>
             <div className="flex flex-col sm:flex-row gap-1 text-center mb-2">
               Time until new Ranked game:
