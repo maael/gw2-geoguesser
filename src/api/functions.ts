@@ -98,6 +98,7 @@ const handlers: ApiHandlers = {
         const userGames = await Game.find({ userId: user._id })
           .sort({ createdAt: 'desc' })
           .populate('challenge', 'name type createdAt')
+          .limit(100)
         return {
           username: user.username,
           image: user.image,
