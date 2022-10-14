@@ -1,10 +1,11 @@
 import { unstable_getServerSession } from 'next-auth/next'
-import { ApiHandlers, CHALLENGE, WithDoc, Challenge as TChallenge } from '~/types'
+import { ApiHandlers, CHALLENGE, WithDoc, Challenge as TChallenge, Game as TGame } from '~/types'
 import { authOptions } from '~/pages/api/auth/[...nextauth]'
 import Game from '~/db/models/games'
 import Challenge from '~/db/models/challenges'
 import ChallengeOption from '~/db/models/challengeOption'
 import User from '~/db/models/user'
+import { FilterQuery } from 'mongoose'
 
 const handlers: ApiHandlers = {
   game: {
@@ -12,7 +13,7 @@ const handlers: ApiHandlers = {
       one: async ({ id, sort, limit = 10 }) => {
         let challengeId = id
         let challenge: WithDoc<TChallenge> | undefined | null = undefined
-        if (challengeId === 'daily' || challengeId === 'weekly' || challengeId === 'monthly') {
+        if (challengeId === CHALLENGE.daily || challengeId === CHALLENGE.weekly || challengeId === CHALLENGE.monthly) {
           challenge = await Challenge.findOne({ type: id }, { _id: 1, name: 1, type: 1, createdAt: 1 }).sort({
             createdAt: 'desc',
           })
@@ -21,7 +22,12 @@ const handlers: ApiHandlers = {
         if (!challengeId) {
           throw new Error('Required challenge ID')
         }
-        const filter = Game.find({ challenge: challengeId }).populate('userId', 'username image')
+        const filterObj: FilterQuery<WithDoc<TGame>> = { challenge: challengeId }
+        if (challengeId === CHALLENGE.random) {
+          delete filterObj.challenge
+          filterObj.challengeType = CHALLENGE.random
+        }
+        const filter = Game.find(filterObj).populate('userId', 'username image')
         if (sort === 'score') {
           filter.sort({ totalScore: 'desc' })
         } else if (sort === 'time') {

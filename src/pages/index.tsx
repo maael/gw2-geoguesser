@@ -23,6 +23,7 @@ export default function Index() {
     { data: highWeeklyGames, isLoading: highWeeklyGamesLoading },
     { data: recentMonthlyGames, isLoading: recentMonthlyGamesLoading },
     { data: highMonthlyGames, isLoading: highMonthlyGamesLoading },
+    { data: recentRandomGames, isLoading: recentRandomGamesLoading },
   ] = useQueries({
     queries: [
       { queryKey: ['daily-challenge'], queryFn: () => fetch('/api/internal/challenge/daily').then((r) => r.json()) },
@@ -57,6 +58,10 @@ export default function Index() {
       {
         queryKey: ['monthly-games-score'],
         queryFn: () => fetch('/api/internal/game/monthly?sort=score&limit=10').then((r) => r.json()),
+      },
+      {
+        queryKey: ['random-games-recent'],
+        queryFn: () => fetch('/api/internal/game/random?sort=time&limit=10').then((r) => r.json()),
       },
     ],
   })
@@ -107,6 +112,9 @@ export default function Index() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
+            <GamesBlock games={recentRandomGames} isLoading={recentRandomGamesLoading} label={'Recent Quick Games'} />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
             <GamesBlock games={recentDailyGames} isLoading={recentDailyGamesLoading} label={'Recent Daily Games'} />
             <GamesBlock games={highDailyGames} isLoading={highDailyGamesLoading} label={'High Daily Games'} />
           </div>
@@ -125,7 +133,7 @@ export default function Index() {
         </div>
       </div>
       <div className="flex-1" />
-      <div className="max-w-3xl mx-auto text-white py-2 text-xs flex flex-row gap-5 justify-center items-end text-center">
+      <div className="max-w-3xl mx-auto mt-2 text-white py-2 text-xs flex flex-row gap-5 justify-center items-end text-center">
         <a href="https://elonian-gallery.com/">Avatars © Ilona Iske 2022</a>
         <a href="https://www.buymeacoffee.com/matte" className="flex flex-row gap-1 justify-center items-end">
           Enjoying the game? Get me a beer. <FaBeer />
@@ -151,9 +159,9 @@ function GamesBlock({
 }) {
   return (
     <div className="bg-brown-brushed px-5 pt-3 pb-5 drop-shadow-lg sm:flex-1 flex flex-col gap-1">
-      <div className="gwfont text-lg sm:text-xl">{label}</div>
+      <div className="gwfont text-xl">{label}</div>
       <div className="flex flex-col sm:flex-row items-center">
-        <div className="sm:flex-1">{games?.challenge?.name}</div>
+        <div className="text-lg sm:flex-1">{games?.challenge?.name}</div>
         <div className="text-sm">
           {games?.games?.length} of {games?.totalGames || '??'} entr{games?.totalGames === 1 ? 'y' : 'ies'}
         </div>
