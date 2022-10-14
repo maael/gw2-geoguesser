@@ -27,8 +27,8 @@ const handlers: ApiHandlers = {
         } else if (sort === 'time') {
           filter.sort({ createdAt: 'desc' })
         }
-        const games = await filter.limit(limit).lean().exec()
-        return { challenge, games }
+        const [games, totalGames] = await Promise.all([filter.limit(limit).lean().exec(), filter.clone().count()])
+        return { challenge, games, totalGames }
       },
       many: async ({ req, res }) => {
         const session = await unstable_getServerSession(req, res, authOptions)
