@@ -4,7 +4,7 @@ import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
 import format from 'date-fns/format'
 import { avatar } from '~/util'
 import Image from 'next/image'
-import { FaArrowRight, FaBeer } from 'react-icons/fa'
+import { FaArrowRight, FaBeer, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
 import dynamic from 'next/dynamic'
 
 const Countdown = dynamic(() => import('../components/primitives/RankedResetTimer'), {
@@ -135,9 +135,27 @@ export default function Index() {
         </div>
       </div>
       <div className="flex-1" />
-      <div className="max-w-3xl mx-auto mt-2 text-white py-2 text-xs flex flex-row gap-5 justify-center items-end text-center">
+      <div className="max-w-3xl mx-auto mt-2 text-white pt-2 pb-1 text-xs flex flex-row gap-5 justify-center items-end text-center">
+        <span className="flex flex-row gap-1 justify-center items-center">
+          <a href="https://mael.tech">Made by Matt Elphick</a>
+          <a href="https://mael.tech">
+            <FaLink />
+          </a>
+          <a href="https://github.com/maael">
+            <FaGithub />
+          </a>
+          <a href="http://reddit.com/u/maael">
+            <FaReddit />
+          </a>
+        </span>
+        <span className="flex flex-row gap-1 justify-center items-center">
+          <Image src={avatar('Gorrik-Icon.jpg')} height={15} width={15} className="rounded-full" />
+          Mael.3259 in game
+        </span>
+      </div>
+      <div className="max-w-3xl mx-auto text-white pb-2 text-xs flex flex-row gap-5 justify-center items-end text-center">
         <a href="https://elonian-gallery.com/">Avatars © Ilona Iske 2022</a>
-        <a href="https://www.buymeacoffee.com/matte" className="flex flex-row gap-1 justify-center items-end">
+        <a href="https://www.buymeacoffee.com/matte" className="flex flex-row gap-1 justify-center items-center">
           Enjoying the game? Get me a beer. <FaBeer />
         </a>
       </div>

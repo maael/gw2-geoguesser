@@ -1,9 +1,6 @@
-import { Schema, Model } from 'mongoose'
+import mongoose, { Schema, Model } from 'mongoose'
 import bcrypt from 'bcryptjs'
-import { connect } from '../mongo'
 import { WithDoc, User } from '../../types'
-
-const connection = connect()
 
 interface ItemMethods {
   comparePassword(input: string): Promise<boolean>
@@ -50,6 +47,6 @@ itemSchema.methods.comparePassword = async function comparePassword(input) {
   })
 }
 
-const Item = connection.model<WithDoc<User>, ItemModel>('User', itemSchema)
+const Item = mongoose.models.User || mongoose.model<WithDoc<User>, ItemModel>('User', itemSchema)
 
 export default Item

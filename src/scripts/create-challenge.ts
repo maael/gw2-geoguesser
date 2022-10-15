@@ -1,5 +1,6 @@
 import getWeek from 'date-fns/getWeek'
 import format from 'date-fns/format'
+import dbConnect from '../db/mongo'
 import Challenge from '../db/models/challenges'
 import ChallengeOption from '../db/models/challengeOption'
 import { CHALLENGE } from '../types'
@@ -7,6 +8,7 @@ import { CHALLENGE } from '../types'
 // eslint-disable-next-line @typescript-eslint/no-extra-semi
 ;(async () => {
   console.info('[start]')
+  await dbConnect()
   const existing = await Challenge.count()
   console.info({ existing })
   await createDaily()

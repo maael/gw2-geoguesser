@@ -1,5 +1,6 @@
 import { NextApiHandler } from 'next'
 import functionsMap from '~/api/functions'
+import dbConnect from '~/db/mongo'
 
 const handler: NextApiHandler = async (req, res) => {
   const [type, id] = (req.query as any).route || []
@@ -20,6 +21,7 @@ const handler: NextApiHandler = async (req, res) => {
     return
   }
   try {
+    await dbConnect()
     const results = await matchedFunction({ id, limit, page, offset, body: req.body || {}, req, res, sort })
     res.json(results)
   } catch (e) {

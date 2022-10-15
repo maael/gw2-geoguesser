@@ -1,8 +1,10 @@
+import dbConnect from '../db/mongo'
 import ChallengeOption from '../db/models/challengeOption'
 
 // eslint-disable-next-line @typescript-eslint/no-extra-semi
 ;(async () => {
   console.info('[start]')
+  await dbConnect()
   const existing = await ChallengeOption.count()
   console.info({ existing })
   if (existing === 0) {

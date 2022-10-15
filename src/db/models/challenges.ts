@@ -1,8 +1,5 @@
-import { Schema, Model } from 'mongoose'
-import { connect } from '../mongo'
+import mongoose, { Schema, Model } from 'mongoose'
 import { WithDoc, Challenge } from '../../types'
-
-const connection = connect()
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ItemModel extends Model<WithDoc<Challenge>> {}
@@ -29,6 +26,6 @@ const itemSchema = new Schema<WithDoc<Challenge>, ItemModel>(
   }
 )
 
-const Item = connection.model<WithDoc<Challenge>, ItemModel>('Challenge', itemSchema)
+const Item = mongoose.models.Challenge || mongoose.model<WithDoc<Challenge>, ItemModel>('Challenge', itemSchema)
 
 export default Item
