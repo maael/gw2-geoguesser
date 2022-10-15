@@ -87,8 +87,7 @@ export default function Index() {
               You can only attempt each ranked game once until a new one is released, so play carefully!
             </div>
             <div className="flex flex-col sm:flex-row gap-1 text-center mb-2">
-              Time until new Ranked game:
-              <Countdown />
+              Time until new Ranked game: <Countdown />
             </div>
             <div className="flex flex-row justify-center items-center gap-2">
               {daily ? (

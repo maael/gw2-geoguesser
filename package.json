@@ -11,7 +11,9 @@
     "prettier": "prettier --ignore-path .gitignore --write .",
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore",
     "initial-options": "ts-node -r dotenv-extended/config src/scripts/initial-options.ts",
-    "create-challenge": "ts-node -r dotenv-extended/config src/scripts/create-challenge.ts"
+    "create-challenge": "ts-node -r dotenv-extended/config src/scripts/create-challenge.ts",
+    "migrate-options": "ts-node -r dotenv-extended/config src/scripts/migrate-options.ts",
+    "danger:reset": "ts-node -r dotenv-extended/config src/scripts/reset.ts"
   },
   "husky": {
     "hooks": {
