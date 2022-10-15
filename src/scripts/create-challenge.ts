@@ -45,7 +45,7 @@ async function createWeek() {
     ).map(({ _id }) => _id)
     const label = getWeek(new Date(), { weekStartsOn: 1 })
     await Challenge.create({
-      name: `Week ${label}`,
+      name: `Week ${label} ${format(new Date(), 'yyyy')}`,
       options,
       type: CHALLENGE.weekly,
     })
@@ -59,7 +59,7 @@ async function createMonthly() {
     const options = await (
       await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 15 } }, { $project: { _id: 1 } }])
     ).map(({ _id }) => _id)
-    const label = format(new Date(), 'MMMM')
+    const label = format(new Date(), 'MMMM yyyy')
     await Challenge.create({
       name: `Monthly ${label}`,
       options,

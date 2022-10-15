@@ -104,7 +104,7 @@ function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLoca
   return (
     <>
       {/** TODO: Replace with own tile service */}
-      <TileLayer url="https://tiles.tinyarmy.org/1/1/{z}/{x}/{y}.jpg" noWrap={true} minZoom={1} maxZoom={7} />
+      <TileLayer url="https://tiles.maael.xyz/1/1/{z}/{x}/{y}.jpg" noWrap={true} minZoom={1} maxZoom={7} />
       <AttributionControl prefix={`Tiles by <a href="https://blog.thatshaman.com/" target="_blank">that_shaman</a>`} />
       {marker ? <Marker title="Your guess" icon={myOtherIcon} position={marker} /> : null}
       {showGuessLocation && locationLongLat ? (

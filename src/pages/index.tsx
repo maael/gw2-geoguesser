@@ -188,10 +188,10 @@ function GamesBlock({
                 backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
               }}
             >
-              <Link href={`/user/${g.userId.username}`}>
+              <Link href={`/user/${g.userId?.username}`}>
                 <a className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
-                  <Image src={avatar(g.userId.image)} height={25} width={25} className="rounded-full" />{' '}
-                  {g.userId.username}
+                  <Image src={avatar(g.userId?.image)} height={25} width={25} className="rounded-full" />{' '}
+                  {g.userId?.username}
                 </a>
               </Link>
               <div className="w-1/5 text-center">{g.totalScore}</div>
