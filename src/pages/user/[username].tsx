@@ -40,12 +40,12 @@ export default function Index() {
           {user.games.map((g, idx) => (
             <div
               key={g._id}
-              className="flex flex-row gap-1 px-3 py-1"
+              className="flex flex-row gap-1 px-3 py-1 text-sm sm:text-lg"
               style={{
                 backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
               }}
             >
-              <div className="w-1/3">{g.challenge?.name || 'Random'}</div>
+              <div className="w-1/3">{g.challenge?.name || 'Quick Game'}</div>
               <div className="w-1/3 text-center">{g.totalScore}</div>
               <div className="w-1/3 text-right">{format(new Date(g.createdAt), 'HH:mm do MMM yyyy')}</div>
             </div>

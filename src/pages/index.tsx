@@ -93,21 +93,21 @@ export default function Index() {
               {daily ? (
                 <Link href="/game/daily">
                   <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
-                    {daily.name}
+                    {daily.name.replace(new Date().getFullYear(), '').trim()}
                   </a>
                 </Link>
               ) : null}
               {weekly ? (
                 <Link href="/game/weekly">
                   <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
-                    {weekly.name}
+                    {weekly.name.replace(new Date().getFullYear(), '').trim()}
                   </a>
                 </Link>
               ) : null}
               {monthly ? (
                 <Link href="/game/monthly">
                   <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
-                    {monthly.name}
+                    {monthly.name.replace(new Date().getFullYear(), '').trim()}
                   </a>
                 </Link>
               ) : null}
@@ -188,7 +188,7 @@ function GamesBlock({
       </div>
       <div className="my-2">
         <div
-          className="flex flex-row gap-2 px-3 py-1 gwfont"
+          className="flex flex-row gap-2 px-3 py-1 gwfont text-lg sm:text-xl"
           style={{
             backgroundColor: 'rgba(96, 76, 52, 0.5)',
           }}
@@ -201,7 +201,7 @@ function GamesBlock({
           games.games.map((g, idx) => (
             <div
               key={`${label}-${g._id}`}
-              className="flex flex-row gap-2 px-3 py-1 text-md"
+              className="flex flex-row gap-2 px-3 py-1 text-sm sm:text-lg"
               style={{
                 backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
               }}
@@ -213,7 +213,10 @@ function GamesBlock({
                 </a>
               </Link>
               <div className="w-1/5 text-center">{g.totalScore}</div>
-              <div className="w-2/5 text-right">{format(new Date(g.createdAt), 'HH:mm do MMM yyyy')}</div>
+              <div className="w-2/5 text-right">
+                {format(new Date(g.createdAt), 'HH:mm do MMM')}
+                <span className="hidden sm:inline-block ml-1">{format(new Date(g.createdAt), 'yyyy')}</span>
+              </div>
             </div>
           ))
         ) : isLoading ? (
