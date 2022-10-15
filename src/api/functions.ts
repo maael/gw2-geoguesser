@@ -58,6 +58,7 @@ const handlers: ApiHandlers = {
           challenge: body.challenge,
           challengeType: body.challengeType,
         })
+        res.revalidate(`/user/${session.user?.name}`)
         return game as any
       },
     },
@@ -94,10 +95,6 @@ const handlers: ApiHandlers = {
   },
   user: {
     get: {
-      many: async ({ req, res }) => {
-        const session = await unstable_getServerSession(req, res, authOptions)
-        return session as any
-      },
       one: async ({ id }) => {
         const user = await User.findOne({ username: id }, { _id: 1, username: 1, createdAt: 1, image: 1 })
         if (!user) throw new Error('Not found')
