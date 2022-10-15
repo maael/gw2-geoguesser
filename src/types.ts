@@ -35,6 +35,7 @@ export interface ChallengeOption {
   id: string
   image: string
   location: [number, number]
+  mapId: number
 }
 
 export type ApiOneHandler<T = any, Body = any> = (args: {

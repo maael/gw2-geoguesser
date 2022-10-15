@@ -8,6 +8,7 @@ const itemSchema = new Schema<WithDoc<ChallengeOption>, ItemModel>(
   {
     image: String,
     location: [Number, Number],
+    mapId: Number,
   },
   {
     id: true,

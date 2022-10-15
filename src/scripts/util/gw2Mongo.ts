@@ -61,6 +61,7 @@ export async function getItems() {
         'https://gw2-sightseeing.maael.xyz/'
       ),
       location: i.metadata?.geocoords,
+      mapId: i.metadata?.mapId,
     }
   })
 }
