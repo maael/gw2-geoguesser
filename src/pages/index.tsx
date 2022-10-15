@@ -4,7 +4,7 @@ import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
 import format from 'date-fns/format'
 import { avatar } from '~/util'
 import Image from 'next/image'
-import { FaArrowRight, FaBeer, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
+import { FaArrowRight, FaBeer, FaGithub, FaLink, FaMedal, FaReddit } from 'react-icons/fa'
 import dynamic from 'next/dynamic'
 
 const Countdown = dynamic(() => import('../components/primitives/RankedResetTimer'), {
@@ -163,6 +163,12 @@ export default function Index() {
   )
 }
 
+const medalColor = {
+  0: '#DAA520',
+  1: '#A9A9A9',
+  2: '#cd7f32',
+}
+
 function GamesBlock({
   games,
   label,
@@ -212,7 +218,9 @@ function GamesBlock({
                   {g.userId?.username}
                 </a>
               </Link>
-              <div className="w-1/5 text-center">{g.totalScore}</div>
+              <div className="w-1/5 text-center flex flex-row gap-1 justify-center items-center">
+                {idx < 3 ? <FaMedal className="text-sm" style={{ color: medalColor[idx] }} /> : null} {g.totalScore}
+              </div>
               <div className="w-2/5 text-right">
                 {format(new Date(g.createdAt), 'HH:mm do MMM')}
                 <span className="hidden sm:inline-block ml-1">{format(new Date(g.createdAt), 'yyyy')}</span>
