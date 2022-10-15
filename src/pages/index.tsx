@@ -114,23 +114,54 @@ export default function Index() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-            <GamesBlock games={recentRandomGames} isLoading={recentRandomGamesLoading} label={'Recent Quick Games'} />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-            <GamesBlock games={recentDailyGames} isLoading={recentDailyGamesLoading} label={'Recent Daily Games'} />
-            <GamesBlock games={highDailyGames} isLoading={highDailyGamesLoading} label={'High Daily Games'} />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-            <GamesBlock games={recentWeeklyGames} isLoading={recentWeeklyGamesLoading} label={'Recent Weekly Games'} />
-            <GamesBlock games={highWeeklyGames} isLoading={highWeeklyGamesLoading} label={'High Weekly Games'} />
+            <GamesBlock
+              type="time"
+              games={recentRandomGames}
+              isLoading={recentRandomGamesLoading}
+              label={'Recent Quick Games'}
+            />
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
             <GamesBlock
+              type="time"
+              games={recentDailyGames}
+              isLoading={recentDailyGamesLoading}
+              label={'Recent Daily'}
+            />
+            <GamesBlock
+              type="score"
+              games={highDailyGames}
+              isLoading={highDailyGamesLoading}
+              label={'High Score Daily'}
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
+            <GamesBlock
+              type="time"
+              games={recentWeeklyGames}
+              isLoading={recentWeeklyGamesLoading}
+              label={'Recent Weekly'}
+            />
+            <GamesBlock
+              type="score"
+              games={highWeeklyGames}
+              isLoading={highWeeklyGamesLoading}
+              label={'High Score Weekly'}
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
+            <GamesBlock
+              type="time"
               games={recentMonthlyGames}
               isLoading={recentMonthlyGamesLoading}
-              label={'Recent Monthly Games'}
+              label={'Recent Monthly'}
             />
-            <GamesBlock games={highMonthlyGames} isLoading={highMonthlyGamesLoading} label={'High Monthly Games'} />
+            <GamesBlock
+              type="score"
+              games={highMonthlyGames}
+              isLoading={highMonthlyGamesLoading}
+              label={'High Score Monthly'}
+            />
           </div>
         </div>
       </div>
@@ -173,6 +204,7 @@ function GamesBlock({
   games,
   label,
   isLoading,
+  type,
 }: {
   isLoading: boolean
   games?: {
@@ -182,6 +214,7 @@ function GamesBlock({
     games?: { _id: string; userId: { username: string; image: string }; totalScore: number; createdAt: string }[]
   }
   label: string
+  type: 'score' | 'time'
 }) {
   return (
     <div className="bg-brown-brushed px-5 pt-3 pb-5 drop-shadow-lg sm:flex-1 flex flex-col gap-1">
@@ -219,7 +252,10 @@ function GamesBlock({
                 </a>
               </Link>
               <div className="w-1/5 text-center flex flex-row gap-1 justify-center items-center">
-                {idx < 3 ? <FaMedal className="text-sm" style={{ color: medalColor[idx] }} /> : null} {g.totalScore}
+                {type === 'score' && idx < 3 ? (
+                  <FaMedal className="text-sm" style={{ color: medalColor[idx] }} />
+                ) : null}{' '}
+                {g.totalScore}
               </div>
               <div className="w-2/5 text-right">
                 {format(new Date(g.createdAt), 'HH:mm do MMM')}
