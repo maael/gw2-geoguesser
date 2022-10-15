@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { AppProps } from 'next/app'
 import { DefaultSeo } from 'next-seo'
 import { SessionProvider } from 'next-auth/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query'
 import useFathom from '~/components/hooks/useFathom'
 import SEO from '~/../next-seo.config'
 import Header from '~/components/primitives/Header'
@@ -12,8 +12,12 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, refetchInterval: false } },
 })
 
-function App({ Component, pageProps: { session, ...pageProps } }: AppProps & { pageProps: { session: any } }) {
+function App({
+  Component,
+  pageProps: { session, dehydratedState, ...pageProps },
+}: AppProps & { pageProps: { session: any; dehydratedState: any } }) {
   const fathom = useFathom()
+  console.info('[hydrate]', dehydratedState?.queries?.length !== undefined && dehydratedState?.queries?.length !== 0)
   return (
     <>
       <Head>
@@ -23,8 +27,10 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps & { p
       <SessionProvider session={session}>
         <div className="flex flex-col h-full bg-fixed">
           <QueryClientProvider client={queryClient}>
-            <Header />
-            <Component {...pageProps} fathom={fathom} />
+            <Hydrate state={dehydratedState}>
+              <Header />
+              <Component {...pageProps} fathom={fathom} />
+            </Hydrate>
           </QueryClientProvider>
         </div>
       </SessionProvider>

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useQueries } from '@tanstack/react-query'
+import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import format from 'date-fns/format'
 import Image from 'next/image'
@@ -54,4 +54,32 @@ export default function Index() {
       </div>
     </div>
   )
+}
+
+export async function getStaticProps({ params }) {
+  const queryClient = new QueryClient()
+
+  const rootUrl = process.env.VERCEL_ENV === 'production' ? 'https://gw2-geoguesser.mael.tech' : 'http://localhost:3002'
+
+  console.info('[revalidate]', { username: params.username })
+
+  await Promise.all([
+    queryClient.prefetchQuery(['user', params.username], () =>
+      fetch(`${rootUrl}/api/internal/user/${params.username}`).then((r) => r.json())
+    ),
+  ])
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      revalidate: 10, // 10s
+    },
+  }
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: 'blocking',
+  }
 }

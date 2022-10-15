@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import * as React from 'react'
-import { useQueries } from '@tanstack/react-query'
+import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
 import format from 'date-fns/format'
 import { avatar } from '~/util'
 import Image from 'next/image'
@@ -206,4 +206,52 @@ function GamesBlock({
       </div>
     </div>
   )
+}
+
+export async function getStaticProps() {
+  const queryClient = new QueryClient()
+
+  const rootUrl = process.env.VERCEL_ENV === 'production' ? 'https://gw2-geoguesser.mael.tech' : 'http://localhost:3002'
+
+  console.info('[revalidate]')
+
+  await Promise.all([
+    queryClient.prefetchQuery(['daily-challenge'], () =>
+      fetch(`${rootUrl}/api/internal/challenge/daily`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['weekly-challenge'], () =>
+      fetch(`${rootUrl}/api/internal/challenge/weekly`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['monthly-challenge'], () =>
+      fetch(`${rootUrl}/api/internal/challenge/monthly`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['daily-games-recent'], () =>
+      fetch(`${rootUrl}/api/internal/game/daily?sort=time&limit=10`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['daily-games-score'], () =>
+      fetch(`${rootUrl}/api/internal/game/daily?sort=score&limit=10`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['weekly-games-recent'], () =>
+      fetch(`${rootUrl}/api/internal/game/weekly?sort=time&limit=10`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['weekly-games-score'], () =>
+      fetch(`${rootUrl}/api/internal/game/weekly?sort=score&limit=10`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['monthly-games-recent'], () =>
+      fetch(`${rootUrl}/api/internal/game/monthly?sort=time&limit=10`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['monthly-games-score'], () =>
+      fetch(`${rootUrl}/api/internal/game/monthly?sort=score&limit=10`).then((r) => r.json())
+    ),
+    queryClient.prefetchQuery(['random-games-recent'], () =>
+      fetch(`${rootUrl}/api/internal/game/random?sort=time&limit=10`).then((r) => r.json())
+    ),
+  ])
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      revalidate: 10, // 10s
+    },
+  }
 }
