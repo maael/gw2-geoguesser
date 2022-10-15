@@ -100,6 +100,7 @@ function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLoca
     setMarker,
     setDistance,
     showGuessLocation,
+    guessId,
   })
   return (
     <>
@@ -136,12 +137,14 @@ function useSetup({
   setMarker,
   setDistance,
   showGuessLocation,
+  guessId,
 }: {
   locationLongLat: any
   marker: any
   setMarker: any
   setDistance: any
   showGuessLocation: boolean
+  guessId: string
 }) {
   const map = useMap()
 
@@ -158,6 +161,10 @@ function useSetup({
       map.fitBounds(bounds)
     }
   }, [marker, showGuessLocation, locationLongLat, map])
+
+  useEffect(() => {
+    map.setView([-241, 368], 3)
+  }, [guessId, map])
 
   useMapEvents({
     click(e) {
