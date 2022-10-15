@@ -176,7 +176,7 @@ function GameScreen({
           Next
         </button>
       ) : null}
-      <div className="absolute bottom-20 md:bottom-10 left-4 md:left-auto right-4 md:right-10 lg:w-1/2 aspect-video scale-100 md:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-50 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
+      <div className="absolute bottom-20 md:bottom-10 left-4 md:left-auto right-4 md:right-10 lg:w-1/2 aspect-video scale-100 md:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map
           guessId={lastItem?._id}
           guessLocation={lastItem?.location}
