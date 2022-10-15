@@ -8,7 +8,9 @@ import useFathom from '~/components/hooks/useFathom'
 import SEO from '~/../next-seo.config'
 import Header from '~/components/primitives/Header'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { refetchOnWindowFocus: false, refetchInterval: false } },
+})
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps & { pageProps: { session: any } }) {
   const fathom = useFathom()
