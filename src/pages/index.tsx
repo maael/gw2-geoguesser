@@ -67,7 +67,7 @@ export default function Index() {
   })
   return (
     <>
-      <div className="ptfont flex flex-col justify-center items-center text-white">
+      <div className="flex flex-col justify-center items-center text-white">
         <div className="flex flex-col gap-7 justify-center items-center max-w-5xl w-full sm:text-lg px-2">
           <div className="text-2xl sm:text-4xl text-center mt-3 sm:mt-7 gwfont">Think you know Tyria?</div>
           <div className="flex flex-col justify-center items-center gap-2 w-full px-2 my-1">

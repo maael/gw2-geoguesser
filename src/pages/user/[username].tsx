@@ -17,7 +17,7 @@ export default function Index() {
   })
   if (!user) return null
   return (
-    <div className="ptfont bg-black-brushed bg-gray-900 flex justify-center items-center text-white">
+    <div className="bg-black-brushed bg-gray-900 flex justify-center items-center text-white">
       <div className="flex flex-col gap-2 justify-center items-center max-w-5xl w-full px-2 sm:px-4 pt-5">
         <div className="relative aspect-square" style={{ width: '25vmin', maxWidth: 200 }}>
           <Image src={avatar(user.image)} layout="fill" className="rounded-full drop-shadow-md" />

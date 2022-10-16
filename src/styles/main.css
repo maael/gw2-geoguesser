@@ -17,7 +17,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: fixed;
-  font-family: PTSerif, Arial, Helvetica, sans-serif;
+  font-family: Cagliostro, Arial, Helvetica, sans-serif;
   @apply bg-gray-900;
 }
 

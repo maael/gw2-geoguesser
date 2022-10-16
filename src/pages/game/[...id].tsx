@@ -154,7 +154,7 @@ function GameScreen({
   return (
     <div
       suppressHydrationWarning
-      className="ptfont bg-black-brushed bg-gray-900 flex flex-col justify-center items-center flex-1 w-full"
+      className="bg-black-brushed bg-gray-900 flex flex-col justify-center items-center flex-1 w-full"
     >
       <div className="bg-brown-brushed flex flex-col md:absolute md:top-16 right-0 text-white pl-12 pr-20 py-2 bg-black text-lg md:text-3xl rounded-full my-4 md:my-0 md:rounded-l-full drop-shadow-xl">
         <div>
