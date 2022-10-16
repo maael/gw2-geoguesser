@@ -17,7 +17,7 @@ export default function Index() {
   })
   if (!user) return null
   return (
-    <div className="bg-black-brushed bg-gray-900 flex justify-center items-center text-white">
+    <div className="flex justify-center items-center text-white">
       <div className="flex flex-col gap-2 justify-center items-center max-w-5xl w-full px-2 sm:px-4 pt-5">
         <div className="relative aspect-square" style={{ width: '25vmin', maxWidth: 200 }}>
           <Image src={avatar(user.image)} layout="fill" className="rounded-full drop-shadow-md" />
@@ -47,7 +47,10 @@ export default function Index() {
             >
               <div className="w-1/3">{g.challenge?.name || 'Quick Game'}</div>
               <div className="w-1/3 text-center">{g.totalScore}</div>
-              <div className="w-1/3 text-right">{format(new Date(g.createdAt), 'HH:mm do MMM yyyy')}</div>
+              <div className="w-1/3 text-right">
+                {format(new Date(g.createdAt), 'HH:mm do MMM')}
+                <span className="ml-1 hidden sm:inline-block">{format(new Date(g.createdAt), 'yyyy')}</span>
+              </div>
             </div>
           ))}
         </div>
