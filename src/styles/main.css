@@ -16,7 +16,7 @@ body {
   background-image: url(/ui/windowbg-glyphs.png);
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: fixed;
+  background-attachment: fixed;
   font-family: Cagliostro, Arial, Helvetica, sans-serif;
   @apply bg-gray-900;
 }
