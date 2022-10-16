@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 export async function getItems() {
-  const db = await mongoose.connect(`${process.env.GW2_SIGHTSEEING_MONGO_DB_URI}`)
+  const db = await mongoose.createConnection(`${process.env.GW2_SIGHTSEEING_MONGO_DB_URI}`)
 
   const Group = new mongoose.Schema({
     items: [mongoose.Schema.Types.ObjectId],
