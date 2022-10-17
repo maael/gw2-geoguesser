@@ -33,7 +33,10 @@ const handlers: ApiHandlers = {
         } else if (sort === 'time') {
           filter.sort({ createdAt: 'desc' })
         }
-        const [games, totalGames] = await Promise.all([filter.limit(limit).lean().exec(), filter.clone().count()])
+        const [games, totalGames] = await Promise.all([
+          filter.clone().limit(limit).lean().exec(),
+          filter.clone().count(),
+        ])
         return { challenge, games, totalGames }
       },
       many: async ({ req, res }) => {

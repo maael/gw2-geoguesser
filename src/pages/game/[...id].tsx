@@ -6,6 +6,7 @@ import { CHALLENGE } from '~/types'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { EVENTS, Fathom } from '~/components/hooks/useFathom'
+import { FaSpinner } from 'react-icons/fa'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -37,26 +38,35 @@ function sumScore(game: Game) {
   return game.reduce((acc, g) => acc + (g.score || 0), 0)
 }
 
+interface TGame {
+  _id: undefined | string
+  options: any
+  error: string
+}
+
 function useGameOptions(gameType: CHALLENGE | null) {
-  const [game, setGame] = React.useState({ _id: undefined, options: [], error: '' })
+  const [game, setGame] = React.useState<TGame>({ _id: undefined, options: [], error: '' })
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
+  async function getGameOptions() {
+    if (gameType === null) return
+    let game: TGame | null = null
+    try {
+      setLoading(true)
+      game = await fetch(`/api/internal/play/${gameType}`).then((r) => r.json())
+      setGame(game!)
+    } catch (e) {
+      setError(e)
+    } finally {
+      setLoading(false)
+    }
+    return game!
+  }
   React.useEffect(() => {
-    if (gameType === null) return // eslint-disable-next-line @typescript-eslint/no-extra-semi
-    ;(async () => {
-      try {
-        setLoading(true)
-        const game = await fetch(`/api/internal/play/${gameType}`).then((r) => r.json())
-        setGame(game)
-      } catch (e) {
-        setError(e)
-      } finally {
-        setLoading(false)
-      }
-    })()
+    void getGameOptions()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameType])
-  return { game, error, loading }
+  return { game, error, loading, reset: getGameOptions }
 }
 
 export default function Game({ fathom }: { fathom: Fathom }) {
@@ -73,13 +83,16 @@ export default function Game({ fathom }: { fathom: Fathom }) {
   const {
     game: { _id: gameId, options, error },
     loading,
+    reset,
   } = useGameOptions(queryGameType ? gameType : null)
   return loading ? (
-    <div>Loading...</div>
+    <div className="flex justify-center items-center h-full">
+      <FaSpinner className="animate-spin text-white text-4xl" />
+    </div>
   ) : error ? (
     <ErrorScreen error={error} />
   ) : (
-    <GameScreen gameId={gameId} options={options} gameType={gameType} fathom={fathom} />
+    <GameScreen gameId={gameId} options={options} gameType={gameType} fathom={fathom} reset={reset} />
   )
 }
 
@@ -133,11 +146,13 @@ function GameScreen({
   gameType,
   gameId,
   fathom,
+  reset,
 }: {
   options: any
   gameType: CHALLENGE
   gameId: string | undefined
   fathom: Fathom
+  reset: () => Promise<TGame | undefined>
 }) {
   const { data: session } = useSession()
   const [game, setGame] = React.useState<Game>([options[0]])
@@ -216,9 +231,10 @@ function GameScreen({
               {gameType === CHALLENGE.random ? (
                 <button
                   className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full"
-                  onClick={() => {
+                  onClick={async () => {
                     fathom.trackGoal(EVENTS.StartGame, 0)
-                    setGame([options[0]])
+                    const newGame = await reset()
+                    setGame([newGame?.options[0]].filter(Boolean))
                   }}
                 >
                   New Game
