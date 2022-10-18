@@ -1,17 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { FaExclamationTriangle, FaInfoCircle, FaQuestionCircle, FaSave, FaSpinner } from 'react-icons/fa'
 import { queryClient } from '~/util'
 
 const QUERY_KEY = ['user-gw2-account']
 
-export default function AccountNamePromptOuter() {
-  const { data: session } = useSession()
-  return session ? <AccountNamePromptInner /> : null
-}
-
-function AccountNamePromptInner() {
+export default function AccountNamePrompt() {
   const { data, isLoading } = useQuery(QUERY_KEY, () => fetch('/api/internal/user').then((r) => r.json()))
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')

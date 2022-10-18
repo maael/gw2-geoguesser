@@ -116,6 +116,7 @@ const handlers: ApiHandlers = {
           .populate('challenge', 'name type createdAt')
           .limit(100)
         return {
+          id: user._id,
           username: user.username,
           image: user.image,
           createdAt: user.createdAt,

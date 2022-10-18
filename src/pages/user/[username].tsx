@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import format from 'date-fns/format'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { avatar } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 
@@ -17,7 +18,10 @@ export default function Index() {
       },
     ],
   })
+  const { data: session } = useSession()
+
   if (!user) return null
+
   return (
     <div className="flex justify-center items-center text-white">
       <div className="flex flex-col gap-2 justify-center items-center max-w-5xl w-full px-2 sm:px-4 pt-5">
@@ -25,7 +29,7 @@ export default function Index() {
           <Image src={avatar(user.image)} layout="fill" className="rounded-full drop-shadow-md" />
         </div>
         <div className="gwfont text-4xl sm:text-6xl mb-3">{user.username}</div>
-        <AccountNamePrompt />
+        {(session?.user as any)?.id === user.id ? <AccountNamePrompt /> : null}
         <div
           className="flex flex-col justify-center bg-brown-brushed px-6 pt-4 pb-6 drop-shadow-lg w-full text-xl"
           style={{ minHeight: '20vh' }}
