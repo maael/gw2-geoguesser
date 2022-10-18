@@ -6,7 +6,7 @@ import { CHALLENGE } from '~/types'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { EVENTS, Fathom } from '~/components/hooks/useFathom'
-import { FaSpinner } from 'react-icons/fa'
+import { FaExclamationTriangle, FaSpinner } from 'react-icons/fa'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -40,11 +40,12 @@ function sumScore(game: Game) {
 
 interface TGame {
   _id: undefined | string
+  name?: string
   options: any
   error: string
 }
 
-function useGameOptions(gameType: CHALLENGE | null) {
+function useGameOptions(gameType: CHALLENGE | null, setStarted: React.Dispatch<React.SetStateAction<boolean>>) {
   const [game, setGame] = React.useState<TGame>({ _id: undefined, options: [], error: '' })
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
@@ -55,6 +56,7 @@ function useGameOptions(gameType: CHALLENGE | null) {
       setLoading(true)
       game = await fetch(`/api/internal/play/${gameType}`).then((r) => r.json())
       setGame(game!)
+      setStarted(false)
     } catch (e) {
       setError(e)
     } finally {
@@ -80,19 +82,50 @@ export default function Game({ fathom }: { fathom: Fathom }) {
       : queryGameType === CHALLENGE.monthly
       ? CHALLENGE.monthly
       : CHALLENGE.random
+  const [started, setStarted] = React.useState(false)
   const {
-    game: { _id: gameId, options, error },
+    game: { _id: gameId, name, options, error },
     loading,
     reset,
-  } = useGameOptions(queryGameType ? gameType : null)
+  } = useGameOptions(queryGameType ? gameType : null, setStarted)
   return loading ? (
     <div className="flex justify-center items-center h-full">
       <FaSpinner className="animate-spin text-white text-4xl" />
     </div>
   ) : error ? (
     <ErrorScreen error={error} />
+  ) : !started ? (
+    <StartScreen name={name} setStarted={setStarted} />
   ) : (
     <GameScreen gameId={gameId} options={options} gameType={gameType} fathom={fathom} reset={reset} />
+  )
+}
+
+function StartScreen({
+  name,
+  setStarted,
+}: {
+  name?: string
+  setStarted: React.Dispatch<React.SetStateAction<boolean>>
+}) {
+  return (
+    <div className="h-full flex flex-col justify-center items-center text-white gap-5">
+      <h1 className="gwfont text-4xl text-center">{name || 'Quick Game'}</h1>
+      {name ? (
+        <p className="flex flex-col gap-3 justify-center items-center max-w-xs text-center text-yellow-500 text-lg">
+          <FaExclamationTriangle className="text-4xl" /> This is a ranked game, you'll only be able to attempt it once!
+        </p>
+      ) : null}
+      <button
+        onClick={(e) => {
+          e.preventDefault()
+          setStarted(true)
+        }}
+        className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-6 py-1 hover:scale-110 transition-transform drop-shadow-lg text-2xl"
+      >
+        Start
+      </button>
+    </div>
   )
 }
 
@@ -227,7 +260,7 @@ function GameScreen({
             <div className="gwfont text-4xl text-center py-3">
               Total: {total} / {500 * maxRounds}
             </div>
-            <div className="flex flex-row justify-center items-center mt-1">
+            <div className="flex flex-row justify-center items-center mt-1 gap-2">
               {gameType === CHALLENGE.random ? (
                 <button
                   className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full"
@@ -239,13 +272,12 @@ function GameScreen({
                 >
                   New Game
                 </button>
-              ) : (
-                <Link href="/">
-                  <a className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full">
-                    Finish
-                  </a>
-                </Link>
-              )}
+              ) : null}
+              <Link href="/">
+                <a className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full">
+                  Finish
+                </a>
+              </Link>
             </div>
           </div>
         </div>
