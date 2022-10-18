@@ -4,7 +4,7 @@ import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
 import format from 'date-fns/format'
 import { avatar } from '~/util'
 import Image from 'next/image'
-import { FaArrowRight, FaBeer, FaGithub, FaLink, FaMedal, FaReddit } from 'react-icons/fa'
+import { FaArrowRight, FaBeer, FaGithub, FaLink, FaMedal, FaReddit, FaSpinner } from 'react-icons/fa'
 import dynamic from 'next/dynamic'
 
 const Countdown = dynamic(() => import('../components/primitives/RankedResetTimer'), {
@@ -218,7 +218,10 @@ function GamesBlock({
 }) {
   return (
     <div className="bg-brown-brushed px-5 pt-3 pb-5 drop-shadow-lg sm:flex-1 flex flex-col gap-1">
-      <div className="gwfont text-xl">{label}</div>
+      <div className="flex flex-row gap-1 items-center">
+        <div className="gwfont text-xl flex-1">{label}</div>
+        {isLoading ? <FaSpinner className="animate-spin" /> : null}
+      </div>
       <div className="flex flex-col sm:flex-row items-center">
         <div className="text-lg sm:flex-1">{games?.challenge?.name}</div>
         <div className="text-sm">
