@@ -27,3 +27,9 @@ export function avatar(name: string | undefined | null) {
 export function getRandomArrayItem<T>(items: T[]) {
   return items[Math.floor(Math.random() * items.length)]
 }
+
+export const medalColor = {
+  0: '#DAA520',
+  1: '#A9A9A9',
+  2: '#cd7f32',
+}

@@ -13,8 +13,18 @@ const handlers: ApiHandlers = {
       one: async ({ id, sort, limit = 10 }) => {
         let challengeId = id
         let challenge: WithDoc<TChallenge> | undefined | null = undefined
-        if (challengeId === CHALLENGE.daily || challengeId === CHALLENGE.weekly || challengeId === CHALLENGE.monthly) {
-          challenge = await Challenge.findOne({ type: id }, { _id: 1, name: 1, type: 1, createdAt: 1 }).sort({
+        if (challengeId !== CHALLENGE.random) {
+          const filterObject: any = {}
+          if (
+            challengeId === CHALLENGE.daily ||
+            challengeId === CHALLENGE.weekly ||
+            challengeId === CHALLENGE.monthly
+          ) {
+            filterObject.type = id
+          } else {
+            filterObject._id = id
+          }
+          challenge = await Challenge.findOne(filterObject, { _id: 1, name: 1, type: 1, createdAt: 1 }).sort({
             createdAt: 'desc',
           })
           challengeId = challenge?._id

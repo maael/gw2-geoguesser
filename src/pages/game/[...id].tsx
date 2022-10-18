@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { EVENTS, Fathom } from '~/components/hooks/useFathom'
 import { FaExclamationTriangle, FaSpinner } from 'react-icons/fa'
+import PrizeList from '~/components/PrizeList'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -41,6 +42,7 @@ function sumScore(game: Game) {
 interface TGame {
   _id: undefined | string
   name?: string
+  prizes?: any
   options: any[]
   error: string
 }
@@ -55,7 +57,7 @@ function useGameOptions(gameType: CHALLENGE | null, setStarted: React.Dispatch<R
     try {
       setLoading(true)
       game = await fetch(`/api/internal/play/${gameType}`).then((r) => r.json())
-      game?.options.forEach((o) => {
+      game?.options?.forEach((o) => {
         const img = new global.Image()
         img.src = o.image
       })
@@ -88,7 +90,7 @@ export default function Game({ fathom }: { fathom: Fathom }) {
       : CHALLENGE.random
   const [started, setStarted] = React.useState(false)
   const {
-    game: { _id: gameId, name, options, error },
+    game: { _id: gameId, name, prizes, options, error },
     loading,
     reset,
   } = useGameOptions(queryGameType ? gameType : null, setStarted)
@@ -99,7 +101,7 @@ export default function Game({ fathom }: { fathom: Fathom }) {
   ) : error ? (
     <ErrorScreen error={error} />
   ) : !started ? (
-    <StartScreen name={name} setStarted={setStarted} />
+    <StartScreen name={name} prizes={prizes} setStarted={setStarted} />
   ) : (
     <GameScreen gameId={gameId} options={options} gameType={gameType} fathom={fathom} reset={reset} />
   )
@@ -107,14 +109,17 @@ export default function Game({ fathom }: { fathom: Fathom }) {
 
 function StartScreen({
   name,
+  prizes,
   setStarted,
 }: {
   name?: string
+  prizes?: any
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   return (
     <div className="h-full flex flex-col justify-center items-center text-white gap-5">
       <h1 className="gwfont text-4xl text-center">{name || 'Quick Game'}</h1>
+      <PrizeList prizes={prizes} />
       {name ? (
         <p className="flex flex-col gap-3 justify-center items-center max-w-xs text-center text-yellow-500 text-lg">
           <FaExclamationTriangle className="text-4xl" /> This is a ranked game, you'll only be able to attempt it once!
@@ -145,32 +150,36 @@ const contentMap = {
 
 function AccountError({ error }: { error: string }) {
   return (
-    <div className="text-white text-center text-2xl flex flex-col justify-center items-center gap-5 mt-5">
+    <div className="text-white text-center text-2xl flex flex-col justify-center items-center gap-5 mt-5 h-full">
       <div>{error}</div>
-      <Link href="/auth">
-        <a className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg h-full">
-          Log in or Sign up here!
-        </a>
-      </Link>
+      <div className="flex flex-row">
+        <Link href="/auth">
+          <a className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-5 py-1 hover:scale-110 transition-transform drop-shadow-lg h-full">
+            Log in or Sign up here!
+          </a>
+        </Link>
+      </div>
     </div>
   )
 }
 
 function AttemptsError({ error }: { error: string }) {
   return (
-    <div className="text-white text-center text-2xl flex flex-col justify-center items-center gap-5 mt-5">
+    <div className="text-white text-center text-2xl flex flex-col justify-center items-center gap-5 mt-5 h-full">
       <div>{error}</div>
-      <Link href="/">
-        <a className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-4 py-1 hover:scale-110 transition-transform drop-shadow-lg h-full">
-          Go back and find another game!
-        </a>
-      </Link>
+      <div className="flex flex-row">
+        <Link href="/">
+          <a className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-5 py-1 hover:scale-110 transition-transform drop-shadow-lg h-full">
+            Go back and find another game!
+          </a>
+        </Link>
+      </div>
     </div>
   )
 }
 
 function DefaultError({ error }: { error: string }) {
-  return <div className="text-white text-center text-2xl mt-5">{error}</div>
+  return <div className="text-white text-center text-2xl mt-5 h-full">{error}</div>
 }
 function ErrorScreen({ error }: { error: string }) {
   const type = messageToTypeMap[error]

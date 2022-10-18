@@ -30,6 +30,7 @@ export interface Challenge {
   isDeleted: boolean
   createdAt: string
   updatedAt: string
+  prizes: any
 }
 
 export interface ChallengeOption {

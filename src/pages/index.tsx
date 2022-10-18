@@ -1,16 +1,25 @@
 import Link from 'next/link'
 import * as React from 'react'
 import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
-import format from 'date-fns/format'
-import { avatar } from '~/util'
+import getDaysInMonth from 'date-fns/getDaysInMonth'
 import Image from 'next/image'
-import { FaArrowRight, FaBeer, FaGithub, FaLink, FaMedal, FaReddit, FaSpinner } from 'react-icons/fa'
+import { FaArrowRight, FaBeer, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
 import dynamic from 'next/dynamic'
+import { avatar } from '~/util'
+import { CHALLENGE } from '~/types'
+import PrizeList from '~/components/PrizeList'
+import GamesBlock from '~/components/primitives/GamesBlock'
 
 const Countdown = dynamic(() => import('../components/primitives/RankedResetTimer'), {
   ssr: false,
   loading: () => null,
 })
+
+function sum(obj: any, multiplier: number) {
+  if (!obj) return 0
+  const perThing = Object.values(obj.prizes || {}).reduce<number>((acc, p) => acc + Number(`${p}`.replace('g', '')), 0)
+  return perThing * multiplier
+}
 
 export default function Index() {
   const [
@@ -86,31 +95,21 @@ export default function Index() {
             <div className="text-center max-w-md my-1">
               You can only attempt each ranked game once until a new one is released, so play carefully!
             </div>
+            <div className="text-center max-w-md mt-1 flex flex-col sm:flex-row gap-1 justify-center items-center gwfont">
+              <div className="text-center flex flex-row gap-1 justify-center items-center gwfont text-4xl">
+                {sum(daily, getDaysInMonth(new Date())) + sum(weekly, 4) + sum(monthly, 1)}{' '}
+                <Image src="/ui/gold.png" height={30} width={30} title="In-game gold" />
+              </div>
+              In prizes this month
+            </div>
+            <div className="text-center max-w-md mb-1 text-sm opacity-60">Allow a delay when receiving prizes</div>
             <div className="flex flex-col sm:flex-row gap-1 text-center mb-2">
               Time until new Ranked game: <Countdown />
             </div>
-            <div className="flex flex-row justify-center items-center gap-2">
-              {daily ? (
-                <Link href="/game/daily">
-                  <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
-                    {daily.name.replace(new Date().getFullYear(), '').trim()}
-                  </a>
-                </Link>
-              ) : null}
-              {weekly ? (
-                <Link href="/game/weekly">
-                  <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
-                    {weekly.name.replace(new Date().getFullYear(), '').trim()}
-                  </a>
-                </Link>
-              ) : null}
-              {monthly ? (
-                <Link href="/game/monthly">
-                  <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1">
-                    {monthly.name.replace(new Date().getFullYear(), '').trim()}
-                  </a>
-                </Link>
-              ) : null}
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-2">
+              <RankedGameBlock type={CHALLENGE.daily} challenge={daily} />
+              <RankedGameBlock type={CHALLENGE.weekly} challenge={weekly} />
+              <RankedGameBlock type={CHALLENGE.monthly} challenge={monthly} />
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
@@ -194,86 +193,18 @@ export default function Index() {
   )
 }
 
-const medalColor = {
-  0: '#DAA520',
-  1: '#A9A9A9',
-  2: '#cd7f32',
-}
-
-function GamesBlock({
-  games,
-  label,
-  isLoading,
-  type,
-}: {
-  isLoading: boolean
-  games?: {
-    error?: string
-    challenge?: { name: string }
-    totalGames?: number
-    games?: { _id: string; userId: { username: string; image: string }; totalScore: number; createdAt: string }[]
-  }
-  label: string
-  type: 'score' | 'time'
-}) {
-  return (
-    <div className="bg-brown-brushed px-5 pt-3 pb-5 drop-shadow-lg sm:flex-1 flex flex-col gap-1">
-      <div className="flex flex-row gap-1 items-center">
-        <div className="gwfont text-xl flex-1">{label}</div>
-        {isLoading ? <FaSpinner className="animate-spin" /> : null}
-      </div>
-      <div className="flex flex-col sm:flex-row items-center">
-        <div className="text-lg sm:flex-1">{games?.challenge?.name}</div>
-        <div className="text-sm">
-          {games?.games?.length} of {games?.totalGames || '??'} entr{games?.totalGames === 1 ? 'y' : 'ies'}
-        </div>
-      </div>
-      <div className="my-2">
-        <div
-          className="flex flex-row gap-2 px-3 py-1 gwfont text-lg sm:text-xl"
-          style={{
-            backgroundColor: 'rgba(96, 76, 52, 0.5)',
-          }}
-        >
-          <div className="w-1/3">User</div>
-          <div className="w-1/3 text-center">Score</div>
-          <div className="w-1/3 text-right">Time</div>
-        </div>
-        {games && games.games && games.games.length > 0 ? (
-          games.games.map((g, idx) => (
-            <div
-              key={`${label}-${g._id}`}
-              className="flex flex-row gap-2 px-3 py-1 text-sm sm:text-lg"
-              style={{
-                backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
-              }}
-            >
-              <Link href={`/user/${g.userId?.username}`}>
-                <a className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
-                  <Image src={avatar(g.userId?.image)} height={25} width={25} className="rounded-full" />{' '}
-                  {g.userId?.username}
-                </a>
-              </Link>
-              <div className="w-1/5 text-center flex flex-row gap-1 justify-center items-center">
-                {type === 'score' && idx < 3 ? (
-                  <FaMedal className="text-sm" style={{ color: medalColor[idx] }} />
-                ) : null}{' '}
-                {g.totalScore}
-              </div>
-              <div className="w-2/5 text-right">
-                {format(new Date(g.createdAt), 'HH:mm do MMM')}
-                <span className="hidden sm:inline-block ml-1">{format(new Date(g.createdAt), 'yyyy')}</span>
-              </div>
-            </div>
-          ))
-        ) : isLoading ? (
-          <div className="text-center">Loading...</div>
-        ) : (
-          <div className="text-center">No scores!</div>
-        )}
-      </div>
+function RankedGameBlock({ type, challenge }: { type: CHALLENGE; challenge: { name: string; prizes: any } }) {
+  return challenge ? (
+    <div className="flex flex-col gap-1 items-center">
+      <h3 className="gwfont text-2xl -mb-0.5">{type}</h3>
+      <PrizeList prizes={challenge.prizes} />
+      <Link href={`/game/${type}`}>
+        <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-1 items-center justify-center">
+          {challenge.name.replace(`${new Date().getFullYear()}`, '').trim()} <FaArrowRight />
+        </a>
+      </Link>
     </div>
-  )
+  ) : null
 }
 
 export async function getStaticProps() {

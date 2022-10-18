@@ -3,6 +3,7 @@ import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import format from 'date-fns/format'
 import Image from 'next/image'
+import Link from 'next/link'
 import { avatar } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 
@@ -35,7 +36,7 @@ export default function Index() {
               backgroundColor: 'rgba(96, 76, 52, 0.5)',
             }}
           >
-            <div className="w-1/3">User</div>
+            <div className="w-1/3">Game</div>
             <div className="w-1/3 text-center">Score</div>
             <div className="w-1/3 text-right">Time</div>
           </div>
@@ -47,7 +48,13 @@ export default function Index() {
                 backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
               }}
             >
-              <div className="w-1/3">{g.challenge?.name || 'Quick Game'}</div>
+              {g.challenge ? (
+                <Link href={`/leaderboard/${g.challenge?._id}`}>
+                  <a className="w-1/3">{g.challenge?.name || 'Quick Game'}</a>
+                </Link>
+              ) : (
+                <div className="w-1/3">Quick Game</div>
+              )}
               <div className="w-1/3 text-center">{g.totalScore}</div>
               <div className="w-1/3 text-right">
                 {format(new Date(g.createdAt), 'HH:mm do MMM')}

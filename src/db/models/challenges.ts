@@ -18,6 +18,7 @@ const itemSchema = new Schema<WithDoc<Challenge>, ItemModel>(
         ref: 'ChallengeOption',
       },
     ],
+    prizes: Schema.Types.Mixed,
     isDeleted: Boolean,
   },
   {

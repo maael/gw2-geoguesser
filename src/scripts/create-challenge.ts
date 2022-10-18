@@ -34,6 +34,9 @@ async function createDaily() {
       name: `Daily ${label}`,
       options,
       type: CHALLENGE.daily,
+      prizes: {
+        entry: '1g',
+      },
     })
   } catch (e) {
     console.warn('[daily:warn]', e)
@@ -50,6 +53,12 @@ async function createWeek() {
       name: `Week ${label} ${format(new Date(), 'yyyy')}`,
       options,
       type: CHALLENGE.weekly,
+      prizes: {
+        first: '5g',
+        second: '3g',
+        third: '2g',
+        entry: '2g',
+      },
     })
   } catch (e) {
     console.warn('[week:warn]', e)
@@ -66,6 +75,12 @@ async function createMonthly() {
       name: `Monthly ${label}`,
       options,
       type: CHALLENGE.monthly,
+      prizes: {
+        first: '10g',
+        second: '4g',
+        third: '2g',
+        entry: '5g',
+      },
     })
   } catch (e) {
     console.warn('[monthly:warn]', e)
