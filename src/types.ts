@@ -7,6 +7,7 @@ export interface User {
   username: string
   password: string
   image: string
+  gw2Account?: string
   isDeleted: boolean
   createdAt: string
   updatedAt: string

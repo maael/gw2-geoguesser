@@ -2,7 +2,7 @@ import { signIn } from 'next-auth/react'
 import * as React from 'react'
 import cls from 'classnames'
 import { useSession } from 'next-auth/react'
-import { FaSpinner } from 'react-icons/fa'
+import { FaInfoCircle, FaQuestionCircle, FaSpinner } from 'react-icons/fa'
 import { Fathom, EVENTS } from '~/components/hooks/useFathom'
 
 export default function Auth({ fathom }: { fathom: Fathom }) {
@@ -100,17 +100,18 @@ function RegisterForm({ fathom }: { fathom: Fathom }) {
   const [loading, setLoading] = React.useState(false)
   return (
     <form
-      className="flex flex-col gap-2"
+      className="flex flex-col gap-2 max-w-xs"
       onSubmit={async (e) => {
         try {
           e.preventDefault()
           const username = (e.currentTarget.elements.namedItem('username') as HTMLInputElement | null)?.value.trim()
           const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement | null)?.value.trim()
           const confirmPassword = (
-            e.currentTarget.elements.namedItem('password') as HTMLInputElement | null
+            e.currentTarget.elements.namedItem('confirmPassword') as HTMLInputElement | null
           )?.value.trim()
+          const gw2Account = (e.currentTarget.elements.namedItem('gw2Account') as HTMLInputElement | null)?.value.trim()
           if (password !== confirmPassword) {
-            setError("Passwords don't match")
+            setError("Passwords don't match, please check what you've entered")
             setLoading(false)
             return
           } else if (password && password.length < 8) {
@@ -123,6 +124,7 @@ function RegisterForm({ fathom }: { fathom: Fathom }) {
             username,
             password,
             confirmPassword,
+            gw2Account,
             type: 'register',
           })
           fathom.trackGoal(EVENTS.Register, 0)
@@ -151,6 +153,22 @@ function RegisterForm({ fathom }: { fathom: Fathom }) {
         />
       </label>
       <label className="flex flex-row gap-1 items-center justify-center">
+        <span className="w-1/2 px-2">GW2 Account</span>
+        <input
+          className="text-black px-2 py-1 rounded-md"
+          name="gw2Account"
+          type="text"
+          placeholder="XXXX.1234..."
+          pattern=".+\.[1-9]{4}"
+        />
+      </label>
+      <span className="flex flex-row gap-2 justify-center items-center text-xs text-opacity-85 text-white text-center max-w-xs -mt-0.5">
+        <FaInfoCircle /> XXXX.1234
+      </span>
+      <span className="flex flex-row gap-2 justify-center items-center text-xs text-opacity-85 text-white text-center max-w-xs -mt-1.5 mb-1">
+        <FaQuestionCircle /> This is optional - used to send ranked games rewards
+      </span>
+      <label className="flex flex-row gap-1 items-center justify-center">
         <span className="w-1/2 px-2">Password</span>
         <input
           className="text-black px-2 py-1 rounded-md"
@@ -161,6 +179,9 @@ function RegisterForm({ fathom }: { fathom: Fathom }) {
           minLength={8}
         />
       </label>
+      <span className="flex flex-row gap-2 justify-center items-center text-xs text-opacity-85 text-white text-center max-w-xs -mt-1 mb-1">
+        <FaInfoCircle /> Minimum length 8 characters
+      </span>
       <label className="flex flex-row gap-1 items-center justify-center">
         <span className="w-1/2 px-2">Repeat Password</span>
         <input

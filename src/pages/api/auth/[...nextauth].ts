@@ -12,9 +12,12 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, _req) {
-        const expandedCredentials = credentials as typeof credentials & { type: 'register' | 'signin' }
+        const expandedCredentials = credentials as typeof credentials & {
+          type: 'register' | 'signin'
+          gw2Account: string
+        }
         if (expandedCredentials?.type === 'register') {
-          return registerFlow(credentials)
+          return registerFlow(expandedCredentials)
         } else {
           return signinFlow(credentials)
         }
@@ -44,7 +47,9 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
   },
 }
 
-async function registerFlow(credentials: Record<'username' | 'password', string> | undefined): Promise<User | null> {
+async function registerFlow(
+  credentials: Record<'username' | 'password' | 'gw2Account', string> | undefined
+): Promise<User | null> {
   return new Promise((resolve, reject) => {
     if (!credentials) return reject(new Error('Credentials required'))
     if (credentials.password.length < 8) return reject(new Error('Password must be more than 8 characters'))
@@ -53,6 +58,7 @@ async function registerFlow(credentials: Record<'username' | 'password', string>
     const newUser = new UserModel({
       username: credentials.username,
       password: credentials.password,
+      gw2Account: credentials.gw2Account,
       image: getRandomArrayItem(avatars),
     })
     newUser.save((err) => {

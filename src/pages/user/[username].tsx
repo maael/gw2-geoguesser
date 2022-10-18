@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import format from 'date-fns/format'
 import Image from 'next/image'
 import { avatar } from '~/util'
+import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 
 export default function Index() {
   const { query } = useRouter()
@@ -23,6 +24,7 @@ export default function Index() {
           <Image src={avatar(user.image)} layout="fill" className="rounded-full drop-shadow-md" />
         </div>
         <div className="gwfont text-4xl sm:text-6xl mb-3">{user.username}</div>
+        <AccountNamePrompt />
         <div
           className="flex flex-col justify-center bg-brown-brushed px-6 pt-4 pb-6 drop-shadow-lg w-full text-xl"
           style={{ minHeight: '20vh' }}

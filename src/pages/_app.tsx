@@ -3,15 +3,12 @@ import Head from 'next/head'
 import { AppProps } from 'next/app'
 import { DefaultSeo } from 'next-seo'
 import { SessionProvider } from 'next-auth/react'
-import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query'
+import { QueryClientProvider, Hydrate } from '@tanstack/react-query'
 import NextProgress from 'next-progress'
 import useFathom from '~/components/hooks/useFathom'
 import SEO from '~/../next-seo.config'
 import Header from '~/components/primitives/Header'
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { refetchOnWindowFocus: false, refetchInterval: false } },
-})
+import { queryClient } from '~/util'
 
 function App({
   Component,

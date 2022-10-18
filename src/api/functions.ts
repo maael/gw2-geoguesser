@@ -1,11 +1,11 @@
 import { unstable_getServerSession } from 'next-auth/next'
+import { FilterQuery } from 'mongoose'
 import { ApiHandlers, CHALLENGE, WithDoc, Challenge as TChallenge, Game as TGame } from '~/types'
 import { authOptions } from '~/pages/api/auth/[...nextauth]'
 import Game from '~/db/models/games'
 import Challenge from '~/db/models/challenges'
 import ChallengeOption from '~/db/models/challengeOption'
 import User from '~/db/models/user'
-import { FilterQuery } from 'mongoose'
 
 const handlers: ApiHandlers = {
   game: {
@@ -111,6 +111,27 @@ const handlers: ApiHandlers = {
           createdAt: user.createdAt,
           games: userGames,
         }
+      },
+      many: async ({ req, res }) => {
+        const session = await unstable_getServerSession(req, res, authOptions)
+        if (!session) {
+          throw new Error('Required session')
+        }
+        return User.findById((session.user as any).id, { gw2Account: 1 }) as any
+      },
+    },
+    put: {
+      many: async ({ body, req, res }) => {
+        const session = await unstable_getServerSession(req, res, authOptions)
+        if (!session) {
+          throw new Error('Required session')
+        }
+        await User.updateOne(
+          { _id: (session.user as any).id },
+          { gw2Account: body.gw2Account },
+          { projection: { gw2Account: 1 } }
+        )
+        return { gw2Account: body.gw2Account } as any
       },
     },
   },

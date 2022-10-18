@@ -1,4 +1,9 @@
+import { QueryClient } from '@tanstack/react-query'
 import { CHALLENGE } from './types'
+
+export const queryClient = new QueryClient({
+  defaultOptions: { queries: { refetchOnWindowFocus: false, refetchInterval: false } },
+})
 
 export const ChallengeOptionsMap: Record<CHALLENGE, { rounds: number }> = {
   [CHALLENGE.random]: {
