@@ -41,7 +41,7 @@ function sumScore(game: Game) {
 interface TGame {
   _id: undefined | string
   name?: string
-  options: any
+  options: any[]
   error: string
 }
 
@@ -55,6 +55,10 @@ function useGameOptions(gameType: CHALLENGE | null, setStarted: React.Dispatch<R
     try {
       setLoading(true)
       game = await fetch(`/api/internal/play/${gameType}`).then((r) => r.json())
+      game?.options.forEach((o) => {
+        const img = new global.Image()
+        img.src = o.image
+      })
       setGame(game!)
       setStarted(false)
     } catch (e) {
@@ -251,7 +255,7 @@ function GameScreen({
                 <div key={g._id} className="flex flex-row items-center gap-1 bg-black-brushed px-3 md:px-10 py-2">
                   <div className="pr-2 md:pr-10">{i + 1}.</div>
                   <div className="max-h-20 h-full aspect-video relative">
-                    <Image src={g.image} layout="fill" />
+                    <Image src={g.image} layout="fill" priority />
                   </div>
                   <div className="text-right flex-1">Score: {g.score}</div>
                 </div>
