@@ -5,7 +5,6 @@ const url = 'https://gw2-geoguesser.mael.tech'
 export default {
   title,
   description,
-  canonical: url,
   openGraph: {
     title,
     description,
