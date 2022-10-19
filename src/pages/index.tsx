@@ -77,6 +77,9 @@ export default function Index() {
   return (
     <>
       <div className="flex flex-col justify-center items-center text-white">
+        <div className="bg-red-700 rounded-md drop-shadow-lg text-3xl px-5 py-1 max-w-xl text-center mt-3">
+          Due to high load, services are down - we expect to be back online at 21:30 BST/13:30 PT, sorry about this!
+        </div>
         <div className="flex flex-col gap-7 justify-center items-center max-w-5xl w-full sm:text-lg px-2">
           <div className="text-2xl sm:text-4xl text-center mt-3 sm:mt-7 gwfont">Think you know Tyria?</div>
           <div className="flex flex-col justify-center items-center gap-2 w-full px-2 my-1">
@@ -193,14 +196,20 @@ export default function Index() {
   )
 }
 
-function RankedGameBlock({ type, challenge }: { type: CHALLENGE; challenge: { name: string; prizes: any } }) {
-  return challenge ? (
+function RankedGameBlock({
+  type,
+  challenge,
+}: {
+  type: CHALLENGE
+  challenge: { error?: string; name: string; prizes: any }
+}) {
+  return challenge && !challenge.error ? (
     <div className="flex flex-col gap-1 items-center">
       <h3 className="gwfont text-2xl -mb-0.5">{type}</h3>
-      <PrizeList prizes={challenge.prizes} />
+      <PrizeList prizes={challenge?.prizes} />
       <Link href={`/game/${type}`}>
         <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-1 items-center justify-center">
-          {challenge.name.replace(`${new Date().getFullYear()}`, '').trim()} <FaArrowRight />
+          {challenge?.name.replace(`${new Date().getFullYear()}`, '').trim()} <FaArrowRight />
         </a>
       </Link>
     </div>
