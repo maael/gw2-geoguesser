@@ -1,10 +1,21 @@
 import nodemailer from 'nodemailer'
+import subtract from 'date-fns/subHours'
 import { Challenge, WithDoc } from '~/types'
+import User from '../../db/models/user'
+import Game from '../../db/models/games'
 
 interface ChallengeResult {
   newChallenge: WithDoc<Challenge> | null
   existingChallenge: WithDoc<Challenge> | null
   winners: Winners | null
+}
+
+async function getStats() {
+  const [users, games] = await Promise.all([
+    User.find({ createdAt: { $gte: subtract(new Date(), 24) } }).count(),
+    Game.find({ createdAt: { $gte: subtract(new Date(), 24) } }).count(),
+  ])
+  return { users, games }
 }
 
 export interface Winner {
@@ -24,12 +35,18 @@ export async function sendChallengeEmail(daily: ChallengeResult, weekly: Challen
     },
   })
 
+  const stats = await getStats()
+
   await client.sendMail({
     from: 'gw2geoguesser-no-reply@gmail.com',
     to: 'matt.a.elphy@gmail.com',
     subject: '🎉 GW2 Geoguesser Challenges and Winners',
     html: `
       <h1>Gw2 Geoguesser Challenges and Winners</h1>
+      <h2>New users in last 24 hours</h2>
+      <p>${stats.users}</p>
+      <h2>New games in last 24 hours</h2>
+      <p>${stats.games}</p>
       <h2>New Challenges</h2>
       ${challengeEntry('new', 'daily', daily.newChallenge)}
       ${challengeEntry('new', 'weekly', weekly.newChallenge)}
