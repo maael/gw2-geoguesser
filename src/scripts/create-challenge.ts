@@ -3,18 +3,20 @@ import format from 'date-fns/format'
 import dbConnect from '../db/mongo'
 import Challenge from '../db/models/challenges'
 import ChallengeOption from '../db/models/challengeOption'
-import { CHALLENGE } from '../types'
+import { Challenge as TChallenge, CHALLENGE, WithDoc } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-extra-semi
+import { sendChallengeEmail } from './util/sendEmail'
 ;(async () => {
   console.info('[start]')
   await dbConnect()
   const existing = await Challenge.count()
   console.info({ existing })
-  await createDaily()
-  await createWeek()
-  await createMonthly()
+  const daily = await createDaily()
+  const weekly = await createWeek()
+  const monthly = await createMonthly()
   const after = await Challenge.count()
+  await sendChallengeEmail(daily, weekly, monthly)
   console.info({ after })
   console.info('[end]')
 })()
@@ -25,12 +27,17 @@ import { CHALLENGE } from '../types'
   .finally(() => process.exit(0))
 
 async function createDaily() {
+  let existingChallenge: WithDoc<TChallenge> | null = null
+  let newChallenge: WithDoc<TChallenge> | null = null
   try {
+    existingChallenge = (
+      await Challenge.find({ type: CHALLENGE.daily }).sort({ createdAt: 'desc' }).lean()
+    )[0] as WithDoc<TChallenge>
     const options = await (
       await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 10 } }, { $project: { _id: 1 } }])
     ).map(({ _id }) => _id)
     const label = format(new Date(), 'do MMM yyyy')
-    await Challenge.create({
+    newChallenge = await Challenge.create({
       name: `Daily ${label}`,
       options,
       type: CHALLENGE.daily,
@@ -39,17 +46,23 @@ async function createDaily() {
       },
     })
   } catch (e) {
-    console.warn('[daily:warn]', e)
+    console.warn('[daily:warn]', e.message)
   }
+  return { existingChallenge, newChallenge }
 }
 
 async function createWeek() {
+  let existingChallenge: WithDoc<TChallenge> | null = null
+  let newChallenge: WithDoc<TChallenge> | null = null
   try {
+    existingChallenge = (
+      await Challenge.find({ type: CHALLENGE.weekly }).sort({ createdAt: 'desc' }).lean()
+    )[0] as WithDoc<TChallenge>
     const options = await (
       await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 10 } }, { $project: { _id: 1 } }])
     ).map(({ _id }) => _id)
     const label = getWeek(new Date(), { weekStartsOn: 1 })
-    await Challenge.create({
+    newChallenge = await Challenge.create({
       name: `Week ${label} ${format(new Date(), 'yyyy')}`,
       options,
       type: CHALLENGE.weekly,
@@ -61,17 +74,23 @@ async function createWeek() {
       },
     })
   } catch (e) {
-    console.warn('[week:warn]', e)
+    console.warn('[week:warn]', e.message)
   }
+  return { existingChallenge, newChallenge }
 }
 
 async function createMonthly() {
+  let existingChallenge: WithDoc<TChallenge> | null = null
+  let newChallenge: WithDoc<TChallenge> | null = null
   try {
+    existingChallenge = (
+      await Challenge.find({ type: CHALLENGE.monthly }).sort({ createdAt: 'desc' }).lean()
+    )[0] as WithDoc<TChallenge>
     const options = await (
       await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 15 } }, { $project: { _id: 1 } }])
     ).map(({ _id }) => _id)
     const label = format(new Date(), 'MMMM yyyy')
-    await Challenge.create({
+    newChallenge = await Challenge.create({
       name: `Monthly ${label}`,
       options,
       type: CHALLENGE.monthly,
@@ -83,6 +102,7 @@ async function createMonthly() {
       },
     })
   } catch (e) {
-    console.warn('[monthly:warn]', e)
+    console.warn('[monthly:warn]', e.message)
   }
+  return { existingChallenge, newChallenge }
 }
