@@ -32,7 +32,7 @@ const getOneGame: ApiOneHandler = async ({ id, sort, limit = 10 }) => {
   }
   const filter = Game.find(filterObj).populate('userId', 'username image')
   if (sort === 'score') {
-    filter.sort({ totalScore: 'desc' })
+    filter.sort({ totalScore: 'desc', createdAt: 'asc' })
   } else if (sort === 'time') {
     filter.sort({ createdAt: 'desc' })
   }
