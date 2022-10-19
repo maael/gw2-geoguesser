@@ -159,7 +159,7 @@ function RegisterForm({ fathom }: { fathom: Fathom }) {
           name="gw2Account"
           type="text"
           placeholder="XXXX.1234..."
-          pattern=".+\.[1-9]{4}"
+          pattern=".+\.[0-9]{4}"
         />
       </label>
       <span className="flex flex-row gap-2 justify-center items-center text-xs text-opacity-85 text-white text-center max-w-xs -mt-0.5">

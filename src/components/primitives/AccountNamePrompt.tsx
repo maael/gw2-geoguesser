@@ -42,13 +42,14 @@ export default function AccountNamePrompt() {
           placeholder="XXXX.1234..."
           name="gw2Account"
           defaultValue={data?.gw2Account}
+          pattern=".+\.[0-9]{4}"
         />
         <button
           disabled={isSaving || isLoading}
           className="gwfont flex flex-row justify-center items-center gap-2 bg-black-brushed px-5 py-2 rounded-md hover:scale-110 transition-transform"
         >
           {isSaving || isLoading ? (
-            <FaSpinner />
+            <FaSpinner className="animate-spin" />
           ) : (
             <>
               <FaSave />
