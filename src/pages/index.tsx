@@ -77,9 +77,6 @@ export default function Index() {
   return (
     <>
       <div className="flex flex-col justify-center items-center text-white">
-        <div className="bg-red-700 rounded-md drop-shadow-lg text-3xl px-5 py-1 max-w-xl text-center mt-3">
-          Due to high load, services are down - we expect to be back online at 21:30 BST/13:30 PT, sorry about this!
-        </div>
         <div className="flex flex-col gap-7 justify-center items-center max-w-5xl w-full sm:text-lg px-2">
           <div className="text-2xl sm:text-4xl text-center mt-3 sm:mt-7 gwfont">Think you know Tyria?</div>
           <div className="flex flex-col justify-center items-center gap-2 w-full px-2 my-1">

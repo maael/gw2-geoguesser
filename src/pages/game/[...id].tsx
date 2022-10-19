@@ -181,9 +181,6 @@ function AttemptsError({ error }: { error: string }) {
 function DefaultError({ error }: { error: string }) {
   return (
     <>
-      <div className="bg-red-700 rounded-md drop-shadow-lg text-3xl px-5 py-1 max-w-xl text-center mt-3 mx-auto text-white">
-        Due to high load, services are down - we expect to be back online at 21:30 BST/13:30 PT, sorry about this!
-      </div>
       <div className="text-white text-center text-2xl mt-5 h-full">{error}</div>
     </>
   )
