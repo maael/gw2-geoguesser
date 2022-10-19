@@ -229,7 +229,7 @@ function GameScreen({
       />
       {lastItem.score !== null && lastItem.score !== undefined && game.length <= maxRounds ? (
         <button
-          className="gwfont bg-brown-brushed text-white hover:scale-125 transition-transform flex flex-col absolute bottom-3 md:bottom-10 px-10 py-2 text-2xl drop-shadow-md rounded-full"
+          className="gwfont bg-brown-brushed text-white left-auto sm:left-2 lg:left-auto hover:scale-125 transition-transform flex flex-col absolute bottom-1.5 sm:bottom-0.5 lg:bottom-3 lg:bottom-10 px-10 py-2 text-2xl lg:text-5xl drop-shadow-md rounded-full"
           onClick={() => {
             setGame((g) => g.concat(options[game.length % options.length]))
           }}
@@ -237,7 +237,7 @@ function GameScreen({
           Next
         </button>
       ) : null}
-      <div className="absolute bottom-2 lg:bottom-10 left-2 sm:left-1/2 lg:left-auto right-4 md:right-10 lg:w-1/2 aspect-square sm:aspect-video scale-100 lg:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
+      <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-2 sm:left-1/2 lg:left-auto right-4 md:right-10 lg:w-1/2 aspect-square sm:aspect-video scale-100 lg:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map
           guessId={lastItem?._id}
           guessLocation={lastItem?.location}
