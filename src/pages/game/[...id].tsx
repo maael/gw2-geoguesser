@@ -62,7 +62,7 @@ function useGameOptions(gameType: CHALLENGE | null, setStarted: React.Dispatch<R
         img.src = o.image
       })
       setGame(game!)
-      setStarted(true)
+      setStarted(false)
     } catch (e) {
       setError(e)
     } finally {
@@ -179,7 +179,14 @@ function AttemptsError({ error }: { error: string }) {
 }
 
 function DefaultError({ error }: { error: string }) {
-  return <div className="text-white text-center text-2xl mt-5 h-full">{error}</div>
+  return (
+    <>
+      <div className="bg-red-700 rounded-md drop-shadow-lg text-3xl px-5 py-1 max-w-xl text-center mt-3 mx-auto text-white">
+        Due to high load, services are down - we expect to be back online at 21:30 BST/13:30 PT, sorry about this!
+      </div>
+      <div className="text-white text-center text-2xl mt-5 h-full">{error}</div>
+    </>
+  )
 }
 function ErrorScreen({ error }: { error: string }) {
   const type = messageToTypeMap[error]
@@ -206,7 +213,7 @@ function GameScreen({
   const lastItem = game[game.length - 1]
   const total = sumScore(game)
   function isFinished(g: Game) {
-    return g.length === maxRounds && g.every((gi) => typeof gi.score === 'number')
+    return g.length === maxRounds && g.every((gi) => typeof gi?.score === 'number')
   }
   React.useEffect(() => {
     fathom.trackGoal(EVENTS.StartGame, 0)
@@ -227,7 +234,7 @@ function GameScreen({
         className="flex flex-row w-full h-full justify-center items-center bg-contain bg-no-repeat bg-top sm:bg-left lg:bg-center"
         style={{ backgroundImage: `url(${lastItem?.image})` }}
       />
-      {lastItem.score !== null && lastItem.score !== undefined && game.length <= maxRounds ? (
+      {lastItem?.score !== null && lastItem?.score !== undefined && game.length <= maxRounds ? (
         <button
           className="gwfont bg-brown-brushed text-white left-auto sm:left-2 lg:left-auto hover:scale-125 transition-transform flex flex-col absolute bottom-1.5 sm:bottom-0.5 lg:bottom-3 lg:bottom-10 px-10 py-2 text-2xl lg:text-5xl drop-shadow-md rounded-full"
           onClick={() => {
