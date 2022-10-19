@@ -1,54 +1,54 @@
 import { unstable_getServerSession } from 'next-auth/next'
 import { FilterQuery } from 'mongoose'
-import { ApiHandlers, CHALLENGE, WithDoc, Challenge as TChallenge, Game as TGame } from '~/types'
+import { ApiHandlers, CHALLENGE, WithDoc, Challenge as TChallenge, Game as TGame, ApiOneHandler } from '~/types'
 import { authOptions } from '~/pages/api/auth/[...nextauth]'
 import Game from '~/db/models/games'
 import Challenge from '~/db/models/challenges'
 import ChallengeOption from '~/db/models/challengeOption'
 import User from '~/db/models/user'
 
+const getOneGame: ApiOneHandler = async ({ id, sort, limit = 10 }) => {
+  let challengeId = id
+  let challenge: WithDoc<TChallenge> | undefined | null = undefined
+  if (challengeId !== CHALLENGE.random) {
+    const filterObject: any = {}
+    if (challengeId === CHALLENGE.daily || challengeId === CHALLENGE.weekly || challengeId === CHALLENGE.monthly) {
+      filterObject.type = id
+    } else {
+      filterObject._id = id
+    }
+    challenge = await Challenge.findOne(filterObject, { _id: 1, name: 1, type: 1, createdAt: 1 }).sort({
+      createdAt: 'desc',
+    })
+    challengeId = challenge?._id
+  }
+  if (!challengeId) {
+    throw new Error('Required challenge ID')
+  }
+  const filterObj: FilterQuery<WithDoc<TGame>> = { challenge: challengeId }
+  if (challengeId === CHALLENGE.random) {
+    delete filterObj.challenge
+    filterObj.challengeType = CHALLENGE.random
+  }
+  const filter = Game.find(filterObj).populate('userId', 'username image')
+  if (sort === 'score') {
+    filter.sort({ totalScore: 'desc' })
+  } else if (sort === 'time') {
+    filter.sort({ createdAt: 'desc' })
+  }
+  const [games, totalGames] = await Promise.all([filter.clone().limit(limit).lean().exec(), filter.clone().count()])
+  return { challenge, games, totalGames }
+}
+
+const getOneChallenge: ApiOneHandler = async ({ id }) => {
+  if (id === 'random') return null
+  return Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+}
+
 const handlers: ApiHandlers = {
   game: {
     get: {
-      one: async ({ id, sort, limit = 10 }) => {
-        let challengeId = id
-        let challenge: WithDoc<TChallenge> | undefined | null = undefined
-        if (challengeId !== CHALLENGE.random) {
-          const filterObject: any = {}
-          if (
-            challengeId === CHALLENGE.daily ||
-            challengeId === CHALLENGE.weekly ||
-            challengeId === CHALLENGE.monthly
-          ) {
-            filterObject.type = id
-          } else {
-            filterObject._id = id
-          }
-          challenge = await Challenge.findOne(filterObject, { _id: 1, name: 1, type: 1, createdAt: 1 }).sort({
-            createdAt: 'desc',
-          })
-          challengeId = challenge?._id
-        }
-        if (!challengeId) {
-          throw new Error('Required challenge ID')
-        }
-        const filterObj: FilterQuery<WithDoc<TGame>> = { challenge: challengeId }
-        if (challengeId === CHALLENGE.random) {
-          delete filterObj.challenge
-          filterObj.challengeType = CHALLENGE.random
-        }
-        const filter = Game.find(filterObj).populate('userId', 'username image')
-        if (sort === 'score') {
-          filter.sort({ totalScore: 'desc' })
-        } else if (sort === 'time') {
-          filter.sort({ createdAt: 'desc' })
-        }
-        const [games, totalGames] = await Promise.all([
-          filter.clone().limit(limit).lean().exec(),
-          filter.clone().count(),
-        ])
-        return { challenge, games, totalGames }
-      },
+      one: getOneGame,
       many: async ({ req, res }) => {
         const session = await unstable_getServerSession(req, res, authOptions)
         if (!session) {
@@ -78,9 +78,47 @@ const handlers: ApiHandlers = {
   },
   challenge: {
     get: {
-      one: async ({ id }) => {
-        if (id === 'random') return null
-        return Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+      one: getOneChallenge,
+    },
+  },
+  home_info: {
+    get: {
+      many: async () => {
+        const [
+          recentDailyGames,
+          highDailyGames,
+          recentWeeklyGames,
+          highWeeklyGames,
+          recentMonthlyGames,
+          highMonthlyGames,
+          recentRandomGames,
+          daily,
+          weekly,
+          monthly,
+        ] = await Promise.all([
+          getOneGame({ id: 'daily', sort: 'time', limit: 10, req: {} as any, res: {} as any }),
+          getOneGame({ id: 'daily', sort: 'score', limit: 10, req: {} as any, res: {} as any }),
+          getOneGame({ id: 'weekly', sort: 'time', limit: 10, req: {} as any, res: {} as any }),
+          getOneGame({ id: 'weekly', sort: 'score', limit: 10, req: {} as any, res: {} as any }),
+          getOneGame({ id: 'monthly', sort: 'time', limit: 10, req: {} as any, res: {} as any }),
+          getOneGame({ id: 'monthly', sort: 'score', limit: 10, req: {} as any, res: {} as any }),
+          getOneGame({ id: 'random', sort: 'time', limit: 10, req: {} as any, res: {} as any }),
+          getOneChallenge({ id: 'daily', req: {} as any, res: {} as any }),
+          getOneChallenge({ id: 'weekly', req: {} as any, res: {} as any }),
+          getOneChallenge({ id: 'monthly', req: {} as any, res: {} as any }),
+        ])
+        return {
+          recentDailyGames,
+          highDailyGames,
+          recentWeeklyGames,
+          highWeeklyGames,
+          recentMonthlyGames,
+          highMonthlyGames,
+          recentRandomGames,
+          daily,
+          weekly,
+          monthly,
+        } as any
       },
     },
   },

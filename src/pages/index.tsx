@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import * as React from 'react'
-import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
+import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query'
 import getDaysInMonth from 'date-fns/getDaysInMonth'
 import Image from 'next/image'
 import { FaArrowRight, FaBeer, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
@@ -22,58 +22,21 @@ function sum(obj: any, multiplier: number) {
 }
 
 export default function Index() {
-  const [
-    { data: daily },
-    { data: weekly },
-    { data: monthly },
-    { data: recentDailyGames, isLoading: recentDailyGamesLoading },
-    { data: highDailyGames, isLoading: highDailyGamesLoading },
-    { data: recentWeeklyGames, isLoading: recentWeeklyGamesLoading },
-    { data: highWeeklyGames, isLoading: highWeeklyGamesLoading },
-    { data: recentMonthlyGames, isLoading: recentMonthlyGamesLoading },
-    { data: highMonthlyGames, isLoading: highMonthlyGamesLoading },
-    { data: recentRandomGames, isLoading: recentRandomGamesLoading },
-  ] = useQueries({
-    queries: [
-      { queryKey: ['daily-challenge'], queryFn: () => fetch('/api/internal/challenge/daily').then((r) => r.json()) },
-      {
-        queryKey: ['weekly-challenge'],
-        queryFn: () => fetch('/api/internal/challenge/weekly').then((r) => r.json()),
-      },
-      {
-        queryKey: ['monthly-challenge'],
-        queryFn: () => fetch('/api/internal/challenge/monthly').then((r) => r.json()),
-      },
-      {
-        queryKey: ['daily-games-recent'],
-        queryFn: () => fetch('/api/internal/game/daily?sort=time&limit=10').then((r) => r.json()),
-      },
-      {
-        queryKey: ['daily-games-score'],
-        queryFn: () => fetch('/api/internal/game/daily?sort=score&limit=10').then((r) => r.json()),
-      },
-      {
-        queryKey: ['weekly-games-recent'],
-        queryFn: () => fetch('/api/internal/game/weekly?sort=time&limit=10').then((r) => r.json()),
-      },
-      {
-        queryKey: ['weekly-games-score'],
-        queryFn: () => fetch('/api/internal/game/weekly?sort=score&limit=10').then((r) => r.json()),
-      },
-      {
-        queryKey: ['monthly-games-recent'],
-        queryFn: () => fetch('/api/internal/game/monthly?sort=time&limit=10').then((r) => r.json()),
-      },
-      {
-        queryKey: ['monthly-games-score'],
-        queryFn: () => fetch('/api/internal/game/monthly?sort=score&limit=10').then((r) => r.json()),
-      },
-      {
-        queryKey: ['random-games-recent'],
-        queryFn: () => fetch('/api/internal/game/random?sort=time&limit=10').then((r) => r.json()),
-      },
-    ],
-  })
+  const {
+    data: {
+      daily,
+      weekly,
+      monthly,
+      recentDailyGames,
+      highDailyGames,
+      recentWeeklyGames,
+      highWeeklyGames,
+      recentMonthlyGames,
+      highMonthlyGames,
+      recentRandomGames,
+    },
+    isLoading,
+  } = useQuery(['home-info'], () => fetch('/api/internal/home_info').then((r) => r.json()))
   return (
     <>
       <div className="flex flex-col justify-center items-center text-white">
@@ -113,54 +76,19 @@ export default function Index() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-            <GamesBlock
-              type="time"
-              games={recentRandomGames}
-              isLoading={recentRandomGamesLoading}
-              label={'Recent Quick Games'}
-            />
+            <GamesBlock type="time" games={recentRandomGames} isLoading={isLoading} label={'Recent Quick Games'} />
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-            <GamesBlock
-              type="time"
-              games={recentDailyGames}
-              isLoading={recentDailyGamesLoading}
-              label={'Recent Daily'}
-            />
-            <GamesBlock
-              type="score"
-              games={highDailyGames}
-              isLoading={highDailyGamesLoading}
-              label={'High Score Daily'}
-            />
+            <GamesBlock type="time" games={recentDailyGames} isLoading={isLoading} label={'Recent Daily'} />
+            <GamesBlock type="score" games={highDailyGames} isLoading={isLoading} label={'High Score Daily'} />
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-            <GamesBlock
-              type="time"
-              games={recentWeeklyGames}
-              isLoading={recentWeeklyGamesLoading}
-              label={'Recent Weekly'}
-            />
-            <GamesBlock
-              type="score"
-              games={highWeeklyGames}
-              isLoading={highWeeklyGamesLoading}
-              label={'High Score Weekly'}
-            />
+            <GamesBlock type="time" games={recentWeeklyGames} isLoading={isLoading} label={'Recent Weekly'} />
+            <GamesBlock type="score" games={highWeeklyGames} isLoading={isLoading} label={'High Score Weekly'} />
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
-            <GamesBlock
-              type="time"
-              games={recentMonthlyGames}
-              isLoading={recentMonthlyGamesLoading}
-              label={'Recent Monthly'}
-            />
-            <GamesBlock
-              type="score"
-              games={highMonthlyGames}
-              isLoading={highMonthlyGamesLoading}
-              label={'High Score Monthly'}
-            />
+            <GamesBlock type="time" games={recentMonthlyGames} isLoading={isLoading} label={'Recent Monthly'} />
+            <GamesBlock type="score" games={highMonthlyGames} isLoading={isLoading} label={'High Score Monthly'} />
           </div>
         </div>
       </div>
@@ -220,38 +148,7 @@ export async function getStaticProps() {
 
   console.info('[revalidate]')
 
-  await Promise.all([
-    queryClient.prefetchQuery(['daily-challenge'], () =>
-      fetch(`${rootUrl}/api/internal/challenge/daily`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['weekly-challenge'], () =>
-      fetch(`${rootUrl}/api/internal/challenge/weekly`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['monthly-challenge'], () =>
-      fetch(`${rootUrl}/api/internal/challenge/monthly`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['daily-games-recent'], () =>
-      fetch(`${rootUrl}/api/internal/game/daily?sort=time&limit=10`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['daily-games-score'], () =>
-      fetch(`${rootUrl}/api/internal/game/daily?sort=score&limit=10`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['weekly-games-recent'], () =>
-      fetch(`${rootUrl}/api/internal/game/weekly?sort=time&limit=10`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['weekly-games-score'], () =>
-      fetch(`${rootUrl}/api/internal/game/weekly?sort=score&limit=10`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['monthly-games-recent'], () =>
-      fetch(`${rootUrl}/api/internal/game/monthly?sort=time&limit=10`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['monthly-games-score'], () =>
-      fetch(`${rootUrl}/api/internal/game/monthly?sort=score&limit=10`).then((r) => r.json())
-    ),
-    queryClient.prefetchQuery(['random-games-recent'], () =>
-      fetch(`${rootUrl}/api/internal/game/random?sort=time&limit=10`).then((r) => r.json())
-    ),
-  ])
+  await queryClient.prefetchQuery(['home-info'], () => fetch(`${rootUrl}/api/internal/home_info`).then((r) => r.json()))
 
   return {
     props: {
