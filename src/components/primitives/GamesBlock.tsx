@@ -67,11 +67,11 @@ export default function GamesBlock({
                     className={cls('rounded-full', { 'rainbow-border thin-border': g.userId?.style === 'rainbow' })}
                   />{' '}
                   <span
-                    className={cls({
+                    className={cls('overflow-ellipsis overflow-hidden', {
                       'rainbow-text': g.userId?.style === 'rainbow',
                     })}
                   >
-                    {g.userId?.username}
+                    {`${g.userId?.username}`?.split('@')[0]?.trim()}
                   </span>
                 </a>
               </Link>
