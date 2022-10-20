@@ -46,7 +46,11 @@ async function getWinners(type: CHALLENGE, challengeId: string) {
   }
   const gameQuery = { challengeType: type, challenge: challengeId }
   const [winnerGames, entryLottery] = await Promise.all([
-    Game.find(gameQuery).limit(3).populate('userId', 'username image gw2Account').sort({ totalScore: 'desc' }).lean(),
+    Game.find(gameQuery)
+      .limit(3)
+      .populate('userId', 'username image gw2Account')
+      .sort({ totalScore: 'desc', createdAt: 'asc' })
+      .lean(),
     Game.aggregate([
       { $match: gameQuery },
       { $sample: { size: 1 } },
