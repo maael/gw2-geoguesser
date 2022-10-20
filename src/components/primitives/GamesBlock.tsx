@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
 import cls from 'classnames'
-import { avatar, medalColor } from '~/util'
+import { avatar, convertMsToMinutesSeconds, medalColor } from '~/util'
 
 export default function GamesBlock({
   games,
@@ -80,7 +80,7 @@ export default function GamesBlock({
               </Link>
               <div
                 className="w-1/5 text-center flex flex-row gap-1 justify-center items-center"
-                title={`Time: ${g.timeMs}`}
+                title={`Time: ${g.timeMs ? convertMsToMinutesSeconds(g.timeMs) : '??:??'}`}
               >
                 {type === 'score' && idx < 3 ? (
                   <FaMedal className="text-sm" style={{ color: medalColor[idx] }} />
