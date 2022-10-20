@@ -292,7 +292,7 @@ function GameScreen({
       suppressHydrationWarning
       className="bg-black-brushed bg-gray-900 flex flex-col justify-center items-center flex-1 w-full relative"
     >
-      <div className="bg-brown-brushed flex flex-col sm:flex-row lg:flex-col gap-0 sm:gap-10 lg:gap-0 md:absolute top-1 right-0 text-white px-8 lg:px-12 py-2 bg-black text-base lg:text-2xl rounded-full my-4 md:my-0 mx-2 md:rounded-l-full drop-shadow-xl">
+      <div className="bg-brown-brushed flex flex-row lg:flex-col gap-4 sm:gap-10 lg:gap-0 md:absolute top-1 right-0 text-white px-8 lg:px-12 py-2 bg-black text-base lg:text-2xl rounded-full my-4 md:my-0 mx-2 md:rounded-l-full drop-shadow-xl">
         <div>
           Round: {game.length}/{maxRounds}
         </div>
@@ -307,7 +307,7 @@ function GameScreen({
       />
       {lastItem?.score !== null && lastItem?.score !== undefined && game.length <= maxRounds ? (
         <button
-          className="gwfont bg-brown-brushed text-white left-auto sm:left-2 lg:left-auto hover:scale-125 transition-transform flex flex-col absolute bottom-1.5 sm:bottom-0.5 lg:bottom-3 lg:bottom-10 px-10 py-2 text-2xl lg:text-5xl drop-shadow-md rounded-full"
+          className="gwfont bg-brown-brushed text-white left-auto sm:left-2 lg:left-auto lg:hover:scale-125 transition-transform flex flex-col absolute bottom-1.5 sm:bottom-0.5 lg:bottom-10 px-10 py-2 text-2xl lg:text-5xl drop-shadow-md rounded-full"
           onClick={() => {
             if (currentGameIsFinished) {
               setShowFinished(true)
@@ -319,7 +319,7 @@ function GameScreen({
           {currentGameIsFinished ? 'Show Results' : 'Next'}
         </button>
       ) : null}
-      <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-0 sm:left-1/2 lg:left-auto right-0 md:right-10 lg:w-1/2 aspect-video scale-100 lg:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
+      <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-0 sm:left-1/2 lg:left-auto right-0 md:right-10 lg:w-1/2 aspect-video scale-100 lg:scale-50 lg:hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map
           guessId={lastItem?._id}
           guessLocation={lastItem?.location}

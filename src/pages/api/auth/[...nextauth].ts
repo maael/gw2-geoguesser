@@ -25,8 +25,7 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
     }),
   ],
   callbacks: {
-    session: async ({ session, token, ...args }) => {
-      console.info('[session]', { session, token, args })
+    session: async ({ session, token }) => {
       if (session?.user) {
         // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;(session.user as any).id = token.uid
@@ -35,8 +34,7 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
       }
       return session
     },
-    jwt: async ({ user, token, ...args }) => {
-      console.info('[jwt]', { user, token, args })
+    jwt: async ({ user, token }) => {
       if (user) {
         token.uid = user.id
         try {
@@ -92,7 +90,6 @@ async function signinFlow(credentials: Record<'username' | 'password', string> |
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const comparison = await (user as any).comparePassword(credentials.password)
   if (comparison) {
-    console.info('[signin]', user)
     return {
       id: user._id.toString(),
       name: user.username,
