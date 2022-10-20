@@ -305,20 +305,6 @@ function GameScreen({
         className="flex flex-row w-full h-full justify-center items-center bg-contain bg-no-repeat bg-top sm:bg-left lg:bg-center"
         style={{ backgroundImage: `url(${lastItem?.image})` }}
       />
-      {lastItem?.score !== null && lastItem?.score !== undefined && game.length <= maxRounds ? (
-        <button
-          className="gwfont bg-brown-brushed text-white left-auto sm:left-2 lg:left-auto lg:hover:scale-125 transition-transform flex flex-col absolute bottom-1.5 sm:bottom-0.5 lg:bottom-10 px-10 py-2 text-2xl lg:text-5xl drop-shadow-md rounded-full"
-          onClick={() => {
-            if (currentGameIsFinished) {
-              setShowFinished(true)
-            } else {
-              setGame((g) => g.concat(options[game.length % options.length]))
-            }
-          }}
-        >
-          {currentGameIsFinished ? 'Show Results' : 'Next'}
-        </button>
-      ) : null}
       <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-0 sm:left-1/2 lg:left-auto right-0 md:right-10 lg:w-1/2 aspect-video scale-100 lg:scale-50 lg:hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map
           guessId={lastItem?._id}
@@ -340,6 +326,20 @@ function GameScreen({
           }}
         />
       </div>
+      {!showFinished && lastItem?.score !== null && lastItem?.score !== undefined && game.length <= maxRounds ? (
+        <button
+          className="z-50 isolate gwfont bg-brown-brushed text-white left-auto sm:left-2 lg:left-auto lg:hover:scale-125 transition-transform flex flex-col absolute bottom-1.5 sm:bottom-0.5 lg:bottom-4 px-10 py-2 text-2xl lg:text-5xl drop-shadow-md rounded-full"
+          onClick={() => {
+            if (currentGameIsFinished) {
+              setShowFinished(true)
+            } else {
+              setGame((g) => g.concat(options[game.length % options.length]))
+            }
+          }}
+        >
+          {currentGameIsFinished ? 'Show Results' : 'Next'}
+        </button>
+      ) : null}
       {showFinished ? (
         <div className="bg-opacity-50 bg-gray-800 absolute inset-0 flex flex-col justify-center items-center">
           <div className="flex flex-col text-white bg-brown-brushed drop-shadow-xl px-2 md:px-10 py-5 justify-center text-xl md:w-1/3 m-3">
