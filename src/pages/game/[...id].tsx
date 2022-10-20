@@ -1,6 +1,5 @@
 import * as React from 'react'
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { CHALLENGE } from '~/types'
 import { useRouter } from 'next/router'
@@ -276,7 +275,9 @@ function GameScreen({
                 <div key={g._id} className="flex flex-row items-center gap-1 bg-black-brushed px-3 md:px-10 py-2">
                   <div className="pr-2 md:pr-10">{i + 1}.</div>
                   <div className="max-h-20 h-full aspect-video relative">
-                    <Image src={g.image} layout="fill" priority />
+                    <picture className="absolute inset-0">
+                      <img src={g.image} />
+                    </picture>
                   </div>
                   <div className="text-right flex-1">Score: {g.score}</div>
                 </div>
