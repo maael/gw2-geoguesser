@@ -14,7 +14,7 @@ export default function GamesBlock({
   isLoading: boolean
   games?: {
     error?: string
-    challenge?: { name: string }
+    challenge?: { _id: string; name: string }
     totalGames?: number
     games?: {
       _id: string
@@ -33,7 +33,9 @@ export default function GamesBlock({
         {isLoading ? <FaSpinner className="animate-spin" /> : null}
       </div>
       <div className="flex flex-col sm:flex-row items-center">
-        <div className="text-lg sm:flex-1">{games?.challenge?.name}</div>
+        <div className="text-lg sm:flex-1">
+          {games?.challenge ? <Link href={`/leaderboard/${games.challenge._id}`}>{games.challenge.name}</Link> : null}
+        </div>
         <div className="text-sm">
           {games?.games?.length} of {games?.totalGames || '??'} entr{games?.totalGames === 1 ? 'y' : 'ies'}
         </div>
