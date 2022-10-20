@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
 import cls from 'classnames'
-import { avatar, medalColor } from '~/util'
+import { avatar, isSpecial, medalColor } from '~/util'
 
 export default function GamesBlock({
   games,
@@ -59,9 +59,15 @@ export default function GamesBlock({
                     src={avatar(g.userId?.image)}
                     height={25}
                     width={25}
-                    className={cls('rounded-full', { 'rainbow-border': g.userId?.username === 'Mael' })}
+                    className={cls('rounded-full', { 'rainbow-border thin-border': isSpecial(g.userId?.username) })}
                   />{' '}
-                  {g.userId?.username}
+                  <span
+                    className={cls({
+                      'rainbow-text': isSpecial(g.userId?.username),
+                    })}
+                  >
+                    {g.userId?.username}
+                  </span>
                 </a>
               </Link>
               <div className="w-1/5 text-center flex flex-row gap-1 justify-center items-center">
