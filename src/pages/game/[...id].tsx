@@ -206,12 +206,14 @@ function GameScreen({
 }) {
   const { data: session } = useSession()
   const [game, setGame] = React.useState<Game>([options[0]])
+  const [showFinished, setShowFinished] = React.useState(false)
   const maxRounds = options.length || 0
   const lastItem = game[game.length - 1]
   const total = sumScore(game)
   function isFinished(g: Game) {
     return g.length === maxRounds && g.every((gi) => typeof gi?.score === 'number')
   }
+  const currentGameIsFinished = isFinished(game)
   React.useEffect(() => {
     fathom.trackGoal(EVENTS.StartGame, 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -235,10 +237,14 @@ function GameScreen({
         <button
           className="gwfont bg-brown-brushed text-white left-auto sm:left-2 lg:left-auto hover:scale-125 transition-transform flex flex-col absolute bottom-1.5 sm:bottom-0.5 lg:bottom-3 lg:bottom-10 px-10 py-2 text-2xl lg:text-5xl drop-shadow-md rounded-full"
           onClick={() => {
-            setGame((g) => g.concat(options[game.length % options.length]))
+            if (currentGameIsFinished) {
+              setShowFinished(true)
+            } else {
+              setGame((g) => g.concat(options[game.length % options.length]))
+            }
           }}
         >
-          Next
+          {currentGameIsFinished ? 'Finish' : 'Next'}
         </button>
       ) : null}
       <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-0 sm:left-1/2 lg:left-auto right-0 md:right-10 lg:w-1/2 aspect-video scale-100 lg:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
@@ -261,7 +267,7 @@ function GameScreen({
           }}
         />
       </div>
-      {isFinished(game) ? (
+      {showFinished ? (
         <div className="bg-opacity-50 bg-gray-800 absolute inset-0 flex flex-col justify-center items-center">
           <div className="flex flex-col text-white bg-brown-brushed drop-shadow-xl px-2 md:px-10 py-5 justify-center text-xl md:w-1/3 m-3">
             <h2 className="gwfont text-5xl text-center">Finished!</h2>
