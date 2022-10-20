@@ -44,3 +44,15 @@ An example was provided in the GW2 API Developers discord used by the TINY guild
 
 > **Note**
 > Todo: Create own Tile Service so we're not leeching off the TINY service and causing them more load.
+
+### Messaging
+
+#### Winner Message
+
+```
+Hey there!
+
+You were chosen as the lucky winner of the entry lottery for Guild Wars 2 Geoguesser's [name] ranked game.
+
+Thanks for playing!
+```
