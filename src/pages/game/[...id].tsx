@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { EVENTS, Fathom } from '~/components/hooks/useFathom'
 import { FaExclamationTriangle, FaSpinner } from 'react-icons/fa'
 import PrizeList from '~/components/PrizeList'
+import { intervalToDuration } from 'date-fns'
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -20,7 +22,7 @@ type Game = Array<{
   score?: null | number
 }>
 
-async function saveGame(gameType: CHALLENGE, gameId: string | undefined, game: Game) {
+async function saveGame(gameType: CHALLENGE, gameId: string | undefined, game: Game, timeMs: number) {
   fetch('/api/internal/game', {
     method: 'POST',
     headers: {
@@ -30,6 +32,7 @@ async function saveGame(gameType: CHALLENGE, gameId: string | undefined, game: G
       challenge: gameId,
       challengeType: gameType,
       totalScore: sumScore(game),
+      timeMs,
     }),
   })
 }
@@ -46,7 +49,11 @@ interface TGame {
   error: string
 }
 
-function useGameOptions(gameType: CHALLENGE | null, setStarted: React.Dispatch<React.SetStateAction<boolean>>) {
+function useGameOptions(
+  gameType: CHALLENGE | null,
+  setStarted: React.Dispatch<React.SetStateAction<boolean>>,
+  resetTimer: () => void
+) {
   const [game, setGame] = React.useState<TGame>({ _id: undefined, options: [], error: '' })
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
@@ -54,6 +61,7 @@ function useGameOptions(gameType: CHALLENGE | null, setStarted: React.Dispatch<R
     if (gameType === null) return
     let game: TGame | null = null
     try {
+      resetTimer()
       setLoading(true)
       game = await fetch(`/api/internal/play/${gameType}`).then((r) => r.json())
       game?.options?.forEach((o) => {
@@ -76,6 +84,49 @@ function useGameOptions(gameType: CHALLENGE | null, setStarted: React.Dispatch<R
   return { game, error, loading, reset: getGameOptions }
 }
 
+const zeroPad = (num) => String(num).padStart(2, '0')
+function formatDuration(start: Date, stop: Date) {
+  const duration = intervalToDuration({ start, end: stop })
+  const differenceMs = differenceInMilliseconds(stop, start)
+  const formatted = [duration.hours].filter(Boolean).concat([duration.minutes, duration.seconds]).map(zeroPad).join(':')
+  return { differenceMs, formatted }
+}
+
+function useTimer() {
+  const [state, setState] = React.useState<{ start: null | Date; stop: null | Date }>({ start: null, stop: null })
+  const [time, setTime] = React.useState<null | Date>()
+  function start() {
+    setState((s) => ({ ...s, start: new Date() }))
+  }
+  function stop() {
+    setState((s) => ({ ...s, stop: new Date() }))
+  }
+  function reset() {
+    setState({ start: null, stop: null })
+  }
+  React.useEffect(() => {
+    let r: number
+    function timer() {
+      if (!state.stop && state.start) {
+        setTime(new Date())
+        r = requestAnimationFrame(timer)
+      }
+    }
+    r = requestAnimationFrame(timer)
+    return () => {
+      cancelAnimationFrame(r)
+    }
+  }, [state.stop, state.start])
+  return {
+    time,
+    difference:
+      state.start && time ? formatDuration(state.start, state.stop || time) : { formatted: '00:00', differenceMs: 0 },
+    start,
+    stop,
+    reset,
+  }
+}
+
 export default function Game({ fathom }: { fathom: Fathom }) {
   const { query } = useRouter()
   const queryGameType = query.id ? query.id[0] : null
@@ -88,11 +139,12 @@ export default function Game({ fathom }: { fathom: Fathom }) {
       ? CHALLENGE.monthly
       : CHALLENGE.random
   const [started, setStarted] = React.useState(false)
+  const { difference: timer, start: startTimer, reset: resetTimer, stop: stopTimer } = useTimer()
   const {
     game: { _id: gameId, name, prizes, options, error },
     loading,
     reset,
-  } = useGameOptions(queryGameType ? gameType : null, setStarted)
+  } = useGameOptions(queryGameType ? gameType : null, setStarted, resetTimer)
   return loading ? (
     <div className="flex justify-center items-center h-full">
       <FaSpinner className="animate-spin text-white text-4xl" />
@@ -100,9 +152,17 @@ export default function Game({ fathom }: { fathom: Fathom }) {
   ) : error ? (
     <ErrorScreen error={error} />
   ) : !started ? (
-    <StartScreen name={name} prizes={prizes} setStarted={setStarted} />
+    <StartScreen name={name} prizes={prizes} setStarted={setStarted} startTimer={startTimer} />
   ) : (
-    <GameScreen gameId={gameId} options={options} gameType={gameType} fathom={fathom} reset={reset} />
+    <GameScreen
+      gameId={gameId}
+      options={options}
+      gameType={gameType}
+      fathom={fathom}
+      reset={reset}
+      stopTimer={stopTimer}
+      timer={timer}
+    />
   )
 }
 
@@ -110,10 +170,12 @@ function StartScreen({
   name,
   prizes,
   setStarted,
+  startTimer,
 }: {
   name?: string
   prizes?: any
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
+  startTimer: () => void
 }) {
   return (
     <div className="h-full flex flex-col justify-center items-center text-white gap-5">
@@ -128,6 +190,7 @@ function StartScreen({
         onClick={(e) => {
           e.preventDefault()
           setStarted(true)
+          startTimer()
         }}
         className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-6 py-1 hover:scale-110 transition-transform drop-shadow-lg text-2xl"
       >
@@ -196,12 +259,19 @@ function GameScreen({
   gameId,
   fathom,
   reset,
+  stopTimer,
+  timer,
 }: {
   options: any
   gameType: CHALLENGE
   gameId: string | undefined
   fathom: Fathom
   reset: () => Promise<TGame | undefined>
+  stopTimer: () => void
+  timer: {
+    formatted: string
+    differenceMs: number
+  }
 }) {
   const { data: session } = useSession()
   const [game, setGame] = React.useState<Game>([options[0]])
@@ -222,11 +292,14 @@ function GameScreen({
       suppressHydrationWarning
       className="bg-black-brushed bg-gray-900 flex flex-col justify-center items-center flex-1 w-full relative"
     >
-      <div className="bg-brown-brushed flex flex-col sm:flex-row lg:flex-col gap-0 sm:gap-10 lg:gap-0 md:absolute top-1 right-0 text-white px-8 lg:px-12 py-2 bg-black text-base lg:text-3xl rounded-full my-4 md:my-0 mx-2 md:rounded-l-full drop-shadow-xl">
+      <div className="bg-brown-brushed flex flex-col sm:flex-row lg:flex-col gap-0 sm:gap-10 lg:gap-0 md:absolute top-1 right-0 text-white px-8 lg:px-12 py-2 bg-black text-base lg:text-2xl rounded-full my-4 md:my-0 mx-2 md:rounded-l-full drop-shadow-xl">
         <div>
           Round: {game.length}/{maxRounds}
         </div>
         <div>Score: {total}</div>
+        <div className="tabular-nums" style={{ fontFamily: 'Arial' }}>
+          Time: {timer.formatted}
+        </div>
       </div>
       <div
         className="flex flex-row w-full h-full justify-center items-center bg-contain bg-no-repeat bg-top sm:bg-left lg:bg-center"
@@ -243,7 +316,7 @@ function GameScreen({
             }
           }}
         >
-          {currentGameIsFinished ? 'Finish' : 'Next'}
+          {currentGameIsFinished ? 'Show Results' : 'Next'}
         </button>
       ) : null}
       <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-0 sm:left-1/2 lg:left-auto right-0 md:right-10 lg:w-1/2 aspect-video scale-100 lg:scale-50 hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
@@ -258,8 +331,9 @@ function GameScreen({
               const canFinish = isFinished(updatedGame)
               console.info('[guess]', { canFinish, updatedGame })
               if (canFinish) {
+                stopTimer()
                 fathom.trackGoal(EVENTS.FinishGame, 0)
-                if (session) void saveGame(gameType, gameId, updatedGame)
+                if (session) void saveGame(gameType, gameId, updatedGame, timer.differenceMs)
               }
               return updatedGame
             })
@@ -270,6 +344,7 @@ function GameScreen({
         <div className="bg-opacity-50 bg-gray-800 absolute inset-0 flex flex-col justify-center items-center">
           <div className="flex flex-col text-white bg-brown-brushed drop-shadow-xl px-2 md:px-10 py-5 justify-center text-xl md:w-1/3 m-3">
             <h2 className="gwfont text-5xl text-center">Finished!</h2>
+            <h3 className="gwfont text-3xl text-center">Time: {timer.formatted}</h3>
             <div className="flex flex-col gap-1 mt-3 mb-1">
               {game.map((g, i) => (
                 <div key={g._id} className="flex flex-row items-center gap-1 bg-black-brushed px-3 md:px-10 py-2">

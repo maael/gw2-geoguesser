@@ -18,6 +18,7 @@ export interface Game {
   totalScore: number
   challengeType: CHALLENGE
   challenge?: ObjectId
+  timeMs?: number
   isDeleted: boolean
   createdAt: string
   updatedAt: string

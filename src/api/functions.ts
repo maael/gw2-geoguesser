@@ -70,6 +70,7 @@ const handlers: ApiHandlers = {
           totalScore: body.totalScore,
           challenge: body.challenge,
           challengeType: body.challengeType,
+          timeMs: body.timeMs,
         })
         res.revalidate(`/user/${session.user?.name}`)
         return game as any

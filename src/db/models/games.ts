@@ -22,6 +22,9 @@ const itemSchema = new Schema<WithDoc<Game>, ItemModel>(
       type: Number,
       required: true,
     },
+    timeMs: {
+      type: Number,
+    },
     isDeleted: Boolean,
   },
   {
