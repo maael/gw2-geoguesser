@@ -17,7 +17,7 @@ const getOneGame: ApiOneHandler = async ({ id, sort, limit = 10 }) => {
     } else {
       filterObject._id = id
     }
-    challenge = await Challenge.findOne(filterObject, { _id: 1, name: 1, type: 1, createdAt: 1 }).sort({
+    challenge = await Challenge.findOne(filterObject, { _id: 1, name: 1, type: 1, createdAt: 1, settings: 1 }).sort({
       createdAt: 'desc',
     })
     challengeId = challenge?._id
@@ -32,7 +32,13 @@ const getOneGame: ApiOneHandler = async ({ id, sort, limit = 10 }) => {
   }
   const filter = Game.find(filterObj).populate('userId', 'username image style')
   if (sort === 'score') {
-    filter.sort({ totalScore: 'desc', createdAt: 'asc' })
+    if (challenge?.settings?.sort === 'score-time') {
+      console.info('[sort]', challenge?.name, 'score-time')
+      filter.sort({ totalScore: 'desc', timeMs: 'asc', createdAt: 'asc' })
+    } else {
+      console.info('[sort]', challenge?.name, 'score-created-at')
+      filter.sort({ totalScore: 'desc', createdAt: 'asc' })
+    }
   } else if (sort === 'time') {
     filter.sort({ createdAt: 'desc' })
   }

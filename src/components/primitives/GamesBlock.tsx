@@ -20,6 +20,7 @@ export default function GamesBlock({
       _id: string
       userId: { username: string; image: string; style?: string }
       totalScore: number
+      timeMs?: number
       createdAt: string
     }[]
   }
@@ -77,7 +78,10 @@ export default function GamesBlock({
                   </span>
                 </a>
               </Link>
-              <div className="w-1/5 text-center flex flex-row gap-1 justify-center items-center">
+              <div
+                className="w-1/5 text-center flex flex-row gap-1 justify-center items-center"
+                title={`Time: ${g.timeMs}`}
+              >
                 {type === 'score' && idx < 3 ? (
                   <FaMedal className="text-sm" style={{ color: medalColor[idx] }} />
                 ) : null}{' '}

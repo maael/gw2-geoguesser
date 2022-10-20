@@ -55,7 +55,7 @@ function userToWinner(user: any): Winner | null {
     gw2Account: user?.gw2Account,
   }
 }
-async function getWinners(type: CHALLENGE, challengeId: string) {
+async function getWinners(type: CHALLENGE, challengeId: string, sortMethod?: string) {
   const winners: Winners = {
     first: null,
     second: null,
@@ -63,12 +63,12 @@ async function getWinners(type: CHALLENGE, challengeId: string) {
     entry: null,
   }
   const gameQuery = { challengeType: type, challenge: challengeId }
+  let sort: any = { totalScore: 'desc', createdAt: 'asc' }
+  if (sortMethod === 'score-time') {
+    sort = { totalScore: 'desc', timeMs: 'asc', createdAt: 'asc' }
+  }
   const [winnerGames, entryLottery] = await Promise.all([
-    Game.find(gameQuery)
-      .limit(3)
-      .populate('userId', 'username image gw2Account')
-      .sort({ totalScore: 'desc', createdAt: 'asc' })
-      .lean(),
+    Game.find(gameQuery).limit(3).populate('userId', 'username image gw2Account').sort(sort).lean(),
     Game.aggregate([
       { $match: gameQuery },
       { $sample: { size: 1 } },
@@ -103,7 +103,7 @@ async function createChallenge(type: CHALLENGE, name: string, rounds: number, pr
     }
     newChallenge = await Challenge.create(newChallengeInfo)
     if (newChallenge) {
-      winners = await getWinners(type, existingChallenge._id)
+      winners = await getWinners(type, existingChallenge._id, existingChallenge.settings?.sort)
     }
   } catch (e) {
     console.warn(`[${type}:warn]`, e.message)
