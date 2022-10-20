@@ -8,6 +8,7 @@ export interface User {
   password: string
   image: string
   gw2Account?: string
+  style?: 'rainbow'
   isDeleted: boolean
   createdAt: string
   updatedAt: string
@@ -27,7 +28,13 @@ export interface Game {
 export interface Challenge {
   name: string
   type: CHALLENGE
-  options: [ObjectId]
+  options: ObjectId[]
+  settings?: {
+    sort?: 'score-time' | 'score-created-at'
+    rounds?: number
+    roundTime?: number
+    pictureTime?: number
+  }
   isDeleted: boolean
   createdAt: string
   updatedAt: string

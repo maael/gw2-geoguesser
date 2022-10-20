@@ -30,7 +30,7 @@ const getOneGame: ApiOneHandler = async ({ id, sort, limit = 10 }) => {
     delete filterObj.challenge
     filterObj.challengeType = CHALLENGE.random
   }
-  const filter = Game.find(filterObj).populate('userId', 'username image')
+  const filter = Game.find(filterObj).populate('userId', 'username image style')
   if (sort === 'score') {
     filter.sort({ totalScore: 'desc', createdAt: 'asc' })
   } else if (sort === 'time') {
@@ -148,7 +148,7 @@ const handlers: ApiHandlers = {
   user: {
     get: {
       one: async ({ id }) => {
-        const user = await User.findOne({ username: id }, { _id: 1, username: 1, createdAt: 1, image: 1 })
+        const user = await User.findOne({ username: id }, { _id: 1, username: 1, createdAt: 1, image: 1, style: 1 })
         if (!user) throw new Error('Not found')
         const userGames = await Game.find({ userId: user._id })
           .sort({ createdAt: 'desc' })
@@ -159,6 +159,7 @@ const handlers: ApiHandlers = {
           username: user.username,
           image: user.image,
           createdAt: user.createdAt,
+          style: user.style,
           games: userGames,
         }
       },

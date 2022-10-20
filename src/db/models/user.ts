@@ -15,6 +15,7 @@ const itemSchema = new Schema<WithDoc<User>, ItemModel, ItemMethods>(
     password: { type: String, required: true },
     gw2Account: { type: String },
     image: { type: String },
+    style: { type: String },
     isDeleted: { type: Boolean, default: false },
   },
   {

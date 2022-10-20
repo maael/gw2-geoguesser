@@ -25,16 +25,28 @@ export const authOptions: Parameters<typeof NextAuth>[2] = {
     }),
   ],
   callbacks: {
-    session: async ({ session, token }) => {
+    session: async ({ session, token, ...args }) => {
+      console.info('[session]', { session, token, args })
       if (session?.user) {
         // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;(session.user as any).id = token.uid
+        // eslint-disable-next-line @typescript-eslint/no-extra-semi
+        ;(session.user as any).style = token.style
       }
       return session
     },
-    jwt: async ({ user, token }) => {
+    jwt: async ({ user, token, ...args }) => {
+      console.info('[jwt]', { user, token, args })
       if (user) {
         token.uid = user.id
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-extra-semi
+          ;(token as any).style = token.email
+        } catch (e) {
+          console.warn('[jwt:style:warn]', e.message)
+        } finally {
+          token.email = undefined
+        }
       }
       return token
     },
@@ -67,6 +79,7 @@ async function registerFlow(
         id: newUser._id.toString(),
         name: newUser.username,
         image: newUser.image,
+        email: undefined,
       })
     })
   })
@@ -79,10 +92,12 @@ async function signinFlow(credentials: Record<'username' | 'password', string> |
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const comparison = await (user as any).comparePassword(credentials.password)
   if (comparison) {
+    console.info('[signin]', user)
     return {
       id: user._id.toString(),
       name: user.username,
       image: user.image,
+      email: user.style,
     }
   } else {
     return null

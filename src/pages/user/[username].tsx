@@ -5,7 +5,7 @@ import format from 'date-fns/format'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { avatar, isSpecial } from '~/util'
+import { avatar } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 import cls from 'classnames'
 
@@ -30,10 +30,10 @@ export default function Index() {
           <Image
             src={avatar(user.image)}
             layout="fill"
-            className={cls('rounded-full drop-shadow-md', { 'border-2 rainbow-border': isSpecial(user.username) })}
+            className={cls('rounded-full drop-shadow-md', { 'border-2 rainbow-border': user.style === 'rainbow' })}
           />
         </div>
-        <div className={cls('gwfont text-4xl sm:text-6xl mb-3', { 'rainbow-text': isSpecial(user.username) })}>
+        <div className={cls('gwfont text-4xl sm:text-6xl mb-3', { 'rainbow-text': user.style === 'rainbow' })}>
           {user.username}
         </div>
         {(session?.user as any)?.id === user.id ? <AccountNamePrompt /> : null}

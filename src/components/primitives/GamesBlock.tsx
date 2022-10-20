@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
 import cls from 'classnames'
-import { avatar, isSpecial, medalColor } from '~/util'
+import { avatar, medalColor } from '~/util'
 
 export default function GamesBlock({
   games,
@@ -16,7 +16,12 @@ export default function GamesBlock({
     error?: string
     challenge?: { name: string }
     totalGames?: number
-    games?: { _id: string; userId: { username: string; image: string }; totalScore: number; createdAt: string }[]
+    games?: {
+      _id: string
+      userId: { username: string; image: string; style?: string }
+      totalScore: number
+      createdAt: string
+    }[]
   }
   label?: string
   type: 'score' | 'time'
@@ -59,11 +64,11 @@ export default function GamesBlock({
                     src={avatar(g.userId?.image)}
                     height={25}
                     width={25}
-                    className={cls('rounded-full', { 'rainbow-border thin-border': isSpecial(g.userId?.username) })}
+                    className={cls('rounded-full', { 'rainbow-border thin-border': g.userId?.style === 'rainbow' })}
                   />{' '}
                   <span
                     className={cls({
-                      'rainbow-text': isSpecial(g.userId?.username),
+                      'rainbow-text': g.userId?.style === 'rainbow',
                     })}
                   >
                     {g.userId?.username}

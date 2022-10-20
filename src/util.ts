@@ -33,8 +33,3 @@ export const medalColor = {
   1: '#A9A9A9',
   2: '#cd7f32',
 }
-
-export function isSpecial(username?: string | null) {
-  if (!username) return false
-  return ['Mael', 'Mael2'].includes(username)
-}
