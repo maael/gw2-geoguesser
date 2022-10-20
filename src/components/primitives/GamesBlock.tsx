@@ -2,6 +2,7 @@ import format from 'date-fns/format'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
+import cls from 'classnames'
 import { avatar, medalColor } from '~/util'
 
 export default function GamesBlock({
@@ -54,7 +55,12 @@ export default function GamesBlock({
             >
               <Link href={`/user/${g.userId?.username}`} prefetch={false}>
                 <a className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
-                  <Image src={avatar(g.userId?.image)} height={25} width={25} className="rounded-full" />{' '}
+                  <Image
+                    src={avatar(g.userId?.image)}
+                    height={25}
+                    width={25}
+                    className={cls('rounded-full', { 'rainbow-border': g.userId?.username === 'Mael' })}
+                  />{' '}
                   {g.userId?.username}
                 </a>
               </Link>

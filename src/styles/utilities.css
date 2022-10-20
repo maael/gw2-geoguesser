@@ -41,3 +41,10 @@
   font-family: 'GwTwo';
   src: url(/fonts/GWTwoFont.ttf);
 }
+
+.rainbow-border {
+  border: solid 1px transparent !important;
+  background-image: linear-gradient(white, white), linear-gradient(to left, #40e0d0, #ff8c00, #ff0080) !important;
+  background-origin: border-box !important;
+  background-clip: content-box, border-box !important;
+}
