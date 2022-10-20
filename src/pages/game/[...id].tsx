@@ -250,7 +250,9 @@ function GameScreen({
             setGame((g) => {
               const last = { ...g[g.length - 1], score }
               const updatedGame = g.slice(0, -1).concat(last)
-              if (isFinished(updatedGame)) {
+              const canFinish = isFinished(updatedGame)
+              console.info('[guess]', { canFinish, updatedGame })
+              if (canFinish) {
                 fathom.trackGoal(EVENTS.FinishGame, 0)
                 if (session) void saveGame(gameType, gameId, updatedGame)
               }

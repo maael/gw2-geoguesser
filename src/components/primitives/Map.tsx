@@ -29,7 +29,7 @@ const MAX_ZOOM = 7
 
 function distanceToScore(distance: number | null) {
   if (!distance) return 0
-  if (distance < 0.5) return 500
+  if (distance <= 0.5) return 500
   return Number(Math.floor(Math.max(500 * Math.exp(-0.5 * Math.pow((distance || 0) / 16, 2)))).toFixed(0))
 }
 
