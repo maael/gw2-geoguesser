@@ -37,7 +37,7 @@ export default function GamesBlock({
           {games?.challenge ? <Link href={`/leaderboard/${games.challenge._id}`}>{games.challenge.name}</Link> : null}
         </div>
         <div className="text-sm">
-          {games?.games?.length} of {games?.totalGames || '??'} entr{games?.totalGames === 1 ? 'y' : 'ies'}
+          {games?.games?.length} of {games?.totalGames ?? '??'} entr{games?.totalGames === 1 ? 'y' : 'ies'}
         </div>
       </div>
       <div className="my-2">
