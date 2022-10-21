@@ -5,7 +5,7 @@ import { Fathom } from '~/components/hooks/useFathom'
 import { FaSpinner } from 'react-icons/fa'
 import ErrorScreen from '~/components/screens/game/Error'
 import useTimer from '~/components/hooks/useTimer'
-import StartScreen from '~/components/screens/game/Start'
+import StartScreen, { useOptions } from '~/components/screens/game/Start'
 import GameScreen, { TGame } from '~/components/screens/game/Game'
 
 function useGameOptions(
@@ -61,6 +61,7 @@ export default function Game({ fathom }: { fathom: Fathom }) {
     loading,
     reset,
   } = useGameOptions(queryGameType ? gameType : null, setStarted, resetTimer)
+  const optionProps = useOptions()
   return loading ? (
     <div className="flex justify-center items-center h-full">
       <FaSpinner className="animate-spin text-white text-4xl" />
@@ -68,7 +69,14 @@ export default function Game({ fathom }: { fathom: Fathom }) {
   ) : error ? (
     <ErrorScreen error={error} />
   ) : !started ? (
-    <StartScreen gameType={gameType} name={name} prizes={prizes} setStarted={setStarted} startTimer={startTimer} />
+    <StartScreen
+      gameType={gameType}
+      name={name}
+      prizes={prizes}
+      setStarted={setStarted}
+      startTimer={startTimer}
+      {...optionProps}
+    />
   ) : (
     <GameScreen
       gameId={gameId}
@@ -78,6 +86,7 @@ export default function Game({ fathom }: { fathom: Fathom }) {
       reset={reset}
       stopTimer={stopTimer}
       timer={timer}
+      {...optionProps}
     />
   )
 }

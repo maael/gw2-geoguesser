@@ -54,7 +54,7 @@ export function SliderInner({ value, min, max, step = 1, onChange }: Props) {
                 borderRadius: '4px',
                 background: getTrackBackground({
                   values,
-                  colors: ['#7c3aed', '#9ca3af'],
+                  colors: ['#4D3520', '#9ca3af'],
                   min,
                   max,
                   rtl: false,

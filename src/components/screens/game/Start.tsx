@@ -11,13 +11,14 @@ export default function StartScreen({
   prizes,
   setStarted,
   startTimer,
+  ...optionsProps
 }: {
   gameType: CHALLENGE
   name?: string
   prizes?: any
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
   startTimer: () => void
-}) {
+} & OptionsProps) {
   return (
     <div className="h-full flex flex-col justify-center items-center text-white gap-5">
       <h1 className="gwfont text-4xl text-center">{name || 'Quick Game'}</h1>
@@ -27,7 +28,7 @@ export default function StartScreen({
           <FaExclamationTriangle className="text-4xl" /> This is a ranked game, you'll only be able to attempt it once!
         </p>
       ) : null}
-      {gameType === CHALLENGE.random ? <Options /> : null}
+      {gameType === CHALLENGE.random ? <Options {...optionsProps} /> : null}
       <button
         onClick={(e) => {
           e.preventDefault()
@@ -42,21 +43,27 @@ export default function StartScreen({
   )
 }
 
-function Options() {
+export type OptionsProps = ReturnType<typeof useOptions>
+
+export function useOptions() {
   const [roundTime, setRoundTime] = React.useState(0)
   const [imageTime, setImageTime] = React.useState(0)
-  const enabled = false
+  return { roundTime, imageTime, setRoundTime, setImageTime }
+}
+
+function Options({ roundTime, setRoundTime, imageTime, setImageTime }: OptionsProps) {
+  const enabled = true
   return (
     <div className="relative p-2">
       <div className="max-w-md flex flex-col gap-5">
-        <h3 className="text-2xl gwfont">Options</h3>
+        <h3 className="text-2xl gwfont text-center">Options</h3>
         <div className="flex flex-col gap-1">
           <SliderOuter
             label="Round Time Limit"
             value={roundTime}
             min={0}
-            max={1_000 * 60 * 10}
-            step={10_000}
+            max={1_000 * 60 * 5}
+            step={5_000}
             onChange={setRoundTime}
             renderValue={(v) => (
               <span className="tabular-nums" style={{ fontFamily: 'Arial' }}>
@@ -73,8 +80,8 @@ function Options() {
             label="Image Time Limit"
             value={imageTime}
             min={0}
-            max={1_000 * 60 * 10}
-            step={10_000}
+            max={1_000 * 60 * 5}
+            step={5_000}
             onChange={setImageTime}
             renderValue={(v) => (
               <span className="tabular-nums" style={{ fontFamily: 'Arial' }}>

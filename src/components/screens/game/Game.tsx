@@ -4,6 +4,8 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { EVENTS, Fathom } from '~/components/hooks/useFathom'
 import { CHALLENGE } from '~/types'
+import { OptionsProps } from './Start'
+import Countdown from 'react-countdown'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -44,6 +46,28 @@ export interface TGame {
   error: string
 }
 
+const TimeLimit = React.memo(function TimeLimit({
+  time,
+  onComplete,
+  isFinished,
+}: {
+  time: number
+  onComplete: () => void
+  isFinished: boolean
+}) {
+  return !isFinished && time ? (
+    <Countdown
+      date={Date.now() + time}
+      renderer={(props) => {
+        return `${props.formatted.hours === '00' ? '' : `${props.formatted.hours}:`}${props.formatted.minutes}:${
+          props.formatted.seconds
+        }`
+      }}
+      onComplete={onComplete}
+    />
+  ) : null
+})
+
 export default function GameScreen({
   options,
   gameType,
@@ -52,6 +76,8 @@ export default function GameScreen({
   reset,
   stopTimer,
   timer,
+  imageTime,
+  roundTime,
 }: {
   options: any
   gameType: CHALLENGE
@@ -63,7 +89,7 @@ export default function GameScreen({
     formatted: string
     differenceMs: number
   }
-}) {
+} & OptionsProps) {
   const { data: session } = useSession()
   const [game, setGame] = React.useState<Game>([options[0]])
   const [showFinished, setShowFinished] = React.useState(false)
@@ -78,23 +104,86 @@ export default function GameScreen({
     fathom.trackGoal(EVENTS.StartGame, 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  const [imageVisible, setImageVisible] = React.useState(true)
+  const onRoundLimitComplete = React.useCallback(() => {
+    setGame((g) => {
+      const last = { ...g[g.length - 1], score: 0 }
+      const updatedGame = g.slice(0, -1).concat(last)
+      const canFinish = isFinished(updatedGame)
+      console.info('[round:limit]', { canFinish, updatedGame })
+      if (canFinish) {
+        stopTimer()
+        fathom.trackGoal(EVENTS.FinishGame, 0)
+        if (session) void saveGame(gameType, gameId, updatedGame, timer.differenceMs)
+      }
+      return updatedGame
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session])
+  const onImageLimitComplete = React.useCallback(() => {
+    console.info('[image:limit]')
+    setImageVisible(false)
+  }, [])
   return (
     <div
       suppressHydrationWarning
       className="bg-black-brushed bg-gray-900 flex flex-col justify-center items-center flex-1 w-full relative"
     >
-      <div className="bg-brown-brushed flex flex-row lg:flex-col gap-4 sm:gap-10 lg:gap-0 md:absolute top-1 right-0 text-white px-8 lg:px-12 py-2 bg-black text-base lg:text-2xl rounded-full my-4 md:my-0 mx-2 md:rounded-l-full drop-shadow-xl">
-        <div>
-          Round: {game.length}/{maxRounds}
+      <div className="bg-brown-brushed flex flex-col justify-center items-center gap-0 md:absolute top-1 right-0 text-white px-8 lg:px-12 lg:text-xl pt-2 pb-4 text-base rounded-t-lg my-4 md:my-0 mx-2 drop-shadow-xl">
+        <div className="flex flex-row lg:flex-col gap-4 sm:gap-10 lg:gap-0 justify-center lg:items-start items-center w-full">
+          <div>
+            Round: {game.length}/{maxRounds}
+          </div>
+          <div>Score: {total}</div>
+          <div>
+            Time:{' '}
+            <span className="tabular-nums" style={{ fontFamily: 'Arial' }}>
+              {timer.formatted}
+            </span>
+          </div>
         </div>
-        <div>Score: {total}</div>
-        <div className="tabular-nums" style={{ fontFamily: 'Arial' }}>
-          Time: {timer.formatted}
-        </div>
+        {roundTime || imageTime ? (
+          <div className="flex flex-row lg:flex-col gap-4 sm:gap-10 lg:gap-0 justify-center lg:items-start items-center w-full">
+            {roundTime ? (
+              <div>
+                Round Limit:{' '}
+                <span className="tabular-nums" style={{ fontFamily: 'Arial' }}>
+                  {typeof lastItem.score === 'number' ? (
+                    '00:00'
+                  ) : (
+                    <TimeLimit
+                      key={lastItem._id}
+                      time={roundTime}
+                      onComplete={onRoundLimitComplete}
+                      isFinished={typeof lastItem.score === 'number'}
+                    />
+                  )}
+                </span>
+              </div>
+            ) : null}
+            {imageTime ? (
+              <div className="tabular-nums" style={{ fontFamily: 'Arial' }}>
+                Image Limit:{' '}
+                <span className="tabular-nums" style={{ fontFamily: 'Arial' }}>
+                  {typeof lastItem.score === 'number' ? (
+                    '00:00'
+                  ) : (
+                    <TimeLimit
+                      key={lastItem._id}
+                      time={imageTime}
+                      onComplete={onImageLimitComplete}
+                      isFinished={typeof lastItem.score === 'number'}
+                    />
+                  )}
+                </span>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
       <div
         className="flex flex-row w-full h-full justify-center items-center bg-contain bg-no-repeat bg-top sm:bg-left lg:bg-center"
-        style={{ backgroundImage: `url(${lastItem?.image})` }}
+        style={{ backgroundImage: imageVisible ? `url(${lastItem?.image})` : '' }}
       />
       <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-0 sm:left-1/2 lg:left-auto right-0 md:right-10 lg:w-1/2 aspect-video scale-100 lg:scale-50 lg:hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map
@@ -126,6 +215,7 @@ export default function GameScreen({
             } else {
               setGame((g) => g.concat(options[game.length % options.length]))
             }
+            setImageVisible(true)
           }}
         >
           {currentGameIsFinished ? 'Show Results' : 'Next'}
