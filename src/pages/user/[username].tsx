@@ -33,7 +33,11 @@ export default function Index() {
             className={cls('rounded-full drop-shadow-md', { 'border-2 rainbow-border': user.style === 'rainbow' })}
           />
         </div>
-        <div className={cls('gwfont text-4xl sm:text-6xl mb-3', { 'rainbow-text': user.style === 'rainbow' })}>
+        <div
+          className={cls('gwfont text-4xl sm:text-6xl mb-3', {
+            'rainbow-text animate-huerotate': user.style === 'rainbow',
+          })}
+        >
           {cleanUsername(user.username)}
         </div>
         {(session?.user as any)?.id === user.id ? <AccountNamePrompt /> : null}
