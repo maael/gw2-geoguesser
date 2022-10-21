@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
 import cls from 'classnames'
-import { avatar, convertMsToMinutesSeconds, medalColor } from '~/util'
+import { avatar, cleanUsername, convertMsToMinutesSeconds, medalColor } from '~/util'
 
 export default function GamesBlock({
   games,
@@ -74,7 +74,7 @@ export default function GamesBlock({
                       'rainbow-text': g.userId?.style === 'rainbow',
                     })}
                   >
-                    {`${g.userId?.username}`?.split('@')[0]?.trim()}
+                    {cleanUsername(g.userId?.username)}
                   </span>
                 </a>
               </Link>

@@ -5,7 +5,7 @@ import format from 'date-fns/format'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { avatar } from '~/util'
+import { avatar, cleanUsername } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 import cls from 'classnames'
 
@@ -34,7 +34,7 @@ export default function Index() {
           />
         </div>
         <div className={cls('gwfont text-4xl sm:text-6xl mb-3', { 'rainbow-text': user.style === 'rainbow' })}>
-          {user.username}
+          {cleanUsername(user.username)}
         </div>
         {(session?.user as any)?.id === user.id ? <AccountNamePrompt /> : null}
         <div
