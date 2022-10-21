@@ -43,7 +43,8 @@
     "react-countdown": "^2.3.2",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
-    "react-leaflet": "^4.1.0"
+    "react-leaflet": "^4.1.0",
+    "react-range": "^1.8.14"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",

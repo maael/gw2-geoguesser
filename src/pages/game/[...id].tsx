@@ -68,7 +68,7 @@ export default function Game({ fathom }: { fathom: Fathom }) {
   ) : error ? (
     <ErrorScreen error={error} />
   ) : !started ? (
-    <StartScreen name={name} prizes={prizes} setStarted={setStarted} startTimer={startTimer} />
+    <StartScreen gameType={gameType} name={name} prizes={prizes} setStarted={setStarted} startTimer={startTimer} />
   ) : (
     <GameScreen
       gameId={gameId}
