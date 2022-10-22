@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
 import cls from 'classnames'
 import { avatar, cleanUsername, convertMsToMinutesSeconds, medalColor } from '~/util'
+import UserLinks, { isStreamer } from './UserLinks'
 
 export default function GamesBlock({
   games,
@@ -61,23 +62,30 @@ export default function GamesBlock({
                 backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
               }}
             >
-              <Link href={`/user/${g.userId?.username}`} prefetch={false}>
-                <a className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
-                  <Image
-                    src={avatar(g.userId?.image)}
-                    height={25}
-                    width={25}
-                    className={cls('rounded-full', { 'rainbow-border thin-border': g.userId?.style === 'rainbow' })}
-                  />{' '}
-                  <span
-                    className={cls('overflow-ellipsis overflow-hidden', {
-                      'rainbow-text': g.userId?.style === 'rainbow',
-                    })}
-                  >
-                    {cleanUsername(g.userId?.username)}
-                  </span>
-                </a>
-              </Link>
+              <span className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
+                <Link href={`/user/${g.userId?.username}`} prefetch={false}>
+                  <a className="text-center sm:text-left flex flex-row gap-2 items-center">
+                    <Image
+                      src={avatar(g.userId?.image)}
+                      height={25}
+                      width={25}
+                      className={cls('rounded-full', {
+                        'twitch-border thin-border': g.userId?.style !== 'rainbow' && isStreamer(g.userId?.username),
+                        'rainbow-border thin-border': g.userId?.style === 'rainbow',
+                      })}
+                    />{' '}
+                    <span
+                      className={cls('overflow-ellipsis overflow-hidden', {
+                        'twitch-text': g.userId?.style !== 'rainbow' && isStreamer(g.userId?.username),
+                        'rainbow-text': g.userId?.style === 'rainbow',
+                      })}
+                    >
+                      {cleanUsername(g.userId?.username)}
+                    </span>
+                  </a>
+                </Link>
+                <UserLinks username={g.userId?.username} />
+              </span>
               <div
                 className="w-1/5 text-center flex flex-row gap-1 justify-center items-center"
                 title={`Time: ${g.timeMs ? convertMsToMinutesSeconds(g.timeMs) : '??:??'}`}

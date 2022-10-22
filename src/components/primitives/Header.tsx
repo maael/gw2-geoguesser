@@ -5,11 +5,13 @@ import { useSession, signOut } from 'next-auth/react'
 import logoImg from '../../../public/logo.png'
 import { avatar } from '~/util'
 import cls from 'classnames'
+import { isStreamer } from './UserLinks'
 
 export default function Header() {
   const { data: session } = useSession()
   console.info({ session })
   const isSpecial = (session?.user as any)?.style === 'rainbow'
+  const isUserStreamer = isStreamer(session?.user?.name)
   return (
     <div>
       <div className="max-w-6xl w-full mx-auto h-12 px-1 py-2 flex flex-row gap-2 sm:gap-5 items-center text-white">
@@ -33,9 +35,14 @@ export default function Header() {
                 src={avatar(session.user?.image)}
                 width={20}
                 height={20}
-                className={cls('rounded-full', { 'thin-border rainbow-border': isSpecial })}
+                className={cls('rounded-full', {
+                  'thin-border rainbow-border': isSpecial,
+                  'thin-border twitch-border': !isSpecial && isUserStreamer,
+                })}
               />
-              <span className={cls({ 'rainbow-text': isSpecial })}>{session.user?.name}</span>
+              <span className={cls({ 'rainbow-text': isSpecial, 'twitch-text': !isSpecial && isUserStreamer })}>
+                {session.user?.name}
+              </span>
             </div>
           </Link>
         ) : null}

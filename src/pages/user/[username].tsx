@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react'
 import { avatar, cleanUsername } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 import cls from 'classnames'
+import UserLinks, { isStreamer } from '~/components/primitives/UserLinks'
 
 export default function Index() {
   const { query } = useRouter()
@@ -30,15 +31,22 @@ export default function Index() {
           <Image
             src={avatar(user.image)}
             layout="fill"
-            className={cls('rounded-full drop-shadow-md', { 'border-2 rainbow-border': user.style === 'rainbow' })}
+            className={cls('rounded-full drop-shadow-md', {
+              'twitch-border border-3': user.style !== 'rainbow' && isStreamer(user.username),
+              'border-3 rainbow-border': user.style === 'rainbow',
+            })}
           />
         </div>
-        <div
-          className={cls('gwfont text-4xl sm:text-6xl mb-3', {
-            'rainbow-text animate-huerotate': user.style === 'rainbow',
-          })}
-        >
-          {cleanUsername(user.username)}
+        <div className="flex flex-row gap-2 justify-center items-center mb-3 text-4xl sm:text-6xl">
+          <div
+            className={cls('gwfont', {
+              'twitch-text': user.style !== 'rainbow' && isStreamer(user.username),
+              'rainbow-text animate-huerotate': user.style === 'rainbow',
+            })}
+          >
+            {cleanUsername(user.username)}
+          </div>
+          <UserLinks username={user.username} />
         </div>
         {(session?.user as any)?.id === user.id ? <AccountNamePrompt /> : null}
         <div
