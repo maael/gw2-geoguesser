@@ -6,6 +6,7 @@ import { EVENTS, Fathom } from '~/components/hooks/useFathom'
 import { CHALLENGE } from '~/types'
 import { OptionsProps } from './Start'
 import Countdown from 'react-countdown'
+import { FaTwitter } from 'react-icons/fa'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -242,10 +243,10 @@ export default function GameScreen({
             <div className="gwfont text-4xl text-center py-3">
               Total: {total} / {500 * maxRounds}
             </div>
-            <div className="flex flex-row justify-center items-center mt-1 gap-2">
+            <div className="flex flex-col xl:flex-row justify-center items-center mt-1 gap-2 xl:gap-5 text-lg lg:text-2xl">
               {gameType === CHALLENGE.random ? (
                 <button
-                  className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full"
+                  className="w-full lg:w-auto gwfont bg-black-brushed text-white hover:scale-110 transition-transform flex flex-col px-10 py-2 drop-shadow-md rounded-full items-center"
                   onClick={async () => {
                     fathom.trackGoal(EVENTS.StartGame, 0)
                     const newGame = await reset()
@@ -255,8 +256,26 @@ export default function GameScreen({
                   New Game
                 </button>
               ) : null}
+              <a
+                className="w-full lg:w-auto gwfont bg-black-brushed text-white hover:scale-110 transition-transform flex flex-row gap-2 justify-center items-center px-10 py-2 drop-shadow-md rounded-full"
+                target="_blank"
+                rel="noreferrer"
+                href={`https://twitter.com/intent/tweet?text=I just got ${total} points in Guild Wars 2 Geoguesser${
+                  gameType === CHALLENGE.daily
+                    ? "'s daily challenge"
+                    : gameType === CHALLENGE.weekly
+                    ? "'s weekly challenge"
+                    : gameType === CHALLENGE.monthly
+                    ? "'s monthly challenge"
+                    : ''
+                } in ${
+                  timer.formatted
+                }! Think you can beat me?&hashtags=GuildWars2,gw2geoguesser&url=https://gw2-geoguesser.mael.tech/&via=GW2Geoguesser`}
+              >
+                <FaTwitter /> Tweet score
+              </a>
               <Link href="/">
-                <a className="gwfont bg-black-brushed text-white hover:scale-125 transition-transform flex flex-col px-10 py-2 text-2xl drop-shadow-md rounded-full">
+                <a className="w-full lg:w-auto gwfont bg-black-brushed text-white hover:scale-110 transition-transform flex flex-col px-10 py-2 drop-shadow-md rounded-full items-center">
                   Finish
                 </a>
               </Link>
