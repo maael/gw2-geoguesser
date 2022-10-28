@@ -22,21 +22,19 @@ function sum(obj: any, multiplier: number) {
 }
 
 export default function Index() {
+  const { data, isLoading } = useQuery(['home-info'], () => fetch('/api/internal/home_info').then((r) => r.json()))
   const {
-    data: {
-      daily,
-      weekly,
-      monthly,
-      recentDailyGames,
-      highDailyGames,
-      recentWeeklyGames,
-      highWeeklyGames,
-      recentMonthlyGames,
-      highMonthlyGames,
-      recentRandomGames,
-    },
-    isLoading,
-  } = useQuery(['home-info'], () => fetch('/api/internal/home_info').then((r) => r.json()))
+    daily,
+    weekly,
+    monthly,
+    recentDailyGames,
+    highDailyGames,
+    recentWeeklyGames,
+    highWeeklyGames,
+    recentMonthlyGames,
+    highMonthlyGames,
+    recentRandomGames,
+  } = data || {}
   return (
     <>
       <div className="flex flex-col justify-center items-center text-white">
@@ -153,12 +151,20 @@ export async function getStaticProps() {
     process.env.VERCEL_ENV === 'production'
       ? 'https://gw2-geoguesser.mael.tech'
       : process.env.VERCEL_ENV === 'preview'
-      ? process.env.VERCEL_URL
+      ? 'https://gw2-geoguesser.mael.tech'
       : 'http://localhost:3002'
 
-  console.info('[revalidate]')
+  console.info('[revalidate]', rootUrl)
 
-  await queryClient.prefetchQuery(['home-info'], () => fetch(`${rootUrl}/api/internal/home_info`).then((r) => r.json()))
+  await queryClient.prefetchQuery(['home-info'], async () => {
+    try {
+      const result = await fetch(`${rootUrl}/api/internal/home_info`).then((r) => r.json())
+      console.info({ result })
+      return result
+    } catch (e) {
+      console.error('error', e)
+    }
+  })
 
   return {
     props: {
