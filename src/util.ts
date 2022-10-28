@@ -1,5 +1,6 @@
 import { QueryClient } from '@tanstack/react-query'
 import { CHALLENGE } from './types'
+import { isStreamer } from './components/primitives/UserLinks'
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, refetchInterval: false } },
@@ -47,4 +48,28 @@ export function convertMsToMinutesSeconds(milliseconds) {
 
 export function cleanUsername(username?: string | null) {
   return `${username || ''}`?.split('@')[0]?.trim()
+}
+
+export function getUserStyles(
+  username?: string | null,
+  style?: string | null,
+  options = { animate: false, large: false }
+) {
+  const userIsStreamer = isStreamer(username)
+  return {
+    border: {
+      'thick-border': options.large,
+      'twitch-border thin-border': style !== 'rainbow' && userIsStreamer,
+      'rainbow-border thin-border': style === 'rainbow',
+      'taimi-border thin-border': style === 'taimi',
+      'noxxi-border thin-border': style === 'noxxi',
+    },
+    text: {
+      'animate-huerotate': style === 'rainbow' && options.animate,
+      'twitch-text': style !== 'rainbow' && userIsStreamer,
+      'rainbow-text': style === 'rainbow',
+      'taimi-text': style === 'taimi',
+      'noxxi-text': style === 'noxxi',
+    },
+  }
 }

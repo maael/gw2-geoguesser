@@ -5,10 +5,10 @@ import format from 'date-fns/format'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { avatar, cleanUsername } from '~/util'
+import { avatar, cleanUsername, getUserStyles } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 import cls from 'classnames'
-import UserLinks, { isStreamer } from '~/components/primitives/UserLinks'
+import UserLinks from '~/components/primitives/UserLinks'
 
 export default function Index() {
   const { query } = useRouter()
@@ -24,6 +24,8 @@ export default function Index() {
 
   if (!user) return null
 
+  const getUserStyle = getUserStyles(user.username, user.style, { large: true, animate: true })
+
   return (
     <div className="flex justify-center items-center text-white">
       <div className="flex flex-col gap-2 justify-center items-center max-w-5xl w-full px-2 sm:px-4 pt-5">
@@ -31,21 +33,11 @@ export default function Index() {
           <Image
             src={avatar(user.image)}
             layout="fill"
-            className={cls('rounded-full drop-shadow-md', {
-              'twitch-border border-3': user.style !== 'rainbow' && isStreamer(user.username),
-              'border-3 rainbow-border': user.style === 'rainbow',
-            })}
+            className={cls('rounded-full drop-shadow-md', getUserStyle.border)}
           />
         </div>
         <div className="flex flex-row gap-2 justify-center items-center mb-3 text-4xl sm:text-6xl">
-          <div
-            className={cls('gwfont', {
-              'twitch-text': user.style !== 'rainbow' && isStreamer(user.username),
-              'rainbow-text animate-huerotate': user.style === 'rainbow',
-            })}
-          >
-            {cleanUsername(user.username)}
-          </div>
+          <div className={cls('gwfont', getUserStyle.text)}>{cleanUsername(user.username)}</div>
           <UserLinks username={user.username} />
         </div>
         {(session?.user as any)?.id === user.id ? <AccountNamePrompt /> : null}

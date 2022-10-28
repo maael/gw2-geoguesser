@@ -71,6 +71,11 @@
   border-width: 1px !important;
 }
 
+.thick-border {
+  border-style: solid !important;
+  border-width: 3px !important;
+}
+
 .animate-huerotate {
   animation: huerotate 6s infinite linear;
   filter: hue-rotate(360deg);
@@ -103,11 +108,26 @@
  * `style: "noxxi"`
  */
 
-/* TODO */
+.noxxi-border {
+  @apply !border-green-500 border !border-solid;
+}
+
+.noxxi-text {
+  @apply !text-green-500 font-bold;
+  filter: drop-shadow(0px 0px 2px rgba(200, 200, 200, 0.3));
+}
 
 /**
  * Taimi - Special user style for Tiny Taimi, the colour of Taimi's bow
  * `style: "taimi"`
  */
+.taimi-border {
+  border-color: #c6664c !important;
+  @apply border !border-solid;
+}
 
-/* TODO */
+.taimi-text {
+  color: #c6664c !important;
+  @apply font-bold;
+  filter: drop-shadow(0px 0px 2px rgba(200, 200, 200, 0.3));
+}

@@ -3,8 +3,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
 import cls from 'classnames'
-import { avatar, cleanUsername, convertMsToMinutesSeconds, medalColor } from '~/util'
-import UserLinks, { isStreamer } from './UserLinks'
+import { avatar, cleanUsername, convertMsToMinutesSeconds, getUserStyles, medalColor } from '~/util'
+import UserLinks from './UserLinks'
 
 export default function GamesBlock({
   games,
@@ -54,53 +54,48 @@ export default function GamesBlock({
           <div className="w-1/3 text-right">Time</div>
         </div>
         {games && games.games && games.games.length > 0 ? (
-          games.games.map((g, idx) => (
-            <div
-              key={`${label}-${g._id}`}
-              className="flex flex-row gap-2 px-3 py-1 text-sm sm:text-lg"
-              style={{
-                backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
-              }}
-            >
-              <span className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
-                <Link href={`/user/${g.userId?.username}`} prefetch={false}>
-                  <a className="text-center sm:text-left flex flex-row gap-2 items-center">
-                    <Image
-                      src={avatar(g.userId?.image)}
-                      height={25}
-                      width={25}
-                      className={cls('rounded-full', {
-                        'twitch-border thin-border': g.userId?.style !== 'rainbow' && isStreamer(g.userId?.username),
-                        'rainbow-border thin-border': g.userId?.style === 'rainbow',
-                      })}
-                    />{' '}
-                    <span
-                      className={cls('overflow-ellipsis overflow-hidden', {
-                        'twitch-text': g.userId?.style !== 'rainbow' && isStreamer(g.userId?.username),
-                        'rainbow-text': g.userId?.style === 'rainbow',
-                      })}
-                    >
-                      {cleanUsername(g.userId?.username)}
-                    </span>
-                  </a>
-                </Link>
-                <UserLinks username={g.userId?.username} />
-              </span>
+          games.games.map((g, idx) => {
+            const getUserStyle = getUserStyles(g.userId?.username, g.userId?.style)
+            return (
               <div
-                className="w-1/5 text-center flex flex-row gap-1 justify-center items-center"
-                title={`Time: ${g.timeMs ? convertMsToMinutesSeconds(g.timeMs) : '??:??'}`}
+                key={`${label}-${g._id}`}
+                className="flex flex-row gap-2 px-3 py-1 text-sm sm:text-lg"
+                style={{
+                  backgroundColor: idx % 2 === 1 ? 'rgba(96, 76, 52, 0.5)' : 'rgba(55, 45, 35, 0.2)',
+                }}
               >
-                {type === 'score' && idx < 3 ? (
-                  <FaMedal className="text-sm" style={{ color: medalColor[idx] }} />
-                ) : null}{' '}
-                {g.totalScore}
+                <span className="w-2/5 text-center sm:text-left flex flex-row gap-2 items-center">
+                  <Link href={`/user/${g.userId?.username}`} prefetch={false}>
+                    <a className="text-center sm:text-left flex flex-row gap-2 items-center">
+                      <Image
+                        src={avatar(g.userId?.image)}
+                        height={25}
+                        width={25}
+                        className={cls('rounded-full', getUserStyle.border)}
+                      />{' '}
+                      <span className={cls('overflow-ellipsis overflow-hidden', getUserStyle.text)}>
+                        {cleanUsername(g.userId?.username)}
+                      </span>
+                    </a>
+                  </Link>
+                  <UserLinks username={g.userId?.username} />
+                </span>
+                <div
+                  className="w-1/5 text-center flex flex-row gap-1 justify-center items-center"
+                  title={`Time: ${g.timeMs ? convertMsToMinutesSeconds(g.timeMs) : '??:??'}`}
+                >
+                  {type === 'score' && idx < 3 ? (
+                    <FaMedal className="text-sm" style={{ color: medalColor[idx] }} />
+                  ) : null}{' '}
+                  {g.totalScore}
+                </div>
+                <div className="w-2/5 text-right">
+                  {format(new Date(g.createdAt), 'HH:mm do MMM')}
+                  <span className="hidden sm:inline-block ml-1">{format(new Date(g.createdAt), 'yyyy')}</span>
+                </div>
               </div>
-              <div className="w-2/5 text-right">
-                {format(new Date(g.createdAt), 'HH:mm do MMM')}
-                <span className="hidden sm:inline-block ml-1">{format(new Date(g.createdAt), 'yyyy')}</span>
-              </div>
-            </div>
-          ))
+            )
+          })
         ) : isLoading ? (
           <div className="text-center">Loading...</div>
         ) : (
