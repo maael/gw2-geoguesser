@@ -3,7 +3,7 @@ import * as React from 'react'
 import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query'
 import getDaysInMonth from 'date-fns/getDaysInMonth'
 import Image from 'next/image'
-import { FaArrowRight, FaBeer, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
+import { FaArrowRight, FaBeer, FaCogs, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
 import dynamic from 'next/dynamic'
 import { avatar } from '~/util'
 import { CHALLENGE } from '~/types'
@@ -46,6 +46,11 @@ export default function Index() {
             <Link href="/game/random">
               <a className="text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
                 Quick Game <FaArrowRight />
+              </a>
+            </Link>
+            <Link href="/game/custom">
+              <a className="text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
+                Custom Game <FaCogs />
               </a>
             </Link>
             <div className="gwfont text-xl sm:text-3xl mt-2">Ranked Games</div>
@@ -144,7 +149,12 @@ function RankedGameBlock({
 export async function getStaticProps() {
   const queryClient = new QueryClient()
 
-  const rootUrl = process.env.VERCEL_ENV === 'production' ? 'https://gw2-geoguesser.mael.tech' : 'http://localhost:3002'
+  const rootUrl =
+    process.env.VERCEL_ENV === 'production'
+      ? 'https://gw2-geoguesser.mael.tech'
+      : process.env.VERCEL_ENV === 'preview'
+      ? process.env.VERCEL_URL
+      : 'http://localhost:3002'
 
   console.info('[revalidate]')
 

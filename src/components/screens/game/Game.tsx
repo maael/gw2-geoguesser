@@ -43,6 +43,7 @@ export interface TGame {
   _id: undefined | string
   name?: string
   prizes?: any
+  settings?: any
   options: any[]
   error: string
 }

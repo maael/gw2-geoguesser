@@ -86,7 +86,12 @@ export default function Index() {
 export async function getStaticProps({ params }) {
   const queryClient = new QueryClient()
 
-  const rootUrl = process.env.VERCEL_ENV === 'production' ? 'https://gw2-geoguesser.mael.tech' : 'http://localhost:3002'
+  const rootUrl =
+    process.env.VERCEL_ENV === 'production'
+      ? 'https://gw2-geoguesser.mael.tech'
+      : process.env.VERCEL_ENV === 'preview'
+      ? process.env.VERCEL_URL
+      : 'http://localhost:3002'
 
   console.info('[revalidate]', { username: params.username })
 

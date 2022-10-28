@@ -6,7 +6,7 @@ export const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, refetchInterval: false } },
 })
 
-export const ChallengeOptionsMap: Record<CHALLENGE, { rounds: number }> = {
+export const ChallengeOptionsMap: Partial<Record<CHALLENGE, { rounds: number }>> = {
   [CHALLENGE.random]: {
     rounds: 5,
   },
