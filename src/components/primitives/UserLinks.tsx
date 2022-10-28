@@ -10,6 +10,9 @@ const STREAMERS = {
   Rioanne: {
     twitch: 'Rioanne',
   },
+  Areki: {
+    twitch: 'areki_mirai',
+  },
 }
 
 const KNOWN_STREAMERS = Object.keys(STREAMERS)
