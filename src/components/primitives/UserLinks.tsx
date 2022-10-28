@@ -7,6 +7,9 @@ const STREAMERS = {
   SimSouls: {
     twitch: 'SimSouls',
   },
+  Rioanne: {
+    twitch: 'Rioanne',
+  },
 }
 
 const KNOWN_STREAMERS = Object.keys(STREAMERS)
