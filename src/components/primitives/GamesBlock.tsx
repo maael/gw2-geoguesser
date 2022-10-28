@@ -73,7 +73,7 @@ export default function GamesBlock({
                         width={25}
                         className={cls('rounded-full', getUserStyle.border)}
                       />{' '}
-                      <span className={cls('overflow-ellipsis overflow-hidden', getUserStyle.text)}>
+                      <span className={cls('overflow-ellipsis overflow-hidden whitespace-nowrap', getUserStyle.text)}>
                         {cleanUsername(g.userId?.username)}
                       </span>
                     </a>
