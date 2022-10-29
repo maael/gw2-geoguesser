@@ -3,6 +3,7 @@ import Link from 'next/link'
 const messageToTypeMap = {
   'Need to have an account to play ranked games!': 'account',
   'Ranked games can only be done once per user!': 'attempts',
+  'Custom games can only be done once per user!': 'attempts',
 }
 const contentMap = {
   account: AccountError,
@@ -10,10 +11,10 @@ const contentMap = {
   default: DefaultError,
 }
 
-function AccountError({ error }: { error: string }) {
+function AccountError(_: { error: string }) {
   return (
     <div className="text-white text-center text-2xl flex flex-col justify-center items-center gap-5 mt-5 h-full">
-      <div>{error}</div>
+      <div>Need to have an account to create custom games, and play ranked or custom games!</div>
       <div className="flex flex-row">
         <Link href="/auth">
           <a className="gwfont flex flex-row gap-2 justify-center items-center bg-brown-brushed rounded-full px-5 py-1 hover:scale-110 transition-transform drop-shadow-lg h-full">

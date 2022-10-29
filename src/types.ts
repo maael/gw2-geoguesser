@@ -50,6 +50,7 @@ export interface ChallengeOption {
 
 export type ApiOneHandler<T = any, Body = any> = (args: {
   id: string
+  secondaryId?: string
   body?: Body
   req: NextApiRequest
   res: NextApiResponse
@@ -77,4 +78,5 @@ export enum CHALLENGE {
   'daily' = 'daily',
   'weekly' = 'weekly',
   'monthly' = 'monthly',
+  'custom' = 'custom',
 }

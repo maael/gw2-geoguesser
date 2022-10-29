@@ -3,7 +3,7 @@ import * as React from 'react'
 import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query'
 import getDaysInMonth from 'date-fns/getDaysInMonth'
 import Image from 'next/image'
-import { FaArrowRight, FaBeer, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
+import { FaArrowRight, FaBeer, FaCogs, FaGithub, FaLink, FaReddit } from 'react-icons/fa'
 import dynamic from 'next/dynamic'
 import { avatar } from '~/util'
 import { CHALLENGE } from '~/types'
@@ -22,21 +22,19 @@ function sum(obj: any, multiplier: number) {
 }
 
 export default function Index() {
+  const { data, isLoading } = useQuery(['home-info'], () => fetch('/api/internal/home_info').then((r) => r.json()))
   const {
-    data: {
-      daily,
-      weekly,
-      monthly,
-      recentDailyGames,
-      highDailyGames,
-      recentWeeklyGames,
-      highWeeklyGames,
-      recentMonthlyGames,
-      highMonthlyGames,
-      recentRandomGames,
-    },
-    isLoading,
-  } = useQuery(['home-info'], () => fetch('/api/internal/home_info').then((r) => r.json()))
+    daily,
+    weekly,
+    monthly,
+    recentDailyGames,
+    highDailyGames,
+    recentWeeklyGames,
+    highWeeklyGames,
+    recentMonthlyGames,
+    highMonthlyGames,
+    recentRandomGames,
+  } = data || {}
   return (
     <>
       <div className="flex flex-col justify-center items-center text-white">
@@ -46,6 +44,11 @@ export default function Index() {
             <Link href="/game/random">
               <a className="text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
                 Quick Game <FaArrowRight />
+              </a>
+            </Link>
+            <Link href="/game/custom">
+              <a className="text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
+                Custom Game <FaCogs />
               </a>
             </Link>
             <div className="gwfont text-xl sm:text-3xl mt-2">Ranked Games</div>
@@ -144,11 +147,24 @@ function RankedGameBlock({
 export async function getStaticProps() {
   const queryClient = new QueryClient()
 
-  const rootUrl = process.env.VERCEL_ENV === 'production' ? 'https://gw2-geoguesser.mael.tech' : 'http://localhost:3002'
+  const rootUrl =
+    process.env.VERCEL_ENV === 'production'
+      ? 'https://gw2-geoguesser.mael.tech'
+      : process.env.VERCEL_ENV === 'preview'
+      ? 'https://gw2-geoguesser.mael.tech'
+      : 'http://localhost:3002'
 
-  console.info('[revalidate]')
+  console.info('[revalidate]', rootUrl)
 
-  await queryClient.prefetchQuery(['home-info'], () => fetch(`${rootUrl}/api/internal/home_info`).then((r) => r.json()))
+  await queryClient.prefetchQuery(['home-info'], async () => {
+    try {
+      const result = await fetch(`${rootUrl}/api/internal/home_info`).then((r) => r.json())
+      console.info({ result })
+      return result
+    } catch (e) {
+      console.error('error', e)
+    }
+  })
 
   return {
     props: {

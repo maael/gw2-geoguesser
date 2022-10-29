@@ -3,7 +3,7 @@ import functionsMap from '~/api/functions'
 import dbConnect from '~/db/mongo'
 
 const handler: NextApiHandler = async (req, res) => {
-  const [type, id] = (req.query as any).route || []
+  const [type, id, secondaryId] = (req.query as any).route || []
   const { limit, page, offset, sort } = req.query
   if (!req.method) return
   if (req.method === 'OPTIONS') {
@@ -11,9 +11,10 @@ const handler: NextApiHandler = async (req, res) => {
     return
   }
   const matchedFunction = ((functionsMap[type] || {})[req.method.toLowerCase()] || {})[id ? 'one' : 'many']
-  console.info({
+  console.info('[internal]', {
     type,
     id,
+    secondaryId,
     method: req.method.toLowerCase(),
   })
   if (!matchedFunction) {
@@ -22,7 +23,17 @@ const handler: NextApiHandler = async (req, res) => {
   }
   try {
     await dbConnect()
-    const results = await matchedFunction({ id, limit, page, offset, body: req.body || {}, req, res, sort })
+    const results = await matchedFunction({
+      id,
+      secondaryId,
+      limit,
+      page,
+      offset,
+      body: req.body || {},
+      req,
+      res,
+      sort,
+    })
     res.json(results)
   } catch (e) {
     res.status(500).json({ error: e.message })

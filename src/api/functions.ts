@@ -7,12 +7,19 @@ import Challenge from '~/db/models/challenges'
 import ChallengeOption from '~/db/models/challengeOption'
 import User from '~/db/models/user'
 
-const getOneGame: ApiOneHandler = async ({ id, sort, limit = 10 }) => {
+const getOneGame: ApiOneHandler = async ({ id, secondaryId, sort, limit = 10 }) => {
   let challengeId = id
   let challenge: WithDoc<TChallenge> | undefined | null = undefined
   if (challengeId !== CHALLENGE.random) {
     const filterObject: any = {}
-    if (challengeId === CHALLENGE.daily || challengeId === CHALLENGE.weekly || challengeId === CHALLENGE.monthly) {
+    if (challengeId === CHALLENGE.custom) {
+      filterObject.type = CHALLENGE.custom
+      filterObject._id = secondaryId
+    } else if (
+      challengeId === CHALLENGE.daily ||
+      challengeId === CHALLENGE.weekly ||
+      challengeId === CHALLENGE.monthly
+    ) {
       filterObject.type = id
     } else {
       filterObject._id = id
@@ -87,6 +94,33 @@ const handlers: ApiHandlers = {
     get: {
       one: getOneChallenge,
     },
+    post: {
+      many: async ({ body }) => {
+        if (!body?.name) {
+          throw new Error('Requires name')
+        } else if (['Daily', 'Week', 'Monthly'].some((i) => body?.name.toLowerCase().startsWith(i.toLowerCase()))) {
+          throw new Error('Cannot start with Daily, Week, or Monthly')
+        }
+        const rounds = body?.rounds || 10
+        const options = (
+          await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: rounds } }, { $project: { _id: 1 } }])
+        ).map(({ _id }) => _id)
+        const challenge = await Challenge.create({
+          name: body?.name,
+          type: CHALLENGE.custom,
+          options,
+          settings: {
+            sort: 'score-time',
+            rounds,
+            roundTime: body?.roundTime,
+            imageTime: body?.imageTime,
+          },
+          prizes: {},
+          isDeleted: false,
+        })
+        return challenge
+      },
+    },
   },
   home_info: {
     get: {
@@ -131,12 +165,22 @@ const handlers: ApiHandlers = {
   },
   play: {
     get: {
-      one: async ({ id, req, res }) => {
+      one: async ({ id, secondaryId, req, res }) => {
         console.info('[challenge]', { type: id })
         if (id === CHALLENGE.random) {
           return {
             options: await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 5 } }]),
           }
+        } else if (id === CHALLENGE.custom) {
+          const session = await unstable_getServerSession(req, res, authOptions)
+          if (!session) throw new Error('Need to have an account to play ranked games!')
+          const challenge = await Challenge.findOne({ type: id, _id: secondaryId })
+            .sort({ createdAt: 'desc' })
+            .populate('options')
+          if (!challenge) return null
+          const existingUserGame = await Game.findOne({ userId: (session.user as any).id, challenge: challenge._id })
+          if (existingUserGame) throw new Error('Custom games can only be done once per user!')
+          return challenge
         } else if (id === CHALLENGE.daily || id === CHALLENGE.monthly || id === CHALLENGE.weekly) {
           const session = await unstable_getServerSession(req, res, authOptions)
           if (!session) throw new Error('Need to have an account to play ranked games!')
