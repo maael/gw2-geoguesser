@@ -18,7 +18,7 @@ body {
   background-size: cover;
   background-attachment: fixed;
   font-family: Cagliostro, Arial, Helvetica, sans-serif;
-  @apply bg-gray-900;
+  background-color: #1A1B1C;
 }
 
 button,

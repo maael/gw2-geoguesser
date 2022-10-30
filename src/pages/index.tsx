@@ -42,15 +42,21 @@ export default function Index() {
           <div className="text-2xl sm:text-4xl text-center mt-3 sm:mt-7 gwfont">Think you know Tyria?</div>
           <div className="flex flex-col justify-center items-center gap-2 w-full px-2 my-1">
             <Link href="/game/random">
-              <a className="text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
+              <a className="-mt-2 text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
                 Quick Game <FaArrowRight />
               </a>
             </Link>
+            <p className="max-w-xs text-center -mt-1 text-sm opacity-75">
+              Play a quick game with some random locations!
+            </p>
             <Link href="/game/custom">
-              <a className="text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
+              <a className="mt-4 text-2xl text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-2 justify-center items-center">
                 Custom Game <FaCogs />
               </a>
             </Link>
+            <p className="max-w-xs text-center -mt-1 text-sm opacity-75">
+              Make a shareable game with fixed locations, perfect for friend groups or sharing with stream viewers!
+            </p>
             <div className="gwfont text-xl sm:text-3xl mt-2">Ranked Games</div>
             <div className="text-center max-w-md">
               <Link href="/auth">

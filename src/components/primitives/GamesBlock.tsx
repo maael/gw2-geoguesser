@@ -90,9 +90,9 @@ export default function GamesBlock({
                   {type === 'score' && idx < 3 ? (
                     <FaMedal className="text-sm" style={{ color: medalColor[idx] }} />
                   ) : null}{' '}
-                  {g.totalScore}
+                  {g.totalScore?.toLocaleString('en', { useGrouping: true })}
                 </div>
-                <div className="w-2/5 text-right">
+                <div className="w-2/5 text-right" suppressHydrationWarning>
                   {format(new Date(g.createdAt), 'HH:mm do MMM')}
                   <span className="hidden sm:inline-block ml-1">{format(new Date(g.createdAt), 'yyyy')}</span>
                 </div>

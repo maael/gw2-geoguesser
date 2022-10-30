@@ -200,10 +200,11 @@ const handlers: ApiHandlers = {
       one: async ({ id }) => {
         const user = await User.findOne({ username: id }, { _id: 1, username: 1, createdAt: 1, image: 1, style: 1 })
         if (!user) throw new Error('Not found')
-        const userGames = await Game.find({ userId: user._id })
-          .sort({ createdAt: 'desc' })
-          .populate('challenge', 'name type createdAt')
-          .limit(100)
+        const baseQuery = Game.find({ userId: user._id })
+        const [userGames, totalGames] = await Promise.all([
+          baseQuery.clone().sort({ createdAt: 'desc' }).populate('challenge', 'name type createdAt').limit(100),
+          baseQuery.clone().count(),
+        ])
         return {
           id: user._id,
           username: user.username,
@@ -211,6 +212,7 @@ const handlers: ApiHandlers = {
           createdAt: user.createdAt,
           style: user.style,
           games: userGames,
+          totalGames,
         }
       },
       many: async ({ req, res }) => {
