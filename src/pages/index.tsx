@@ -165,7 +165,6 @@ export async function getStaticProps() {
   await queryClient.prefetchQuery(['home-info'], async () => {
     try {
       const result = await fetch(`${rootUrl}/api/internal/home_info`).then((r) => r.json())
-      console.info({ result })
       return result
     } catch (e) {
       console.error('error', e)

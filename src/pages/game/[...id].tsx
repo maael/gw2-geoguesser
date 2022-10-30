@@ -30,7 +30,6 @@ function useGameOptions(
       setLoading(true)
       const response = await fetch(`/api/internal/play/${[gameType, customGameId].filter(Boolean).join('/')}`)
       game = await response.json()
-      console.info('what', game, game?.error)
       if (response.status == 500 || game?.error) throw new Error(game?.error || 'Server error')
       game?.options?.forEach((o) => {
         const img = new global.Image()
