@@ -73,3 +73,20 @@ export function getUserStyles(
     },
   }
 }
+
+export function formatDate(d: string) {
+  const locale = typeof navigator === 'undefined' ? 'en-GB' : navigator.language || 'en-GB'
+  const dateObj = new Date(d)
+  return `${
+    dateObj
+      .toLocaleDateString(locale, {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      .split(' ')[1]
+  } ${dateObj.toLocaleDateString(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  })}`
+}

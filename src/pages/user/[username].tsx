@@ -1,11 +1,10 @@
 import * as React from 'react'
 import { dehydrate, QueryClient, useQueries } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import format from 'date-fns/format'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { avatar, cleanUsername, getUserStyles } from '~/util'
+import { avatar, cleanUsername, formatDate, getUserStyles } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 import cls from 'classnames'
 import UserLinks from '~/components/primitives/UserLinks'
@@ -106,8 +105,7 @@ export default function Index() {
               )}
               <div className="w-1/3 text-center">{g.totalScore?.toLocaleString('en', { useGrouping: true })}</div>
               <div className="w-1/3 text-right" suppressHydrationWarning>
-                {format(new Date(g.createdAt), 'HH:mm do MMM')}
-                <span className="ml-1 hidden sm:inline-block">{format(new Date(g.createdAt), 'yyyy')}</span>
+                {formatDate(g.createdAt)}
               </div>
             </div>
           ))}

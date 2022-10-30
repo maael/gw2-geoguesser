@@ -1,9 +1,8 @@
-import format from 'date-fns/format'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FaMedal, FaSpinner } from 'react-icons/fa'
 import cls from 'classnames'
-import { avatar, cleanUsername, convertMsToMinutesSeconds, getUserStyles, medalColor } from '~/util'
+import { avatar, cleanUsername, convertMsToMinutesSeconds, formatDate, getUserStyles, medalColor } from '~/util'
 import UserLinks from './UserLinks'
 
 export default function GamesBlock({
@@ -93,8 +92,7 @@ export default function GamesBlock({
                   {g.totalScore?.toLocaleString('en', { useGrouping: true })}
                 </div>
                 <div className="w-2/5 text-right" suppressHydrationWarning>
-                  {format(new Date(g.createdAt), 'HH:mm do MMM')}
-                  <span className="hidden sm:inline-block ml-1">{format(new Date(g.createdAt), 'yyyy')}</span>
+                  {formatDate(g.createdAt)}
                 </div>
               </div>
             )
