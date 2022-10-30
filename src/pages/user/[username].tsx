@@ -103,8 +103,10 @@ export default function Index() {
               ) : (
                 <div className="w-1/3">Quick Game</div>
               )}
-              <div className="w-1/3 text-center">{g.totalScore?.toLocaleString('en', { useGrouping: true })}</div>
-              <div className="w-1/3 text-right" suppressHydrationWarning>
+              <div className="w-1/3 text-center flex justify-center items-center">
+                {g.totalScore?.toLocaleString('en', { useGrouping: true })}
+              </div>
+              <div className="w-1/3 text-right flex justify-end items-center" suppressHydrationWarning>
                 {formatDate(g.createdAt)}
               </div>
             </div>

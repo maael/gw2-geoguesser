@@ -91,7 +91,7 @@ export default function GamesBlock({
                   ) : null}{' '}
                   {g.totalScore?.toLocaleString('en', { useGrouping: true })}
                 </div>
-                <div className="w-2/5 text-right" suppressHydrationWarning>
+                <div className="w-2/5 text-right flex justify-end items-center" suppressHydrationWarning>
                   {formatDate(g.createdAt)}
                 </div>
               </div>
