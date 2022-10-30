@@ -58,7 +58,7 @@ export function getUserStyles(
   const userIsStreamer = isStreamer(username)
   return {
     border: {
-      'thick-border': options.large,
+      'thick-border': (userIsStreamer || !!style) && options.large,
       'twitch-border thin-border': style !== 'rainbow' && userIsStreamer,
       'rainbow-border thin-border': style === 'rainbow',
       'taimi-border thin-border': style === 'taimi',

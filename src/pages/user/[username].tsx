@@ -24,7 +24,7 @@ export default function Index() {
 
   if (!user) return null
 
-  const getUserStyle = getUserStyles(user.username, user.style, { large: true, animate: true })
+  const userStyles = getUserStyles(user.username, user.style, { large: true, animate: true })
 
   return (
     <div className="flex justify-center items-center text-white">
@@ -33,11 +33,11 @@ export default function Index() {
           <Image
             src={avatar(user.image)}
             layout="fill"
-            className={cls('rounded-full drop-shadow-md', getUserStyle.border)}
+            className={cls('rounded-full drop-shadow-md', userStyles.border)}
           />
         </div>
         <div className="flex flex-row gap-2 justify-center items-center mb-3 text-4xl sm:text-6xl">
-          <div className={cls('gwfont', getUserStyle.text)}>{cleanUsername(user.username)}</div>
+          <div className={cls('gwfont', userStyles.text)}>{cleanUsername(user.username)}</div>
           <UserLinks username={user.username} />
         </div>
         {(session?.user as any)?.id === user.id ? <AccountNamePrompt /> : null}
@@ -71,7 +71,7 @@ export default function Index() {
                 <div className="w-1/3">Quick Game</div>
               )}
               <div className="w-1/3 text-center">{g.totalScore}</div>
-              <div className="w-1/3 text-right">
+              <div className="w-1/3 text-right" suppressHydrationWarning>
                 {format(new Date(g.createdAt), 'HH:mm do MMM')}
                 <span className="ml-1 hidden sm:inline-block">{format(new Date(g.createdAt), 'yyyy')}</span>
               </div>
