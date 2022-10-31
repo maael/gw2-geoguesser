@@ -8,6 +8,7 @@ import { avatar, cleanUsername, formatDate, getUserStyles } from '~/util'
 import AccountNamePrompt from '~/components/primitives/AccountNamePrompt'
 import cls from 'classnames'
 import UserLinks from '~/components/primitives/UserLinks'
+import { CHALLENGE } from '~/types'
 
 function averageScore(ar) {
   return (ar.length === 0 ? 0 : ar.reduce((acc, i) => acc + i.totalScore, 0) / ar.length).toLocaleString('en', {
@@ -32,10 +33,10 @@ export default function Index() {
 
   const userStyles = getUserStyles(user.username, user.style, { large: true, animate: true })
 
-  const quickGames = user.games.filter((g) => !!g.challenge?.name)
-  const dailyGames = user.games.filter((g) => g.challenge?.name?.startsWith('Daily'))
-  const weeklyGames = user.games.filter((g) => g.challenge?.name?.startsWith('Week'))
-  const monthlyGames = user.games.filter((g) => g.challenge?.name?.startsWith('Monthly'))
+  const quickGames = user.games.filter((g) => g.challengeType === CHALLENGE.random)
+  const dailyGames = user.games.filter((g) => g.challengeType === CHALLENGE.daily)
+  const weeklyGames = user.games.filter((g) => g.challengeType === CHALLENGE.weekly)
+  const monthlyGames = user.games.filter((g) => g.challengeType === CHALLENGE.monthly)
 
   return (
     <div className="flex justify-center items-center text-white">
