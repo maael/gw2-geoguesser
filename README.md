@@ -34,7 +34,7 @@ Taking a note from Hyrule Guesser, we'll roll our own minimal user/password syst
 
 ### Data Collection
 
-Images and locations are collected using the [Guild Wars 2 Sightseeing App here](https://github.com/maael/guild-wars-2-sightseeing-app). This makes it easy to collect the images and game locations required.
+Images and locations are collected using the [Guild Wars 2 Sightseeing App here](https://github.com/maael/gw2-sightseeing). This makes it easy to collect the images and game locations required.
 
 ### Tiles / Game Locations
 
