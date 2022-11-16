@@ -106,7 +106,6 @@ function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLoca
   })
   return (
     <>
-      {/** TODO: Replace with own tile service */}
       <TileLayer url="https://tiles.maael.xyz/1/1/{z}/{x}/{y}.jpg" noWrap={true} minZoom={1} maxZoom={7} />
       <AttributionControl prefix={`Tiles by <a href="https://blog.thatshaman.com/" target="_blank">that_shaman</a>`} />
       {marker ? <Marker title="Your guess" icon={myOtherIcon} position={marker} /> : null}
@@ -150,6 +149,12 @@ function useSetup({
 }) {
   const map = useMap()
 
+  const [shownLocation, setShownLocation] = useState(false)
+
+  useEffect(() => {
+    setShownLocation(false)
+  }, [guessId, setShownLocation])
+
   useEffect(() => {
     const northWest = map.unproject([0, 0], MAX_ZOOM)
     const southEast = map.unproject([81920, 114688], MAX_ZOOM)
@@ -158,11 +163,12 @@ function useSetup({
   }, [map])
 
   useEffect(() => {
-    if (showGuessLocation) {
+    if (showGuessLocation && !shownLocation) {
       const bounds = new L.LatLngBounds([marker, locationLongLat])
       map.fitBounds(bounds)
+      setShownLocation(true)
     }
-  }, [marker, showGuessLocation, locationLongLat, map])
+  }, [marker, showGuessLocation, locationLongLat, map, shownLocation, setShownLocation])
 
   useEffect(() => {
     map.setView([-241, 368], 3)
