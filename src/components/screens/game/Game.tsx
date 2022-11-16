@@ -256,6 +256,12 @@ export default function GameScreen({
                 >
                   New Game
                 </button>
+              ) : gameId ? (
+                <Link href={`/leaderboard/${gameId}`}>
+                  <a className="w-full lg:w-auto gwfont bg-black-brushed text-white hover:scale-110 transition-transform flex flex-col px-10 py-2 drop-shadow-md rounded-full items-center">
+                    Leaderboard
+                  </a>
+                </Link>
               ) : null}
               <a
                 className="w-full lg:w-auto gwfont bg-black-brushed text-white hover:scale-110 transition-transform flex flex-row gap-2 justify-center items-center px-10 py-2 drop-shadow-md rounded-full"
@@ -273,7 +279,7 @@ export default function GameScreen({
                   timer.formatted
                 }! Think you can beat me?&hashtags=GuildWars2,gw2geoguesser&url=https://gw2-geoguesser.mael.tech/&via=GW2Geoguesser`}
               >
-                <FaTwitter /> Tweet score
+                <FaTwitter /> Tweet <span className="hidden lg:block">score</span>
               </a>
               <Link href="/">
                 <a className="w-full lg:w-auto gwfont bg-black-brushed text-white hover:scale-110 transition-transform flex flex-col px-10 py-2 drop-shadow-md rounded-full items-center">
