@@ -59,7 +59,7 @@ function SightseeingAppBanner({ fathom }: { fathom?: any }) {
   ) : null
 }
 
-export default function Index() {
+export default function Index({ fathom }: any) {
   const { data, isLoading } = useQuery(['home-info'], () => fetch('/api/internal/home_info').then((r) => r.json()))
   const {
     daily,
@@ -122,7 +122,7 @@ export default function Index() {
               <RankedGameBlock type={CHALLENGE.monthly} challenge={monthly} />
             </div>
           </div>
-          <SightseeingAppBanner />
+          <SightseeingAppBanner fathom={fathom} />
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
             <GamesBlock type="time" games={recentRandomGames} isLoading={isLoading} label={'Recent Quick Games'} />
           </div>
