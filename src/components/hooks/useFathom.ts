@@ -11,6 +11,7 @@ export const EVENTS = {
   Register: 'RMLL1R4C',
   StartGame: 'YWX7HTHN',
   FinishGame: '7XZ3PJYS',
+  SightseeingAppClick: 'HYW5PXCJ',
 }
 
 export default function useFathom() {

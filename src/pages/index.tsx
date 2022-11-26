@@ -9,6 +9,8 @@ import { avatar } from '~/util'
 import { CHALLENGE } from '~/types'
 import PrizeList from '~/components/PrizeList'
 import GamesBlock from '~/components/primitives/GamesBlock'
+import { EVENTS } from '~/components/hooks/useFathom'
+import { useSession } from 'next-auth/react'
 
 const Countdown = dynamic(() => import('../components/primitives/RankedResetTimer'), {
   ssr: false,
@@ -19,6 +21,42 @@ function sum(obj: any, multiplier: number) {
   if (!obj) return 0
   const perThing = Object.values(obj.prizes || {}).reduce<number>((acc, p) => acc + Number(`${p}`.replace('g', '')), 0)
   return perThing * multiplier
+}
+
+function SightseeingAppBanner({ fathom }: { fathom?: any }) {
+  const { data: session } = useSession()
+  return session?.user ? (
+    <div className="bg-brown-brushed pt-5 pb-7 px-5 flex flex-col gap-3 justify-center items-center text-center max-w-3xl text-base">
+      <h2 className="text-xl md:text-2xl rainbow-text uppercase">Want to explore Tyria, but even more?</h2>
+      <p>Thank you for being a player of Guild Wars 2 Geoguesser!</p>
+      <p>
+        I'd like to invite you to try out the beta for 🔗
+        <a
+          href="https://gw2-sightseeing.mael.tech/"
+          className="underline"
+          onClick={() => {
+            fathom?.trackGoal(EVENTS.SightseeingAppClick, 0)
+          }}
+        >
+          Guild Wars 2 Sightseeing App →
+        </a>
+      </p>
+      <p>
+        Use it to take the exploration into the game, having to actually get to the shown location in game. Other
+        benefits include easily submitting suggestions for Geoguesser! Find out more at the link above!
+      </p>
+      <p>
+        It's still a work in progress - but all data from it (completions/challenges) should carry over once it's done.
+      </p>
+      <p>
+        Any issues or feedback? Let me know on{' '}
+        <a href="https://www.reddit.com/user/maael" className="underline">
+          Reddit
+        </a>{' '}
+        or Discord (maael#2482).
+      </p>
+    </div>
+  ) : null
 }
 
 export default function Index() {
@@ -84,6 +122,7 @@ export default function Index() {
               <RankedGameBlock type={CHALLENGE.monthly} challenge={monthly} />
             </div>
           </div>
+          <SightseeingAppBanner />
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 w-full">
             <GamesBlock type="time" games={recentRandomGames} isLoading={isLoading} label={'Recent Quick Games'} />
           </div>
