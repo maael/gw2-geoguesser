@@ -1,10 +1,21 @@
 import { NextApiHandler } from 'next'
-import { deleteSubmission, getSubmissions } from '~/scripts/util/gw2Mongo'
+import { unstable_getServerSession } from 'next-auth'
+import { deleteSubmission, getSubmissions, approveSubmission } from '~/scripts/util/gw2Mongo'
+import { authOptions } from '~/pages/api/auth/[...nextauth]'
 
 const submissionApi: NextApiHandler = async (req, res) => {
+  const session = await unstable_getServerSession(req, res, authOptions)
+  if (!session || session?.user?.name !== 'Mael') {
+    res.status(401).json({ error: 'Unauthorized' })
+    return
+  }
+  console.info('[submission]', req.method, req.query.id?.toString())
   if (req.method === 'GET') {
     const submissions = await getSubmissions({ accepted: false })
     res.json({ data: submissions })
+  } else if (req.method === 'PUT') {
+    await approveSubmission({ id: req.query.id?.toString() })
+    res.json({ ok: 1 })
   } else if (req.method === 'DELETE') {
     await deleteSubmission({ id: req.query.id?.toString() })
     res.json({ ok: 1 })

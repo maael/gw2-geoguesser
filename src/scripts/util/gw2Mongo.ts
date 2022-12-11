@@ -109,3 +109,24 @@ export async function deleteSubmission({ id }: { id?: string }) {
 
   return submissions
 }
+
+export async function approveSubmission({ id }: { id?: string }) {
+  if (!id) return
+
+  const db = await mongoose.createConnection(`${process.env.GW2_SIGHTSEEING_MONGO_DB_URI}`)
+
+  const Submission = new mongoose.Schema({
+    accepted: { type: Boolean, default: false },
+    account: { type: String },
+    location: { type: [Number, Number] },
+    image: { type: String },
+  })
+
+  const SubmissionModel = db.model('GeoguesserSubmission', Submission)
+
+  const submissions = await SubmissionModel.updateOne({ _id: id }, { accepted: true })
+
+  await db.close()
+
+  return submissions
+}
