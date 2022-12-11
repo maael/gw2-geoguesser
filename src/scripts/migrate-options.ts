@@ -2,6 +2,10 @@ import dbConnect from '../db/mongo'
 import ChallengeOption from '../db/models/challengeOption'
 import { getItems } from './util/gw2Mongo'
 
+/**
+ * TODO: Need to make this use the submissions going forwards
+ */
+
 // eslint-disable-next-line @typescript-eslint/no-extra-semi
 ;(async () => {
   console.info('[start]')

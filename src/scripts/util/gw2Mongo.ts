@@ -54,6 +54,8 @@ export async function getItems() {
 
   console.info('[Found]', { items: items.length })
 
+  await db.close()
+
   return items.map((i) => {
     return {
       image: i.imageUrl?.replace(
@@ -64,4 +66,46 @@ export async function getItems() {
       mapId: i.metadata?.mapId,
     }
   })
+}
+
+export async function getSubmissions({ accepted }: { accepted: boolean }) {
+  const db = await mongoose.createConnection(`${process.env.GW2_SIGHTSEEING_MONGO_DB_URI}`)
+
+  const Submission = new mongoose.Schema({
+    accepted: { type: Boolean, default: false },
+    account: { type: String },
+    location: { type: [Number, Number] },
+    image: { type: String },
+  })
+
+  const SubmissionModel = db.model('GeoguesserSubmission', Submission)
+
+  const submissions = await SubmissionModel.find({ accepted }).lean()
+
+  console.info('[submissions]', submissions.length)
+
+  await db.close()
+
+  return submissions
+}
+
+export async function deleteSubmission({ id }: { id?: string }) {
+  if (!id) return
+
+  const db = await mongoose.createConnection(`${process.env.GW2_SIGHTSEEING_MONGO_DB_URI}`)
+
+  const Submission = new mongoose.Schema({
+    accepted: { type: Boolean, default: false },
+    account: { type: String },
+    location: { type: [Number, Number] },
+    image: { type: String },
+  })
+
+  const SubmissionModel = db.model('GeoguesserSubmission', Submission)
+
+  const submissions = await SubmissionModel.deleteOne({ _id: id })
+
+  await db.close()
+
+  return submissions
 }
