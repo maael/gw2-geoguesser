@@ -22,7 +22,7 @@ export const ChallengeOptionsMap: Partial<Record<CHALLENGE, { rounds: number }>>
 }
 
 export function avatar(name: string | undefined | null) {
-  return `https://gw2-sightseeing.maael.xyz/avatars/${name || 'Toxx_2BIcon.jpg'}`
+  return `https://gw2-sightseeing.mael-cdn.com/avatars/${name || 'Toxx_2BIcon.jpg'}`
 }
 
 export function getRandomArrayItem<T>(items: T[]) {
@@ -89,4 +89,12 @@ export function formatDate(d: string) {
     month: '2-digit',
     year: '2-digit',
   })}`
+}
+
+export function getPath(p?: string) {
+  try {
+    return `${`${new URL(p || '').pathname}`}`
+  } catch {
+    return ''
+  }
 }

@@ -6,6 +6,7 @@ import Game from '~/db/models/games'
 import Challenge from '~/db/models/challenges'
 import ChallengeOption from '~/db/models/challengeOption'
 import User from '~/db/models/user'
+import { getPath } from '~/util'
 
 const getOneGame: ApiOneHandler = async ({ id, secondaryId, sort, limit = 10 }) => {
   let challengeId = id
@@ -55,7 +56,19 @@ const getOneGame: ApiOneHandler = async ({ id, secondaryId, sort, limit = 10 }) 
 
 const getOneChallenge: ApiOneHandler = async ({ id }) => {
   if (id === 'random') return null
-  return Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+  const challenge = await Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+  return cleanChallengeOptions(challenge)
+}
+
+function cleanChallengeOptions(challenge: any) {
+  return {
+    ...challenge,
+    options: cleanOptions(challenge.options),
+  }
+}
+
+function cleanOptions(options: any) {
+  return options.map((o) => ({ ...o, image: `https://gw2-sightseeing.mael-cdn.com${getPath(o.image)}` }))
 }
 
 const handlers: ApiHandlers = {
@@ -168,8 +181,10 @@ const handlers: ApiHandlers = {
       one: async ({ id, secondaryId, req, res }) => {
         console.info('[challenge]', { type: id })
         if (id === CHALLENGE.random) {
+          const options = await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 5 } }])
+          console.info({ options })
           return {
-            options: await ChallengeOption.aggregate<{ _id: string }>([{ $sample: { size: 5 } }]),
+            options: cleanOptions(options),
           }
         } else if (id === CHALLENGE.custom) {
           const session = await unstable_getServerSession(req, res, authOptions)
@@ -180,7 +195,7 @@ const handlers: ApiHandlers = {
           if (!challenge) return null
           const existingUserGame = await Game.findOne({ userId: (session.user as any).id, challenge: challenge._id })
           if (existingUserGame) throw new Error('Custom games can only be done once per user!')
-          return challenge
+          return cleanChallengeOptions(challenge)
         } else if (id === CHALLENGE.daily || id === CHALLENGE.monthly || id === CHALLENGE.weekly) {
           const session = await unstable_getServerSession(req, res, authOptions)
           if (!session) throw new Error('Need to have an account to play ranked games!')
@@ -188,7 +203,7 @@ const handlers: ApiHandlers = {
           if (!challenge) return null
           const existingUserGame = await Game.findOne({ userId: (session.user as any).id, challenge: challenge._id })
           if (existingUserGame) throw new Error('Ranked games can only be done once per user!')
-          return challenge
+          return cleanChallengeOptions(challenge)
         } else {
           return null
         }

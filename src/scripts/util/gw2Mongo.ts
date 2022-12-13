@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { getPath } from '~/util'
 
 export async function getItems() {
   const db = await mongoose.createConnection(`${process.env.GW2_SIGHTSEEING_MONGO_DB_URI}`)
@@ -58,10 +59,7 @@ export async function getItems() {
 
   return items.map((i) => {
     return {
-      image: i.imageUrl?.replace(
-        'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz/',
-        'https://gw2-sightseeing.maael.xyz/'
-      ),
+      image: `https://gw2-sightseeing.mael-cdn.com${getPath(i.imageUrl)}`,
       location: i.metadata?.geocoords,
       mapId: i.metadata?.mapId,
     }
