@@ -34,7 +34,8 @@ export default function SubmissionsControl() {
           <FaUser /> {currentSubmission?.author || 'Unknown'}
         </h3>
         <h3 className="flex flex-row gap-2 justify-center items-center text-xl text-center mb-5">
-          <FaClock /> {format(new Date(currentSubmission?.createdAt), 'HH:mm dd/MM/yy') || 'Unknown'}
+          <FaClock />{' '}
+          {currentSubmission?.createdAt ? format(new Date(currentSubmission?.createdAt), 'HH:mm dd/MM/yy') : 'Unknown'}
         </h3>
         <h3 className="flex flex-row gap-2 justify-center items-center text-xl text-center mb-5">
           <FaMapPin /> {currentSubmission?.mapId || 'Unknown'}
