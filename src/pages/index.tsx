@@ -182,7 +182,7 @@ function RankedGameBlock({
       <PrizeList prizes={challenge?.prizes} />
       <Link href={`/game/${type}`}>
         <a className="text-center bg-brown-brushed rounded-full drop-shadow-md hover:scale-110 transition-transform px-5 py-1 flex flex-row gap-1 items-center justify-center">
-          {challenge?.name.replace(`${new Date().getFullYear()}`, '').trim()} <FaArrowRight />
+          {challenge?.name?.replace(`${new Date().getFullYear()}`, '').trim()} <FaArrowRight />
         </a>
       </Link>
     </div>

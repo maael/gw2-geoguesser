@@ -56,7 +56,7 @@ const getOneGame: ApiOneHandler = async ({ id, secondaryId, sort, limit = 10 }) 
 
 const getOneChallenge: ApiOneHandler = async ({ id }) => {
   if (id === 'random') return null
-  const challenge = await Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+  const challenge = await Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options').lean()
   return cleanChallengeOptions(challenge)
 }
 
