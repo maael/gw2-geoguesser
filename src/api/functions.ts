@@ -192,6 +192,7 @@ const handlers: ApiHandlers = {
           const challenge = await Challenge.findOne({ type: id, _id: secondaryId })
             .sort({ createdAt: 'desc' })
             .populate('options')
+            .lean()
           if (!challenge) return null
           const existingUserGame = await Game.findOne({ userId: (session.user as any).id, challenge: challenge._id })
           if (existingUserGame) throw new Error('Custom games can only be done once per user!')
@@ -199,7 +200,7 @@ const handlers: ApiHandlers = {
         } else if (id === CHALLENGE.daily || id === CHALLENGE.monthly || id === CHALLENGE.weekly) {
           const session = await unstable_getServerSession(req, res, authOptions)
           if (!session) throw new Error('Need to have an account to play ranked games!')
-          const challenge = await Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options')
+          const challenge = await Challenge.findOne({ type: id }).sort({ createdAt: 'desc' }).populate('options').lean()
           if (!challenge) return null
           const existingUserGame = await Game.findOne({ userId: (session.user as any).id, challenge: challenge._id })
           if (existingUserGame) throw new Error('Ranked games can only be done once per user!')
