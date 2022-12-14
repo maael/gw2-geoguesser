@@ -7,6 +7,7 @@ import { CHALLENGE } from '~/types'
 import { OptionsProps } from './Start'
 import Countdown from 'react-countdown'
 import { FaTwitter } from 'react-icons/fa'
+import useImageHost from '~/components/hooks/useImageHost'
 
 const Map = dynamic(() => import('~/components/primitives/Map'), {
   ssr: false,
@@ -126,6 +127,8 @@ export default function GameScreen({
     console.info('[image:limit]')
     setImageVisible(false)
   }, [])
+  const imageHost = useImageHost()
+  const image = lastItem?.image ? `https://gw2-sightseeing.${imageHost}${new URL(lastItem?.image).pathname}` : undefined
   return (
     <div
       suppressHydrationWarning
@@ -185,7 +188,7 @@ export default function GameScreen({
       </div>
       <div
         className="flex flex-row w-full h-full justify-center items-center bg-contain bg-no-repeat bg-top sm:bg-left lg:bg-center"
-        style={{ backgroundImage: imageVisible ? `url(${lastItem?.image})` : '' }}
+        style={{ backgroundImage: imageVisible ? `url(${image})` : '' }}
       />
       <div className="absolute bottom-16 sm:bottom-2 lg:bottom-10 left-0 sm:left-1/2 lg:left-auto right-0 md:right-10 lg:w-1/2 aspect-video scale-100 lg:scale-50 lg:hover:scale-100 origin-bottom-right transition-all opacity-60 hover:opacity-100 shadow-lg overflow-hidden rounded-xl">
         <Map

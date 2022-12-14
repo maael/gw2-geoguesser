@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { FaExclamationTriangle, FaInfoCircle, FaQuestionCircle, FaSave, FaSpinner } from 'react-icons/fa'
+import { FaExclamationTriangle, FaImages, FaInfoCircle, FaQuestionCircle, FaSave, FaSpinner } from 'react-icons/fa'
 import { queryClient } from '~/util'
+import useImageHost, { IMAGE_HOST_KEY } from '../hooks/useImageHost'
 
 const QUERY_KEY = ['user-gw2-account']
 
@@ -9,6 +10,7 @@ export default function AccountNamePrompt() {
   const { data, isLoading } = useQuery(QUERY_KEY, () => fetch('/api/internal/user').then((r) => r.json()))
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
+  const imageHost = useImageHost()
   return (
     <form
       onSubmit={async (e) => {
@@ -69,6 +71,35 @@ export default function AccountNamePrompt() {
           <FaExclamationTriangle /> {error}
         </p>
       ) : null}
+      <h4 className="gwfont pt-2">Image Host</h4>
+
+      <div
+        className="gwfont flex flex-row justify-center items-center gap-2 bg-black-brushed px-5 py-2 mb-1 rounded-md hover:scale-110 transition-transform"
+        onClick={() => {
+          const current = localStorage.getItem(IMAGE_HOST_KEY)
+          let newHost = 'mael-cdn.com'
+          if (current === 'mael-cdn.com') {
+            newHost = 'maael.xyz'
+          } else if (current === 'maael.xyz') {
+            newHost = 'mael-cdn.com'
+          }
+          localStorage.setItem(IMAGE_HOST_KEY, newHost)
+          window.location.reload()
+        }}
+      >
+        <FaImages /> Swap Host
+      </div>
+      <input
+        className="px-4 py-1 rounded-md text-black mb-2 text-center"
+        type="text"
+        placeholder="Image Host..."
+        name="imageHost"
+        value={imageHost}
+        disabled
+      />
+      <span className="flex flex-row gap-2 justify-center items-center text-xs text-opacity-85 text-white text-center max-w-xs -mt-1 mb-1">
+        <FaQuestionCircle /> Only change this if you're having issues seeing images
+      </span>
     </form>
   )
 }

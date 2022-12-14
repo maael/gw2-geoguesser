@@ -12,6 +12,7 @@ import {
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import cls from 'classnames'
+import useImageHost from '../hooks/useImageHost'
 
 const myIcon = L.icon({
   iconUrl: '/ui/guess-icon-green.png',
@@ -46,6 +47,7 @@ export default function Map({
 }) {
   const [distance, setDistance] = useState(null)
   const [marker, setMarker] = useState(null)
+  const imageHost = useImageHost()
   return (
     <>
       <div className="isolate w-full h-full relative">
@@ -67,6 +69,7 @@ export default function Map({
             showGuessLocation={showGuessLocation}
             marker={marker}
             setMarker={setMarker}
+            imageHost={imageHost}
           />
         </MapContainer>
       </div>
@@ -90,7 +93,16 @@ export default function Map({
   )
 }
 
-function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLocation, marker, setMarker }: any) {
+function MapInner({
+  guessLocation,
+  distance,
+  setDistance,
+  guessId,
+  showGuessLocation,
+  marker,
+  setMarker,
+  imageHost,
+}: any) {
   const locationLongLat = useLocationLongLat(guessLocation)
   useEffect(() => {
     setMarker(null)
@@ -106,7 +118,7 @@ function MapInner({ guessLocation, distance, setDistance, guessId, showGuessLoca
   })
   return (
     <>
-      <TileLayer url="https://tiles.mael-cdn.com/1/1/{z}/{x}/{y}.jpg" noWrap={true} minZoom={1} maxZoom={7} />
+      <TileLayer url={`https://tiles.${imageHost}/1/1/{z}/{x}/{y}.jpg`} noWrap={true} minZoom={1} maxZoom={7} />
       <AttributionControl prefix={`Tiles by <a href="https://blog.thatshaman.com/" target="_blank">that_shaman</a>`} />
       {marker ? <Marker title="Your guess" icon={myOtherIcon} position={marker} /> : null}
       {showGuessLocation && locationLongLat ? (
