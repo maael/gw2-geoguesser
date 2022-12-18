@@ -254,6 +254,21 @@ const handlers: ApiHandlers = {
       },
     },
   },
+  options: {
+    post: {
+      many: async ({ req, res, body }) => {
+        const session = await unstable_getServerSession(req, res, authOptions)
+        if (!session || session?.user?.name !== 'Mael') {
+          res.status(401)
+          return { error: 'Unauthorized' } as any
+        }
+        const existing = new Set((await ChallengeOption.find({})).map((i) => i.image))
+        const newItems = body.filter((i) => !existing.has(i.image))
+        const results = await ChallengeOption.insertMany(newItems)
+        return results
+      },
+    },
+  },
   avatars: {
     get: {
       many: async () => {

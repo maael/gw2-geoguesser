@@ -87,8 +87,9 @@ export async function getSubmissions({ accepted }: { accepted: boolean }) {
   return submissions
 }
 
-export async function deleteSubmission({ id }: { id?: string }) {
-  if (!id) return
+export async function deleteSubmissions({ ids }: { ids: string[] }) {
+  console.info('[deleting]', ids)
+  if (ids.length === 0) return
 
   const db = await mongoose.createConnection(`${process.env.GW2_SIGHTSEEING_MONGO_DB_URI}`)
 
@@ -101,7 +102,7 @@ export async function deleteSubmission({ id }: { id?: string }) {
 
   const SubmissionModel = db.model('GeoguesserSubmission', Submission)
 
-  const submissions = await SubmissionModel.deleteOne({ _id: id })
+  const submissions = await SubmissionModel.deleteMany({ _id: { $in: ids } })
 
   await db.close()
 

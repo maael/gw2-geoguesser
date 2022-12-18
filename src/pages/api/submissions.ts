@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next'
 import { unstable_getServerSession } from 'next-auth'
-import { deleteSubmission, getSubmissions, approveSubmission } from '~/scripts/util/gw2Mongo'
+import { deleteSubmissions, getSubmissions, approveSubmission } from '~/scripts/util/gw2Mongo'
 import { authOptions } from '~/pages/api/auth/[...nextauth]'
 
 const submissionApi: NextApiHandler = async (req, res) => {
@@ -17,7 +17,7 @@ const submissionApi: NextApiHandler = async (req, res) => {
     await approveSubmission({ id: req.query.id?.toString() })
     res.json({ ok: 1 })
   } else if (req.method === 'DELETE') {
-    await deleteSubmission({ id: req.query.id?.toString() })
+    await deleteSubmissions({ ids: (req.query.ids?.toString() || '').split(',').filter(Boolean) })
     res.json({ ok: 1 })
   } else {
     res.status(501).json({ error: 'Not implemented' })
