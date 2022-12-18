@@ -39,7 +39,7 @@ function SubmissionItem({
     <div className="flex flex-col gap-1 mx-5">
       <div className="flex flex-row gap-2 justify-around items-center">
         <h3 className="flex flex-row gap-2 justify-center items-center text-xl text-center">
-          <FaUser /> {item?.author || 'Unknown'}
+          <FaUser /> {item?.account || 'Unknown'}
         </h3>
         <h3 className="flex flex-row gap-2 justify-center items-center text-xl text-center">
           <FaClock /> {item?.createdAt ? format(new Date(item?.createdAt), 'HH:mm dd/MM/yy') : 'Unknown'}
@@ -99,7 +99,7 @@ export default function SubmissionsControl() {
               const newChallengeOptions: Omit<ChallengeOption, 'id'>[] = toApprove.map((s) => ({
                 image: `https://gw2-sightseeing.mael-cdn.com${new URL(s.image).pathname}`,
                 mapId: s.mapId,
-                author: s.author,
+                account: s.account,
                 location: s.location,
               }))
               console.info({ toApprove, toRemove, newChallengeOptions })
